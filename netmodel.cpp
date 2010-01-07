@@ -1,5 +1,8 @@
 #include "netmodel.h"
 #include <QDebug>
+#include <limits>
+
+using namespace std;
 
 Event::Event()
 {
@@ -269,7 +272,7 @@ bool NetModel::remove(Event* event/*, bool deleteOutput*/)
         {
             foreach (Operation *o, event->getOutOperations())
                 o->setBeginEvent(NULL);
-        /*}*/
+        //}*/
         events.removeAt(index);
         delete event;
         return true;
@@ -637,15 +640,6 @@ bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
     Operation *o1 = getOperationByEvents((*o)->getBeginEvent(), e);
     if (o1)
     {
-        /*Event *begin = (*o)->getBeginEvent();
-        Event *end = (*o)->getEndEvent();
-        if (begin)
-            begin->getOutOperations().replace(begin->getOutOperations().indexOf(*o), o1);
-        if (end)
-            end->getInOperations().replace(end->getInOperations().indexOf(*o), o1);
-        operations.replace(operations.indexOf(*o), o1);
-        delete *o;
-        *o = o1;*/
         return false;
     }
     else
@@ -730,4 +724,17 @@ bool NetModel::removeOperation(QObject *view, Operation *o)
         return true;
     else
         return false;
+}
+
+int NetModel::generateId()
+{
+    QSet<int> set;
+    foreach (Event *e, events)
+        set += e->getN();
+    for (int i = 0; i <= std::numeric_limits<int>::max(); ++i)
+    {
+        if (!set.contains(i))
+            return i;
+    }
+    return std::numeric_limits<int>::max();
 }

@@ -374,7 +374,7 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
         }
         else
         {
-            Event *e = new Event(42);
+            Event *e = new Event(netmodel->generateId());
             if (netmodel->insertEvent(this, e, i))
             {
                 beginInsertRows(parent, i, i);

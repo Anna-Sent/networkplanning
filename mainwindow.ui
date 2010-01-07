@@ -33,7 +33,14 @@
       <item>
        <widget class="QPushButton" name="btnAddEvent">
         <property name="text">
-         <string>Создать событие</string>
+         <string>Добавить событие</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnInsertEvent">
+        <property name="text">
+         <string>Вставить событие</string>
         </property>
        </widget>
       </item>
@@ -45,9 +52,23 @@
        </widget>
       </item>
       <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="btnAddOperation">
         <property name="text">
-         <string>Создать работу</string>
+         <string>Добавить работу</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnInsertOperation">
+        <property name="text">
+         <string>Вставить работу</string>
         </property>
        </widget>
       </item>
@@ -55,6 +76,13 @@
        <widget class="QPushButton" name="btnDeleteOperation">
         <property name="text">
          <string>Удалить работу</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
