@@ -86,6 +86,7 @@ public:
     NetModel();
     ~NetModel();
     // utils
+    int generateId();
     Event* getEventByNumber(int n);
     Operation* getOperationByEvents(Event*,Event*);
     QString print();

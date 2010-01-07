@@ -22,13 +22,34 @@ private:
     Ui::MainWindow *ui;
     TreeModel *treemodel;
     NetModel netmodel;
+    void insertEvent(int index);
+    void insertOperation(int index);
 private slots:
     void addEvent();
+    void insertEvent();
     void deleteEvent();
     void addOperation();
+    void insertOperation();
     void deleteOperation();
     void check();
     void currentChanged(const QModelIndex &, const QModelIndex &);
 };
 
 #endif // MAINWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

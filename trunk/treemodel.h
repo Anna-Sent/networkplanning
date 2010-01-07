@@ -76,6 +76,7 @@ public:
         return /*Qt::CopyAction |*/ Qt::MoveAction;
     }
     void fill(QComboBox *, const QModelIndex &) const;
+    TreeItem *getRootItem() {return rootItem;}
 
 private:
     void setupModelData(TreeItem *parent);

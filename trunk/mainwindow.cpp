@@ -9,8 +9,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->btnAddEvent, SIGNAL(clicked()), this, SLOT(addEvent()));
+    connect(ui->btnInsertEvent, SIGNAL(clicked()), this, SLOT(insertEvent()));
     connect(ui->btnDeleteEvent, SIGNAL(clicked()), this, SLOT(deleteEvent()));
     connect(ui->btnAddOperation,  SIGNAL(clicked()), this, SLOT(addOperation()));
+    connect(ui->btnInsertOperation, SIGNAL(clicked()), this, SLOT(insertOperation()));
     connect(ui->btnDeleteOperation, SIGNAL(clicked()), this, SLOT(deleteOperation()));
     connect(ui->btnCheck, SIGNAL(clicked()), this, SLOT(check()));
 /*    connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
@@ -99,6 +101,34 @@ void MainWindow::check()
     QMessageBox::information(this, QString::fromUtf8(caption.toAscii()), QString::fromUtf8(s.toAscii()));
 }
 
+void MainWindow::insertEvent(int index)
+{
+}
+
+void MainWindow::insertEvent()
+{
+    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
+    QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
+    if (selected.isValid())
+    {
+        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+        if (item->getEvent())
+        {
+            model->insertRow(selected.row(), selected.parent());
+        }
+    }
+    else
+    {
+        model->insertRow(0, selected);
+        ui->treeView->selectionModel()->setCurrentIndex(
+                    model->index(0,0),
+                    QItemSelectionModel::Select);
+        ui->treeView->selectionModel()->setCurrentIndex(
+                    model->index(0,1),
+                    QItemSelectionModel::Select);
+    }
+}
+
 void MainWindow::addEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
@@ -107,7 +137,13 @@ void MainWindow::addEvent()
     {
         TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
         if (item->getEvent())
-            model->insertRow(selected.row(), selected.parent());
+        {
+            model->insertRow(item->parent()->childCount(), selected.parent());
+        }
+        else if (item->getOperation())
+        {
+            model->insertRow(model->getRootItem()->childCount(), selected.parent().parent());
+        }
     }
     else
     {
@@ -133,7 +169,11 @@ void MainWindow::deleteEvent()
     }
 }
 
-void MainWindow::addOperation()
+void MainWindow::insertOperation(int index)
+{
+}
+
+void MainWindow::insertOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
@@ -144,6 +184,20 @@ void MainWindow::addOperation()
             model->insertRow(0, selected);
         else if (item->getOperation())
             model->insertRow(selected.row(), selected.parent());
+    }
+}
+
+void MainWindow::addOperation()
+{
+    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
+    QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
+    if (selected.isValid())
+    {
+        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+        if (item->getEvent())
+            model->insertRow(item->childCount(), selected);
+        else if (item->getOperation())
+            model->insertRow(item->parent()->childCount(), selected.parent());
     }
 }
 
@@ -167,17 +221,21 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
         if (item->getEvent())
         {
             ui->btnAddEvent->setEnabled(true);
-            ui->btnDeleteOperation->setEnabled(false);
+            ui->btnInsertEvent->setEnabled(true);
             ui->btnDeleteEvent->setEnabled(true);
             ui->btnAddOperation->setEnabled(true);
+            ui->btnInsertOperation->setEnabled(true);
+            ui->btnDeleteOperation->setEnabled(false);
             ui->btnCheck->setEnabled(true);
         }
         else if (item->getOperation())
         {
-            ui->btnAddEvent->setEnabled(false);
-            ui->btnDeleteOperation->setEnabled(true);
+            ui->btnAddEvent->setEnabled(true);
+            ui->btnInsertEvent->setEnabled(false);
             ui->btnDeleteEvent->setEnabled(false);
             ui->btnAddOperation->setEnabled(true);
+            ui->btnInsertOperation->setEnabled(true);
+            ui->btnDeleteOperation->setEnabled(true);
             ui->btnCheck->setEnabled(true);
         }
         else
@@ -192,10 +250,12 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
     else
     {
         ui->btnAddEvent->setEnabled(true);
-        ui->btnAddOperation->setEnabled(false);
-        ui->btnCheck->setEnabled(true);
+        ui->btnInsertEvent->setEnabled(true);
         ui->btnDeleteEvent->setEnabled(false);
+        ui->btnAddOperation->setEnabled(false);
+        ui->btnInsertOperation->setEnabled(false);
         ui->btnDeleteOperation->setEnabled(false);
+        ui->btnCheck->setEnabled(true);
     }
 }
 
