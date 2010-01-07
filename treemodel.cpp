@@ -174,9 +174,12 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
                 {
                     Event *e = v.value<Event*>();
                     Operation *o = item->getOperation();
-                    netmodel->setOperationEndEvent(this, &o, e);
-                    emit dataChanged(index,index);
-                    return true;
+                    bool res = netmodel->setOperationEndEvent(this, &o, e);
+                    if (res)
+                    {
+                        emit dataChanged(index,index);
+                        return true;
+                    } else return false;
                 }
             case 3:
                 if (v.convert(QVariant::String)
