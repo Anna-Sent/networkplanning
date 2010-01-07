@@ -15,7 +15,9 @@ private:
     QList<Operation*> inputOperations, outputOperations;
     int n;
     QString name;
+    QPoint point;
 public:
+    QPoint& getPoint();
     Event();
     Event(int);
     int getN();
