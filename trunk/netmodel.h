@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDebug>
 #include <QMetaType>
+#include <QPoint>
 
 class Operation;
 
