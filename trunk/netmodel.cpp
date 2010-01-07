@@ -490,32 +490,36 @@ void NetModel::getPathes(Event *begin, Event *end, QList<Path> *pathes)
     }
 }
 
-QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end, double *maxweight)
+QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
 {
     QList<Path> *pathes = new QList<Path>;
     if (begin!=NULL&&end!=NULL&&begin!=end)
     {
         getPathes(begin,end,pathes);
-        *maxweight=0;
+        double maxweight=0;
         for (int i=0;i<pathes->count();++i)
         {
             double cur = (*pathes)[i].weight();
-            if (cur-*maxweight>1e-9)
-                *maxweight=cur;
+            if (cur-maxweight>1e-9)
+                maxweight=cur;
         }
         for (int i=0;i<pathes->count();++i)
         {
-            if (abs((*pathes)[i].weight()-*maxweight)>1e-9)
+            if (abs((*pathes)[i].weight()-maxweight)>1e-9)
                 pathes->removeAt(i);
         }
     }
     return pathes;
 }
 
-QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
+double NetModel::getMaxPathWeight(Event *begin, Event *end)
 {
-    double w;
-    return getMaxPathes(begin,end,&w);
+    double w = 0;
+    QList<Path> *pathes = getMaxPathes(begin, end);
+    if (pathes->count()>0)
+        w = pathes->first().weight();
+    delete pathes;
+    return w;
 }
 
 void NetModel::getBeginEndEvents(Event**begin,Event**end)
@@ -569,26 +573,22 @@ QList<Path> *NetModel::getFullPathes()
 
 double NetModel::getCriticalPathWeight()
 {
-    Event *begin, *end;
-    getBeginEndEvents(&begin,&end);
-    double w;
-    getMaxPathes(begin,end,&w);
+    double w = 0;
+    QList<Path> *pathes = getCriticalPathes();
+    if (pathes->count()>0)
+        w = pathes->first().weight();
+    delete pathes;
     return w;
 }
 
 double NetModel::getEarlyEndTime(Event *i)
 {
-    Event *J = getBeginEvent();
-    double w;
-    getMaxPathes(J,i,&w);
-    return w;
+    return getMaxPathWeight(getBeginEvent(), i);
 }
 
 double NetModel::getLaterEndTime(Event *i)
 {
-    double w, tcr = getCriticalPathWeight();
-    getMaxPathes(i,getEndEvent(),&w);
-    return tcr-w;
+    return getCriticalPathWeight()-getMaxPathWeight(i, getEndEvent());
 }
 
 double NetModel::getEarlyStartTime(Operation *o)
@@ -624,7 +624,7 @@ double NetModel::getReserveTime(Event *e)
 double NetModel::getFullReserveTime(Operation *o)
 {
     return getLaterEndTime(o)-getEarlyEndTime(o);
-    //return getLaterStartTime(o)-getEarlyStartTime(o);
+    //return getLaterStartTime(o)-getEarlyStartTime(o); // it's the same
 }
 
 double NetModel::getFreeReserveTime(Operation *o)
@@ -661,11 +661,8 @@ bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
     }
     else
     {
-        Event *end = (*o)->getEndEvent();
-        if (end)
-            end->getInOperations().removeAt(end->getInOperations().indexOf(*o));
-        (*o)->setEndEvent(e);
-        e->addInOperation(*o);
+        disconnect(*o, (*o)->getEndEvent());
+        connect(*o, e);
     }
     emit operationEndEventChanged(obj, o, e);
     return true;

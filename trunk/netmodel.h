@@ -74,7 +74,8 @@ private:
     QList<Event*> events;
     QList<Operation*> operations;
     QList<Path> *getMaxPathes(Event*,Event*);
-    QList<Path> *getMaxPathes(Event*,Event*,double*);
+    double getMaxPathWeight(Event *, Event *);
+    //QList<Path> *getMaxPathes(Event*,Event*,double*);
     void getPathes(Event*,Event*,QList<Path>*);
     bool add(Operation*);
     bool remove(Operation*);
