@@ -258,8 +258,9 @@ bool NetModel::remove(Event* event/*, bool deleteOutput*/)
             for (int i=0; i < event->getOutOperations().count(); ++i)
             {
                 Operation *o = event->getOutOperations()[i];
-                o->getEndEvent()->getInOperations().removeAt(
-                        o->getEndEvent()->getInOperations().indexOf(o));
+                Event *e = o->getEndEvent();
+                if (e)
+                    e->getInOperations().removeAt(e->getInOperations().indexOf(o));
                 delete o;
             }
             event->getOutOperations().clear();
@@ -632,6 +633,7 @@ bool NetModel::setName(QObject *obj, Event *e, const QString &name)
 
 bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
 {
+    //if (!e) return false;
     Operation *o1 = getOperationByEvents((*o)->getBeginEvent(), e);
     if (o1)
     {
@@ -641,9 +643,9 @@ bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
             begin->getOutOperations().replace(begin->getOutOperations().indexOf(*o), o1);
         if (end)
             end->getInOperations().replace(end->getInOperations().indexOf(*o), o1);
-        operations.replace(operations.indexOf(*o), o1);*/
+        operations.replace(operations.indexOf(*o), o1);
         delete *o;
-        *o = o1;
+        *o = o1;*/
         return false;
     }
     else
