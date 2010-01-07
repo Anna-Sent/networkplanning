@@ -157,22 +157,27 @@ Operation* NetModel::getOperationByEvents(Event* beginEvent, Event* endEvent)
 
 bool NetModel::add(Operation* operation)
 {
-    if (operations.indexOf(operation)==-1)
+    if (operation)
     {
-        if (operation->getBeginEvent() && operation->getEndEvent())
+        if (operations.indexOf(operation)==-1)
         {
-            Operation *o= getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent());
-            if (o)
+            if (operation->getBeginEvent() && operation->getEndEvent())
             {
-                delete operation;
-                operation = o;
+                Operation *o= getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent());
+                if (o)
+                {
+                    delete operation;
+                    operation = o;
+                }
             }
+            operations << operation;
+            return true;
         }
-        operations << operation;
-        return true;
-    }
-    else
-        return false;
+        else
+            return false;
+    }\
+else
+    return false;
 }
 
 bool NetModel::insert(int i, Operation* operation)
@@ -221,13 +226,18 @@ bool NetModel::remove(Operation* operation)
 
 bool NetModel::add(Event* event)
 {
-    foreach (Event *e, events)
-        if (e->getN()==event->getN())
-            return false;
-    if (events.indexOf(event)==-1)
+    if (event)
     {
-        events << event;
-        return true;
+        foreach (Event *e, events)
+            if (e->getN()==event->getN())
+                return false;
+        if (events.indexOf(event)==-1)
+        {
+            events << event;
+            return true;
+        }
+        else
+           return false;
     }
     else
         return false;
@@ -235,13 +245,18 @@ bool NetModel::add(Event* event)
 
 bool NetModel::insert(int i, Event* event)
 {
-    foreach (Event *e, events)
-        if (e->getN()==event->getN())
-            return false;
-    if (events.indexOf(event)==-1)
+    if (event)
     {
-        events.insert(i, event);
-        return true;
+        foreach (Event *e, events)
+            if (e->getN()==event->getN())
+                return false;
+        if (events.indexOf(event)==-1)
+        {
+            events.insert(i, event);
+            return true;
+        }
+        else
+            return false;
     }
     else
         return false;
@@ -280,48 +295,50 @@ bool NetModel::remove(Event* event/*, bool deleteOutput*/)
     return false;
 }
 
-void NetModel::connect(Event* event,Operation* operation)
+void NetModel::connect(Event* event, Operation* operation)
 {
-    if (operation->getBeginEvent()==NULL)
+    if (operation && operation->getBeginEvent()==NULL)
     {
         add(event);
         add(operation);
-        event->addOutOperation(operation);
+        if (event) event->addOutOperation(operation);
         operation->setBeginEvent(event);
     }
 }
 
-void NetModel::connect(Operation* operation,Event* event)
+void NetModel::connect(Operation* operation, Event* event)
 {
-    if (operation->getEndEvent()==NULL)
+    if (operation && operation->getEndEvent()==NULL)
     {
         add(event);
         add(operation);
-        event->addInOperation(operation);
+        if (event) event->addInOperation(operation);
         operation->setEndEvent(event);
     }
 }
 
 void NetModel::disconnect(Event* event,Operation* operation)
 {
-    int index=event->getOutOperations().indexOf(operation);
-    qDebug()<<event->getOutOperations().count();
-    if (index!=-1)
+    if (event)
     {
-        event->getOutOperations().removeAt(index);
-        operation->setBeginEvent(NULL);
-        qDebug()<<event->getOutOperations().count();
+        int index=event->getOutOperations().indexOf(operation);
+        if (index!=-1)
+            event->getOutOperations().removeAt(index);
     }
+    if (operation && operation->getBeginEvent()==event)
+        operation->setBeginEvent(NULL);
 }
 
 void NetModel::disconnect(Operation* operation,Event* event)
 {
-    int index=event->getInOperations().indexOf(operation);
-    if (index!=-1)
+    if (event)
     {
-        event->getInOperations().removeAt(index);
-        operation->setEndEvent(NULL);
+        int index=event->getInOperations().indexOf(operation);
+        if (index!=-1)
+            event->getInOperations().removeAt(index);
     }
+    if (operation && operation->getEndEvent()==event)
+        operation->setEndEvent(NULL);
 }
 
 void NetModel::connect(Event *e1, Operation *o, Event *e2)
@@ -534,7 +551,7 @@ Event *NetModel::getEndEvent()
     return end;
 }
 
-QList<Path> *NetModel::getCriticalPath()
+QList<Path> *NetModel::getCriticalPathes()
 {
     Event *begin, *end;
     getBeginEndEvents(&begin,&end);

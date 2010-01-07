@@ -85,7 +85,7 @@ void MainWindow::check()
             s += path.print() + "\n";
         }
         delete pathes;
-        QList<Path> *criticPathes = netmodel.getCriticalPath();
+        QList<Path> *criticPathes = netmodel.getCriticalPathes();
         s += "Критические пути\n";
         i=0;
         foreach(Path path, *criticPathes)

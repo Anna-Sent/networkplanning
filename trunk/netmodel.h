@@ -112,7 +112,7 @@ public:
     QList<Operation*> *getOperations() {return &operations;}
     // for net
     QList<Path> *getFullPathes();
-    QList<Path> *getCriticalPath();
+    QList<Path> *getCriticalPathes();
     double getCriticalPathWeight();
     double getEarlyEndTime(Event*);
     double getLaterEndTime(Event*);
