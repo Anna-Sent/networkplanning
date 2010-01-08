@@ -175,7 +175,7 @@ bool NetModel::add(Operation* operation)
         }
         else
             return false;
-    }\
+    }
 else
     return false;
 }
@@ -205,18 +205,8 @@ bool NetModel::remove(Operation* operation)
     int index=operations.indexOf(operation);
     if (index!=-1)
     {
-        if (operation->getBeginEvent())
-        {
-            int index1 = operation->getBeginEvent()->getOutOperations().indexOf(operation);
-            if (index1!=-1)
-                operation->getBeginEvent()->getOutOperations().removeAt(index1);
-        }
-        if (operation->getEndEvent())
-        {
-            int index1 = operation->getEndEvent()->getInOperations().indexOf(operation);
-            if (index1!=-1)
-                operation->getEndEvent()->getInOperations().removeAt(index1);
-        }
+        disconnect(operation->getBeginEvent(), operation);
+        disconnect(operation, operation->getEndEvent());
         operations.removeAt(index);
         delete operation;
         return true;
@@ -264,30 +254,22 @@ bool NetModel::insert(int i, Event* event)
 
 bool NetModel::remove(Event* event/*, bool deleteOutput*/)
 {
+    bool deleteOutput = true;
     int index=events.indexOf(event);
     if (index!=-1)
     {
-        foreach (Operation *o, event->getInOperations())
-            o->setEndEvent(NULL);
-        /*if (deleteOutput)
-        {*/
-            foreach (Operation *o, event->getOutOperations())
-                operations.removeAt(operations.indexOf(o));
-            for (int i=0; i < event->getOutOperations().count(); ++i)
-            {
-                Operation *o = event->getOutOperations()[i];
-                Event *e = o->getEndEvent();
-                if (e)
-                    e->getInOperations().removeAt(e->getInOperations().indexOf(o));
-                delete o;
-            }
-            event->getOutOperations().clear();
-        /*}
+        QList<Operation*> in = event->getInOperations();
+        foreach (Operation *o, in)
+            disconnect(o, event);
+        event->getInOperations().clear();
+        QList<Operation*> out = event->getOutOperations();
+        if (deleteOutput)
+            foreach (Operation *o, out)
+                remove(o);
         else
-        {
-            foreach (Operation *o, event->getOutOperations())
-                o->setBeginEvent(NULL);
-        //}*/
+            foreach (Operation *o, out)
+                disconnect(event, o);
+        event->getOutOperations().clear();
         events.removeAt(index);
         delete event;
         return true;
@@ -752,3 +734,18 @@ int NetModel::generateId()
     }
     return std::numeric_limits<int>::max();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
