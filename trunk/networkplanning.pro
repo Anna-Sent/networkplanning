@@ -3,14 +3,19 @@ HEADERS = treeitem.h \
     mainwindow.h \
     ui_mainwindow.h \
     netmodel.h \
-    operationdelegate.h
+    operationdelegate.h \
+    eventwidget.h \
+    positioning.h \
+    graphwidget.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
     main.cpp \
     mainwindow.cpp \
     netmodel.cpp \
-    operationdelegate.cpp
+    operationdelegate.cpp \
+    positioning.cpp \
+    graphwidget.cpp
 CONFIG += qt
 
 # install

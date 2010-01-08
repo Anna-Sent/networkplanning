@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "operationdelegate.h"
 #include "treeitem.h"
+#include "positioning.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -51,6 +52,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeView->setAcceptDrops(true);
     ui->treeView->setDropIndicatorShown(true);
     ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+	Position *pos = new PlanarPosition(ui->graphView);
+	pos->position(&netmodel);
+	delete pos;
 
     connect(ui->treeView->selectionModel(),
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
