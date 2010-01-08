@@ -51,10 +51,11 @@ class QDropEvent;
 QT_END_NAMESPACE
 
 //! [0]
-class DragWidget : public QFrame
+class GraphWidget : public QFrame
 {
 public:
-    DragWidget(QWidget *parent=0);
+    GraphWidget(QWidget *parent=0);
+    void synchronize(NetModel *model);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);

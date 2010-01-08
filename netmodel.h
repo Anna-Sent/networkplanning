@@ -18,7 +18,7 @@ private:
     QString name;
     QPoint point;
 public:
-    QPoint& getPoint();
+    QPoint& getPoint() {return point;};
     Event();
     Event(int);
     int getN();
