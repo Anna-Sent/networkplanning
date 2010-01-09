@@ -4,6 +4,7 @@
 #include <QtGui>
 #include "treemodel.h"
 #include "netmodel.h"
+#include "dialog.h"
 
 namespace Ui
 {
@@ -22,6 +23,7 @@ private:
     Ui::MainWindow *ui;
     TreeModel *treemodel;
     NetModel netmodel;
+    Dialog dialog;
     void insertEvent(int index);
     void insertOperation(int index);
 private slots:
@@ -32,6 +34,7 @@ private slots:
     void insertOperation();
     void deleteOperation();
     void check();
+    void calc();
     void currentChanged(const QModelIndex &, const QModelIndex &);
 };
 

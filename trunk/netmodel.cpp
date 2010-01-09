@@ -666,7 +666,8 @@ bool NetModel::setOperationWaitTime(QObject *obj, Operation *o, double twait)
 
 bool NetModel::addEvent(QObject *obj, Event *e)
 {
-    if (add(e)) {
+    if (add(e))
+    {
         emit afterEventAdd(obj, e);
         return true;
     }
@@ -676,7 +677,8 @@ bool NetModel::addEvent(QObject *obj, Event *e)
 
 bool NetModel::insertEvent(QObject *obj, Event *e, int i)
 {
-    if (insert(i, e)) {
+    if (insert(i, e))
+    {
         emit afterEventInsert(obj, e, i);
         return true;
     }
@@ -695,7 +697,8 @@ bool NetModel::removeEvent(QObject *obj, Event *e)
 
 bool NetModel::addOperation(QObject *view, Operation *o)
 {
-    if (add(o)) {
+    if (add(o))
+    {
         emit afterOperationAdd(view, o);
         return true;
     }
@@ -705,7 +708,8 @@ bool NetModel::addOperation(QObject *view, Operation *o)
 
 bool NetModel::insertOperation(QObject *view, Operation *o, int i)
 {
-    if (insert(i, o)) {
+    if (insert(i, o))
+    {
         emit afterOperationInsert(view, o, i);
         return true;
     }
