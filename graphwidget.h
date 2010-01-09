@@ -53,15 +53,20 @@ QT_END_NAMESPACE
 //! [0]
 class GraphWidget : public QFrame
 {
+NetModel *_model;
 public:
     GraphWidget(QWidget *parent=0);
-    void synchronize(NetModel *model);
+    void setModel(NetModel *model);
+
+public slots:
+    void updatePositions();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
     void dropEvent(QDropEvent *event);
     void mousePressEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *event);
 };
 //! [0]
 

@@ -52,9 +52,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeView->setAcceptDrops(true);
     ui->treeView->setDropIndicatorShown(true);
     ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
-	Position *pos = new PlanarPosition(ui->graphView);
+	Position *pos = new PlanarPosition;
 	pos->position(&netmodel);
 	delete pos;
+	ui->graphView->setModel(&netmodel);
 
     connect(ui->treeView->selectionModel(),
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),

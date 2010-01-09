@@ -42,21 +42,40 @@
 #include <QtGui>
 
 #include "graphwidget.h"
+#include <QDebug>
 
-void GraphWidget::synchronize(NetModel* model)
+void GraphWidget::setModel(NetModel* model)
 {
 
+	_model=model;
+	if (!model) return;
+
+	QList<Event*>* events = _model->getEvents();
+	foreach(Event* ev,*events)
+	{
+		EventWidget *ic = new EventWidget(ev,model,this);
+		ic->setText(QString::number(ev->getN()));
+		ic->move(ev->getPoint());
+		ic->show();
+		ic->setAttribute(Qt::WA_DeleteOnClose);
+	}
+}
+
+void GraphWidget::updatePositions()
+{
+	
 }
 
 //! [0]
 GraphWidget::GraphWidget(QWidget *parent)
     : QFrame(parent)
 {
+    _model=0;
     setMinimumSize(200, 200);
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
-/*
-    setAcceptDrops(true);
 
+    setAcceptDrops(true);
+/*
     QLabel *boatIcon = new QLabel(this);
     boatIcon->setPixmap(QPixmap(":/images/boat.png"));
     boatIcon->move(20, 20);
@@ -107,7 +126,7 @@ void GraphWidget::dragMoveEvent(QDragMoveEvent *event)
 
 void GraphWidget::dropEvent(QDropEvent *event)
 {
-/*    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
         QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
         
@@ -130,37 +149,37 @@ void GraphWidget::dropEvent(QDropEvent *event)
     } else {
         event->ignore();
     }
-*/
+
 }
 
 //! [1]
 void GraphWidget::mousePressEvent(QMouseEvent *event)
 {
-/*    QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
+    QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
     if (!child)
         return;
 
-    QPixmap pixmap = *child->pixmap();
+/*    QPixmap pixmap = *child->pixmap();
 
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
     dataStream << pixmap << QPoint(event->pos() - child->pos()
-);
+);*/
 //! [1]
 
 //! [2]
     QMimeData *mimeData = new QMimeData;
-    mimeData->setData("application/x-dnditemdata", itemData);
+    //mimeData->setData("application/x-dnditemdata", itemData);
 //! [2]
         
 //! [3]
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    drag->setPixmap(pixmap);
+    //drag->setPixmap(pixmap);
     drag->setHotSpot(event->pos() - child->pos());
 //! [3]
 
-    QPixmap tempPixmap = pixmap;
+    /*QPixmap tempPixmap = pixmap;
     QPainter painter;
     painter.begin(&tempPixmap);
     painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 127));
@@ -173,6 +192,31 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
     else {
         child->show();
         child->setPixmap(pixmap);
-    }
-*/
+    }*/
+
 }
+
+void GraphWidget::paintEvent(QPaintEvent *event)
+{
+	
+	qDebug() << "paint";
+	if (!_model) return;
+QPainter painter;
+painter.begin(this);
+	QList<Event*>* events = _model->getEvents();
+	foreach(Event* ev,*events)
+	{
+		QList<Operation*> ops = ev->getOutOperations();
+		foreach(Operation * op,ops)
+		{
+			Event *be = op->getBeginEvent();
+			Event *ee = op->getEndEvent();
+			if (be&&ee) {
+				painter.drawLine(be->getPoint(),ee->getPoint());
+			}
+		}
+
+	}
+	painter.end();
+}
+
