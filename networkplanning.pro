@@ -7,7 +7,9 @@ HEADERS = treeitem.h \
     eventwidget.h \
     positioning.h \
     graphwidget.h \
-    arrowwidget.h
+    arrowwidget.h \
+    ui_dialog.h \
+    dialog.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -17,7 +19,8 @@ SOURCES = treeitem.cpp \
     operationdelegate.cpp \
     positioning.cpp \
     graphwidget.cpp \
-    arrowwidget.cpp
+    arrowwidget.cpp \
+    dialog.cpp
 CONFIG += qt
 
 # install
@@ -30,4 +33,5 @@ sources.files = $$SOURCES \
 sources.path = $$[QT_INSTALL_EXAMPLES]/itemviews/simpletreemodel
 INSTALLS += target \
     sources
-FORMS += mainwindow.ui
+FORMS += mainwindow.ui \
+    dialog.ui

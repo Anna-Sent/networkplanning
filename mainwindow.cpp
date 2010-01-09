@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnInsertOperation, SIGNAL(clicked()), this, SLOT(insertOperation()));
     connect(ui->btnDeleteOperation, SIGNAL(clicked()), this, SLOT(deleteOperation()));
     connect(ui->btnCheck, SIGNAL(clicked()), this, SLOT(check()));
+    connect(ui->btnCalc, SIGNAL(clicked()), this, SLOT(calc()));
 /*    connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
     connect(ui->treeView, SIGNAL(pressed(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
     connect(ui->treeView, SIGNAL(activated(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
@@ -61,6 +62,14 @@ MainWindow::MainWindow(QWidget *parent)
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
             this,
             SLOT(currentChanged(QModelIndex, QModelIndex)));
+}
+
+void MainWindow::calc()
+{
+    //QDialog *dialog = new QDialog();
+    //QTableWidget table(&dialog);
+    dialog.show();
+    //delete dialog;
 }
 
 void MainWindow::check()
