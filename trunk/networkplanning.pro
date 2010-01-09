@@ -6,7 +6,8 @@ HEADERS = treeitem.h \
     operationdelegate.h \
     eventwidget.h \
     positioning.h \
-    graphwidget.h
+    graphwidget.h \
+    arrowwidget.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -15,7 +16,8 @@ SOURCES = treeitem.cpp \
     netmodel.cpp \
     operationdelegate.cpp \
     positioning.cpp \
-    graphwidget.cpp
+    graphwidget.cpp \
+    arrowwidget.cpp
 CONFIG += qt
 
 # install

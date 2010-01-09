@@ -10,9 +10,7 @@ public:
 };
 
 class PlanarPosition : public Position {
-QWidget* _widget;
 public:
-	PlanarPosition(QWidget* widget) {_widget=widget; }
 	virtual void position(NetModel* model);
 };
 

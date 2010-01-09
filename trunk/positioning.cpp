@@ -9,16 +9,13 @@ void PlanarPosition::position(NetModel* model)
 
 	evlist wave;
 	evlist nextWave;
+	evlist processed;
 	wave.insert(begin);
 	int x=10;
 	int y=10;
 	begin->getPoint()=QPoint(x,y);
-					EventWidget *ic = new EventWidget(begin,model,_widget);
-					ic->setText(QString::number(begin->getN()));
-					ic->move(x, y);
-					ic->show();
-					ic->setAttribute(Qt::WA_DeleteOnClose);
-x+=30;
+	x+=30;
+	processed.insert(begin);
 	while(!wave.isEmpty()) {
 		nextWave.clear();
 		y=10;
@@ -29,14 +26,9 @@ x+=30;
 			foreach(Operation *op,ops)
 			{
 				Event *end=op->getEndEvent();
-				if (end) {
+				if (end&&!processed.contains(end)) {
 					end->getPoint()=QPoint(x,y);
-					EventWidget *ic = new EventWidget(end,model,_widget);
-					ic->setText(QString::number(end->getN()));
-					ic->move(x, y);
-					ic->show();
-					ic->setAttribute(Qt::WA_DeleteOnClose);
-
+					processed.insert(end);
 					nextWave.insert(end);
 					y+=30;
 				}

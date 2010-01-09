@@ -12,7 +12,9 @@ public:
 	EventWidget(): _event(0),_model(0) {};
 	EventWidget(Event *event, NetModel *model, QWidget *parent): _event(event),_model(model),QLabel(parent) {};
 	Event *event() {return _event;}
-	NetModel *model() {return _model;}	
+	NetModel *model() {return _model;}
+	int x() {return _event->getPoint().x();};
+	int y() {return _event->getPoint().y();};
 };
 
 #endif
