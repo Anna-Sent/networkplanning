@@ -8,6 +8,7 @@
 
 class EventWidget : public QLabel
 {
+    Q_OBJECT
     Event *_event;
     NetModel *_model;
 public:
@@ -19,6 +20,7 @@ public:
     int x() {return _event->getPoint().x();}
     int y() {return _event->getPoint().y();}
     QPoint center() const;
+    bool wrapsEvent(Event* ev) { return _event==ev; }
 };
 
 #endif

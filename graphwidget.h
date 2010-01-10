@@ -44,6 +44,7 @@
 
 #include <QFrame>
 #include "eventwidget.h"
+#include <QMap>
 
 QT_BEGIN_NAMESPACE
 class QDragEnterEvent;
@@ -53,6 +54,7 @@ QT_END_NAMESPACE
 //! [0]
 class GraphWidget : public QFrame
 {
+    Q_OBJECT
 NetModel *_model;
 public:
     GraphWidget(QWidget *parent=0);
@@ -60,6 +62,7 @@ public:
 
 public slots:
     void updatePositions();
+    void eventNameChanged(QObject *, Event *, const QString &);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
