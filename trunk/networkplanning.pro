@@ -20,7 +20,8 @@ SOURCES = treeitem.cpp \
     positioning.cpp \
     graphwidget.cpp \
     arrowwidget.cpp \
-    dialog.cpp
+    dialog.cpp \
+    eventwidget.cpp
 CONFIG += qt
 
 # install
