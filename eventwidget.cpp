@@ -23,6 +23,6 @@
         QPainter p;
         p.begin(this);
         p.drawPixmap(0,0,*this->pixmap());
-        p.drawText(QRect(8,8,20,20),Qt::AlignCenter,_event->getName());
+        p.drawText(QRect(0,0,30,30),Qt::AlignCenter,QString::number(_event->getN()) );
         p.end();
     }

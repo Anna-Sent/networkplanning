@@ -61,7 +61,8 @@ void GraphWidget::setModel(NetModel* model)
 		ic->setAttribute(Qt::WA_DeleteOnClose);
 	}
         connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
-}
+connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
+    }
 
 void GraphWidget::updatePositions()
 {
@@ -256,6 +257,17 @@ void GraphWidget::drawArrow(QPainter &p,QLine l) const
 }
 
 void GraphWidget::eventNameChanged(QObject *, Event * event, const QString &)
+{
+    QObjectList ch = children();
+    foreach(QObject* qo,ch)
+    {
+        EventWidget* ev = qobject_cast<EventWidget*>(qo);
+        if (ev&&ev->wrapsEvent(event)) {
+            ev->update();
+        }
+    }
+}
+void GraphWidget::eventIdChanged(QObject *, Event * event, const int id)
 {
     QObjectList ch = children();
     foreach(QObject* qo,ch)
