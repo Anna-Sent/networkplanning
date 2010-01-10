@@ -1,13 +1,17 @@
 #ifndef CALCEVENTMODEL_H
 #define CALCEVENTMODEL_H
 
-#include <QAbstractItemModel>
-#include "netmodel.h"
+#include "calcmodel.h"
 
-class CalcEventModel : public QAbstractItemModel
+class CalcEventModel : public CalcModel
 {
+    Q_OBJECT
 public:
-    CalcEventModel(NetModel &, QObject *parent = 0);
+    CalcEventModel(NetModel &);
+protected:
+    void setupModelData();
+    void setupHeader();
+    int colCount() const;
 };
 
 #endif // CALCEVENTMODEL_H

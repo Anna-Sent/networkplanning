@@ -1,29 +1,17 @@
 #ifndef CALCOPERATIONMODEL_H
 #define CALCOPERATIONMODEL_H
 
-#include <QAbstractItemModel>
-#include "netmodel.h"
+#include "calcmodel.h"
 
-class CalcOperationModel : public QAbstractItemModel
+class CalcOperationModel : public CalcModel
 {
     Q_OBJECT
 public:
-    CalcOperationModel(NetModel &, QObject *parent = 0);
-    /*~CalcOperationModel();
-    QVariant data(const QModelIndex &index, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const;
-    QModelIndex index(int row, int column,
-                      const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex parent(const QModelIndex &index) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
-private:
-    NetModel *netmodel;
-    QList<QVariant[]> *data;
-private slots:
-    void update();*/
+    CalcOperationModel(NetModel &);
+protected:
+    void setupModelData();
+    void setupHeader();
+    int colCount() const;
 };
 
 #endif // CALCOPERATIONMODEL_H

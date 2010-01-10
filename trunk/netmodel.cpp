@@ -107,7 +107,7 @@ QString Path::code() const
             Event *event = events[i];
             s += QString::number(event->getN()) + "-";
         }
-        s += events.last()->getN();
+        s += QString::number(events.last()->getN());
     }
     return s;
 }
