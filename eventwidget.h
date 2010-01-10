@@ -20,6 +20,7 @@ public:
     int x() {return _event->getPoint().x();}
     int y() {return _event->getPoint().y();}
     QPoint center() const;
+    void move(const QPoint& pos) { _event->getPoint()=pos; QLabel::move(pos); }
     bool wrapsEvent(Event* ev) { return _event==ev; }
 };
 
