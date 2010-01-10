@@ -155,9 +155,14 @@ void GraphWidget::dropEvent(QDropEvent *event)
         
         QPixmap pixmap;
         QPoint offset;
+        //Event* ev;
+        //void * ev;
         dataStream >> pixmap >> offset;
-
-        QLabel *newIcon = new QLabel(this);
+        Event * chev = 0;
+        dataStream.readRawData(reinterpret_cast<char*>(&chev),sizeof(chev));
+        //EventAdd(0,chev);
+        EventWidget *newIcon = new EventWidget(chev,_model,this);
+        //QLabel *newIcon = new QLabel(this);
         newIcon->setPixmap(pixmap);
         newIcon->move(event->pos() - offset);
         newIcon->show();
@@ -172,40 +177,45 @@ void GraphWidget::dropEvent(QDropEvent *event)
     } else {
         event->ignore();
     }
+    update();
 
 }
 
 //! [1]
 void GraphWidget::mousePressEvent(QMouseEvent *event)
 {
-    QLabel *child = static_cast<QLabel*>(childAt(event->pos()));
+    EventWidget *child = static_cast<EventWidget*>(childAt(event->pos()));
     if (!child)
         return;
 
-/*    QPixmap pixmap = *child->pixmap();
+    qDebug() << child;
+
+    QPixmap pixmap = *child->pixmap();
 
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-    dataStream << pixmap << QPoint(event->pos() - child->pos()
-);*/
+
+    dataStream << pixmap << QPoint(event->pos() - child->pos());
+    Event * chev = child->event();
+    dataStream.writeRawData(reinterpret_cast<char*>(&chev),sizeof(chev));
 //! [1]
 
 //! [2]
     QMimeData *mimeData = new QMimeData;
-    //mimeData->setData("application/x-dnditemdata", itemData);
+    mimeData->setData("application/x-dnditemdata", itemData);
 //! [2]
         
 //! [3]
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
-    //drag->setPixmap(pixmap);
+    drag->setPixmap(pixmap);
     drag->setHotSpot(event->pos() - child->pos());
 //! [3]
 
-    /*QPixmap tempPixmap = pixmap;
+    QPixmap tempPixmap = pixmap;
     QPainter painter;
     painter.begin(&tempPixmap);
-    painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 127));
+    painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 255));
     painter.end();
 
     child->setPixmap(tempPixmap);
@@ -215,7 +225,7 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
     else {
         child->show();
         child->setPixmap(pixmap);
-    }*/
+    }
 
 }
 
