@@ -63,6 +63,9 @@ public slots:
     void updatePositions();
     void eventNameChanged(QObject *, Event *, const QString &);
     void eventIdChanged(QObject *, Event *, const int id);
+    void EventAdd(QObject *, Event *);
+    void EventAdd(QObject *, Event *,int);
+    void DeleteEvent(QObject *, Event *);
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
