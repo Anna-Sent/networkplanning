@@ -51,7 +51,6 @@ class QDragEnterEvent;
 class QDropEvent;
 QT_END_NAMESPACE
 
-//! [0]
 class GraphWidget : public QFrame
 {
     Q_OBJECT
@@ -63,7 +62,7 @@ public:
 public slots:
     void updatePositions();
     void eventNameChanged(QObject *, Event *, const QString &);
-
+    void eventIdChanged(QObject *, Event *, const int id);
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);
@@ -74,6 +73,5 @@ private:
     QLine adjustLine(QPoint p1,QPoint p2,int margin);
     void drawArrow(QPainter& p,QLine l) const;
 };
-//! [0]
 
 #endif
