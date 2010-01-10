@@ -1,15 +1,15 @@
-#ifndef FULLPATHESMODEL_H
-#define FULLPATHESMODEL_H
+#ifndef CALCOPERATIONMODEL_H
+#define CALCOPERATIONMODEL_H
 
 #include <QAbstractItemModel>
 #include "netmodel.h"
 
-class FullPathesModel : public QAbstractItemModel
+class CalcOperationModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    FullPathesModel(NetModel&, QObject *parent = 0);
-    ~FullPathesModel();
+    CalcOperationModel(NetModel &, QObject *parent = 0);
+    /*~CalcOperationModel();
     QVariant data(const QModelIndex &index, int role) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation,
@@ -20,14 +20,10 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 private:
-    static const int colCount = 3;
     NetModel *netmodel;
-    QList< QList<QVariant> > modelData;
-    QString header[colCount];
-    void setupModelData();
-    void clearModelData();
+    QList<QVariant[]> *data;
 private slots:
-    void update();
+    void update();*/
 };
 
-#endif // FULLPATHESMODEL_H
+#endif // CALCOPERATIONMODEL_H

@@ -3,54 +3,60 @@
 FullPathesModel::FullPathesModel(NetModel &netmodel, QObject *parent)
     : QAbstractItemModel(parent), netmodel(&netmodel)
 {
-    if (this->netmodel->isCorrect())
-        pathes = this->netmodel->getFullPathes();
-    else
-        pathes = NULL;
+    header[0] = QString::fromUtf8("Шифр полного пути");
+    header[1] = QString::fromUtf8("Продолжительность пути");
+    header[2] = QString::fromUtf8("Резерв времени пути");
+    setupModelData();
     connect(this->netmodel, SIGNAL(updated()), this, SLOT(update()));
 }
 
 void FullPathesModel::update()
 {
-    if (pathes)
-        delete pathes;
-    if (netmodel->isCorrect())
-        pathes = netmodel->getFullPathes();
-    else
-        pathes = NULL;
+    clearModelData();
+    setupModelData();
     reset();
+}
+
+void FullPathesModel::clearModelData()
+{
+    foreach(QList<QVariant> row, modelData)
+        row.clear();
+    modelData.clear();
+}
+
+void FullPathesModel::setupModelData()
+{
+    if (netmodel->isCorrect())
+    {
+        QList<Path> *pathes = netmodel->getFullPathes();
+        foreach (Path path, *pathes)
+        {
+            QList<QVariant> row;
+            row << path.code();
+            row << path.weight();
+            row << netmodel->getReserveTime(path);
+            modelData << row;
+        }
+        delete pathes;
+    }
 }
 
 FullPathesModel::~FullPathesModel()
 {
-    if (pathes)
-        delete pathes;
+    clearModelData();
 }
 
 int FullPathesModel::columnCount(const QModelIndex &) const
 {
-    return 3;
+    return colCount;
 }
 
 QVariant FullPathesModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if (!index.isValid() || role != Qt::DisplayRole)
         return QVariant();
-
-    if (role != Qt::DisplayRole)
-        return QVariant();
-    if (pathes)
-        switch (index.column())
-        {
-            case 0:
-            {return pathes->at(index.row()).code();}
-            case 1:
-            {return pathes->at(index.row()).weight();}
-            case 2:
-            {return netmodel->getReserveTime(pathes->at(index.row()));}
-            default:
-            {return QVariant();}
-        }
+    if (modelData.count()>0)
+        return modelData[index.row()][index.column()];
     else
         return QVariant();
 }
@@ -65,14 +71,9 @@ Qt::ItemFlags FullPathesModel::flags(const QModelIndex &index) const
 QVariant FullPathesModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        switch (section)
-        {
-            case 0: return QString::fromUtf8("Шифр полного пути");
-            case 1: return QString::fromUtf8("Продолжительность пути");
-            case 2: return QString::fromUtf8("Резерв времени пути");
-            default: return QVariant();
-        };
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole
+        && section>-1 && section < colCount)
+        return header[section];
     return QVariant();
 }
 
@@ -88,10 +89,7 @@ QModelIndex FullPathesModel::parent(const QModelIndex &/*index*/) const
 
 int FullPathesModel::rowCount(const QModelIndex &/*parent*/) const
 {
-    if (pathes)
-        return pathes->count();
-    else
-        return 0;
+    return modelData.count();
 }
 
 

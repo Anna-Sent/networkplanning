@@ -99,9 +99,15 @@ Path::Path(QList<Event*> events)
 QString Path::code() const
 {
     QString s;
-    foreach(Event*event,events)
+    int count = events.count();
+    if (count>0)
     {
-        s += QString::number(event->getN()) + " ";
+        for (int i=0;i<count-1;++i)
+        {
+            Event *event = events[i];
+            s += QString::number(event->getN()) + "-";
+        }
+        s += events.last()->getN();
     }
     return s;
 }
