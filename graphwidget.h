@@ -67,6 +67,9 @@ protected:
     void dropEvent(QDropEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
+private:
+    QLine adjustLine(QPoint p1,QPoint p2,int margin);
+    void drawArrow(QPainter& p,QLine l) const;
 };
 //! [0]
 

@@ -43,6 +43,7 @@
 
 #include "graphwidget.h"
 #include <QDebug>
+#include <cmath>
 
 void GraphWidget::setModel(NetModel* model)
 {
@@ -54,7 +55,7 @@ void GraphWidget::setModel(NetModel* model)
 	foreach(Event* ev,*events)
 	{
 		EventWidget *ic = new EventWidget(ev,model,this);
-		ic->setText(QString::number(ev->getN()));
+                //ic->setText(QString::number(ev->getN()));
 		ic->move(ev->getPoint());
 		ic->show();
 		ic->setAttribute(Qt::WA_DeleteOnClose);
@@ -196,6 +197,23 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
 
 }
 
+template<class Ty>
+        Ty sqr(Ty x)
+{
+    return x*x;
+}
+
+QLine GraphWidget::adjustLine(QPoint p1,QPoint p2,int margin)
+{
+    QPoint vec = p2-p1;
+    double len = sqrt(  sqr(vec.x())+sqr(vec.y()) );
+    //QPoint shift = (vec/len)*static_cast<double>(margin);
+    double sx = static_cast<double>(vec.x())/len*static_cast<double>(margin);
+    double sy = static_cast<double>(vec.y())/len*static_cast<double>(margin);
+    QPoint shift(sx,sy);
+    return QLine(p1+shift,p2-shift);
+}
+
 void GraphWidget::paintEvent(QPaintEvent *event)
 {
 	
@@ -211,8 +229,10 @@ painter.begin(this);
 		{
 			Event *be = op->getBeginEvent();
 			Event *ee = op->getEndEvent();
+                        QPoint center = QPoint(15,15);
 			if (be&&ee) {
-				painter.drawLine(be->getPoint(),ee->getPoint());
+                                //painter.drawLine();
+                            drawArrow(painter,adjustLine(be->getPoint()+center,ee->getPoint()+center,15));
 			}
 		}
 
@@ -220,3 +240,16 @@ painter.begin(this);
 	painter.end();
 }
 
+void GraphWidget::drawArrow(QPainter &p,QLine l) const
+{
+    p.translate(l.p2());
+    double angle = atan2(l.dx(),l.dy())/M_PI*180.0;
+    p.rotate(-angle);
+    double len = sqrt(  sqr(l.dx())+sqr(l.dy()) );
+    //QPoint end
+    p.drawLine(QPoint(0,0), QPoint(0,-len));
+    p.drawLine(0,0,4,-10);
+    p.drawLine(0,0,-4,-10);
+    //p.drawLine(
+    p.resetTransform();
+}

@@ -14,7 +14,7 @@ void PlanarPosition::position(NetModel* model)
 	int x=10;
 	int y=10;
 	begin->getPoint()=QPoint(x,y);
-	x+=30;
+        x+=60;
 	processed.insert(begin);
 	while(!wave.isEmpty()) {
 		nextWave.clear();
@@ -30,11 +30,11 @@ void PlanarPosition::position(NetModel* model)
 					end->getPoint()=QPoint(x,y);
 					processed.insert(end);
 					nextWave.insert(end);
-					y+=30;
+                                        y+=60;
 				}
 			}
 		}
-		x+=30;
+                x+=60;
 		wave=nextWave;
 	}
 }
