@@ -24,8 +24,6 @@ private:
     TreeModel *treemodel;
     NetModel netmodel;
     Dialog *dialog;
-    void insertEvent(int index);
-    void insertOperation(int index);
 private slots:
     void addEvent();
     void insertEvent();

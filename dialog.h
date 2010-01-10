@@ -4,7 +4,8 @@
 #include <QDialog>
 #include "netmodel.h"
 #include "fullpathesmodel.h"
-#include "treemodel.h"
+#include "calceventmodel.h"
+#include "calcoperationmodel.h"
 
 namespace Ui
 {
@@ -13,12 +14,18 @@ namespace Ui
 
 class Dialog : public QDialog
 {
+    Q_OBJECT
 public:
     Dialog(NetModel &, QWidget *parent = 0);
     ~Dialog();
 private:
     Ui::Dialog *ui;
     FullPathesModel *fpmodel;
+    CalcEventModel *cemodel;
+    CalcOperationModel *comodel;
+    NetModel *netmodel;
+private slots:
+    void setupLabelText();
 };
 
 #endif // DIALOG_H

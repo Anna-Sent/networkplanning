@@ -12,7 +12,8 @@ HEADERS = treeitem.h \
     dialog.h \
     fullpathesmodel.h \
     calceventmodel.h \
-    calcoperationmodel.h
+    calcoperationmodel.h \
+    calcmodel.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -27,7 +28,8 @@ SOURCES = treeitem.cpp \
     fullpathesmodel.cpp \
     eventwidget.cpp \
     calceventmodel.cpp \
-    calcoperationmodel.cpp
+    calcoperationmodel.cpp \
+    calcmodel.cpp
 CONFIG += qt
 
 # install

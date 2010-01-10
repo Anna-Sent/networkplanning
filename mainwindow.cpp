@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnAddOperation,  SIGNAL(clicked()), this, SLOT(addOperation()));
     connect(ui->btnInsertOperation, SIGNAL(clicked()), this, SLOT(insertOperation()));
     connect(ui->btnDeleteOperation, SIGNAL(clicked()), this, SLOT(deleteOperation()));
-    connect(ui->btnCheck, SIGNAL(clicked()), this, SLOT(check()));
+    //connect(ui->btnCheck, SIGNAL(clicked()), this, SLOT(check()));
     connect(ui->btnCalc, SIGNAL(clicked()), this, SLOT(calc()));
 /*    connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
     connect(ui->treeView, SIGNAL(pressed(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
@@ -116,10 +116,6 @@ void MainWindow::check()
     QMessageBox::information(this, QString::fromUtf8(caption.toAscii()), QString::fromUtf8(s.toAscii()));
 }
 
-void MainWindow::insertEvent(int index)
-{
-}
-
 void MainWindow::insertEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
@@ -184,10 +180,6 @@ void MainWindow::deleteEvent()
     }
 }
 
-void MainWindow::insertOperation(int index)
-{
-}
-
 void MainWindow::insertOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
@@ -241,7 +233,7 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
             ui->btnAddOperation->setEnabled(true);
             ui->btnInsertOperation->setEnabled(true);
             ui->btnDeleteOperation->setEnabled(false);
-            ui->btnCheck->setEnabled(true);
+            //ui->btnCheck->setEnabled(true);
         }
         else if (item->getOperation())
         {
@@ -251,7 +243,7 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
             ui->btnAddOperation->setEnabled(true);
             ui->btnInsertOperation->setEnabled(true);
             ui->btnDeleteOperation->setEnabled(true);
-            ui->btnCheck->setEnabled(true);
+            //ui->btnCheck->setEnabled(true);
         }
         else
         {
@@ -270,7 +262,7 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
         ui->btnAddOperation->setEnabled(false);
         ui->btnInsertOperation->setEnabled(false);
         ui->btnDeleteOperation->setEnabled(false);
-        ui->btnCheck->setEnabled(true);
+        //ui->btnCheck->setEnabled(true);
     }
 }
 
