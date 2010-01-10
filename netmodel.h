@@ -18,7 +18,7 @@ private:
     QString name;
     QPoint point;
 public:
-    QPoint& getPoint() {return point;};
+    QPoint& getPoint() {return point;}
     Event();
     Event(int);
     int getN();
@@ -63,7 +63,7 @@ private:
 public:
     QList<Event*> events;
     Path(QList<Event*> events);
-    QString print() const;
+    QString code() const;
     double weight() const;
 };
 
@@ -120,15 +120,13 @@ public:
     double getLaterStartTime(Operation*);
     double getEarlyEndTime(Operation*);
     double getLaterEndTime(Operation*);
-    double getReserveTime(Path&);
+    double getReserveTime(const Path&);
     double getReserveTime(Event*);
     double getFullReserveTime(Operation*);
     double getFreeReserveTime(Operation*);
 public slots:
-    // setters for events
     bool setN(QObject *, Event *, int);
     bool setName(QObject *, Event *, const QString &);
-    // setters for operation
     bool setOperationEndEvent(QObject *, Operation **, Event *);
     bool setOperationName(QObject *, Operation *, const QString &);
     bool setOperationWaitTime(QObject *, Operation *, double);
@@ -150,6 +148,7 @@ signals:
     void beforeOperationDelete(QObject *, Operation */*, bool deleteOutput = true*/);
     void afterEventInsert(QObject *, Event *, int);
     void afterOperationInsert(QObject *, Operation *, int);
+    void updated();
 };
 
 #endif // NETMODEL_H

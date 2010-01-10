@@ -62,13 +62,14 @@ MainWindow::MainWindow(QWidget *parent)
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
             this,
             SLOT(currentChanged(QModelIndex, QModelIndex)));
+    dialog = new Dialog(netmodel, treemodel, this);
 }
 
 void MainWindow::calc()
 {
     //QDialog *dialog = new QDialog();
     //QTableWidget table(&dialog);
-    dialog.show();
+    dialog->show();
     //delete dialog;
 }
 
@@ -96,7 +97,7 @@ void MainWindow::check()
         foreach(Path path, *pathes)
         {
             s += QString::number(++i) + ": ";
-            s += path.print() + "\n";
+            s += path.code() + "\n";
         }
         delete pathes;
         QList<Path> *criticPathes = netmodel.getCriticalPathes();
@@ -105,7 +106,7 @@ void MainWindow::check()
         foreach(Path path, *criticPathes)
         {
             s += QString::number(++i) + ": ";
-            s += path.print() + "\n";
+            s += path.code() + "\n";
         }
         delete criticPathes;
     }
@@ -277,4 +278,5 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete treemodel;
+    delete dialog;
 }

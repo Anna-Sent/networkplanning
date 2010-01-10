@@ -23,7 +23,7 @@ private:
     Ui::MainWindow *ui;
     TreeModel *treemodel;
     NetModel netmodel;
-    Dialog dialog;
+    Dialog *dialog;
     void insertEvent(int index);
     void insertOperation(int index);
 private slots:

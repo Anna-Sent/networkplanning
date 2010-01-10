@@ -1,44 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial Usage
-** Licensees holding valid Qt Commercial licenses may use this file in
-** accordance with the Qt Commercial License Agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Nokia.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Nokia gives you certain
-** additional rights. These rights are described in the Nokia Qt LGPL
-** Exception version 1.0, included in the file LGPL_EXCEPTION.txt in this
-** package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
-** If you are unsure which license is appropriate for your use, please
-** contact the sales department at http://www.qtsoftware.com/contact.
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 /*
     treemodel.cpp
 
@@ -51,7 +10,6 @@
 #include "treeitem.h"
 #include "treemodel.h"
 
-//! [0]
 TreeModel::TreeModel(NetModel &netmodel, QObject *parent)
     : QAbstractItemModel(parent)
 {
@@ -61,16 +19,12 @@ TreeModel::TreeModel(NetModel &netmodel, QObject *parent)
     this->netmodel = &netmodel;
     setupModelData(rootItem);
 }
-//! [0]
 
-//! [1]
 TreeModel::~TreeModel()
 {
     delete rootItem;
 }
-//! [1]
 
-//! [2]
 int TreeModel::columnCount(const QModelIndex &) const
 {
     //if (parent.isValid())
@@ -79,9 +33,7 @@ int TreeModel::columnCount(const QModelIndex &) const
       //  return rootItem->columnCount();
     return 5;
 }
-//! [2]
 
-//! [3]
 QVariant TreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -114,9 +66,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
         return QVariant();
 //    return item->data(index.column());
 }
-//! [3]
 
-//! [4]
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -131,7 +81,6 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
                 Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
     return 0;
 }
-//! [4]
 
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
@@ -205,8 +154,6 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
     return false;
 }
 
-
-//! [5]
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
@@ -215,9 +162,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
 
     return QVariant();
 }
-//! [5]
 
-//! [6]
 QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
             const
 {
@@ -237,9 +182,7 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
     else
         return QModelIndex();
 }
-//! [6]
 
-//! [7]
 QModelIndex TreeModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
@@ -253,9 +196,7 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
 
     return createIndex(parentItem->row(), 0, parentItem);
 }
-//! [7]
 
-//! [8]
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
     TreeItem *parentItem;
@@ -269,7 +210,6 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 
     return parentItem->childCount();
 }
-//! [8]
 
 void TreeModel::process(Event *e, TreeItem *parent, QSet<int> &set)
 {
@@ -335,6 +275,7 @@ void TreeModel::fill(QComboBox *cbox, const QModelIndex &index) const
         }
     }
 }
+
 /*
 On models that support this, inserts count rows into the model before the given row.
 The items in the new row will be children of the item represented by the parent
