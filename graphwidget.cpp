@@ -54,19 +54,39 @@ void GraphWidget::setModel(NetModel* model)
 	QList<Event*>* events = _model->getEvents();
 	foreach(Event* ev,*events)
 	{
-		EventWidget *ic = new EventWidget(ev,model,this);
+                /*EventWidget *ic = new EventWidget(ev,model,this);
                 //ic->setText(QString::number(ev->getN()));
 		ic->move(ev->getPoint());
 		ic->show();
-		ic->setAttribute(Qt::WA_DeleteOnClose);
+                ic->setAttribute(Qt::WA_DeleteOnClose);*/
+            EventAdd(0,ev);
 	}
         connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
-connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
+        connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
+        connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
+        connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
+        connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
+        connect(model, SIGNAL(updated()),this,SLOT(update()));
     }
 
 void GraphWidget::updatePositions()
 {
 	
+}
+
+void GraphWidget::EventAdd(QObject *, Event * ev)
+{
+                EventWidget *ic = new EventWidget(ev,_model,this);
+                //ic->setText(QString::number(ev->getN()));
+                ic->move(ev->getPoint());
+                ic->show();
+                ic->setAttribute(Qt::WA_DeleteOnClose);
+                update();
+}
+
+void GraphWidget::EventAdd(QObject *, Event * ev,int)
+{
+    EventAdd(0,ev);
 }
 
 //! [0]
@@ -275,6 +295,18 @@ void GraphWidget::eventIdChanged(QObject *, Event * event, const int id)
         EventWidget* ev = qobject_cast<EventWidget*>(qo);
         if (ev&&ev->wrapsEvent(event)) {
             ev->update();
+        }
+    }
+}
+
+void GraphWidget::DeleteEvent(QObject *, Event * event)
+{
+    QObjectList ch = children();
+    foreach(QObject* qo,ch)
+    {
+        EventWidget* ev = qobject_cast<EventWidget*>(qo);
+        if (ev&&ev->wrapsEvent(event)) {
+            delete ev;
         }
     }
 }
