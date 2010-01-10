@@ -9,7 +9,10 @@ HEADERS = treeitem.h \
     graphwidget.h \
     arrowwidget.h \
     ui_dialog.h \
-    dialog.h
+    dialog.h \
+    fullpathesmodel.h \
+    calceventmodel.h \
+    calcoperationmodel.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -21,7 +24,10 @@ SOURCES = treeitem.cpp \
     graphwidget.cpp \
     arrowwidget.cpp \
     dialog.cpp \
-    eventwidget.cpp
+    fullpathesmodel.cpp \
+    eventwidget.cpp \
+    calceventmodel.cpp \
+    calcoperationmodel.cpp
 CONFIG += qt
 
 # install

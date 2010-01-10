@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent)
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
             this,
             SLOT(currentChanged(QModelIndex, QModelIndex)));
-    dialog = new Dialog(netmodel, treemodel, this);
+    dialog = new Dialog(netmodel, this);
 }
 
 void MainWindow::calc()

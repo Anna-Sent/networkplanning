@@ -14,7 +14,7 @@ namespace Ui
 class Dialog : public QDialog
 {
 public:
-    Dialog(NetModel &, TreeModel *, QWidget *parent = 0);
+    Dialog(NetModel &, QWidget *parent = 0);
     ~Dialog();
 private:
     Ui::Dialog *ui;

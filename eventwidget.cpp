@@ -18,7 +18,7 @@
         return QPoint(15,15);
     }
 
-    void EventWidget::paintEvent(QPaintEvent *event)
+    void EventWidget::paintEvent(QPaintEvent */*event*/)
     {
         QPainter p;
         p.begin(this);
