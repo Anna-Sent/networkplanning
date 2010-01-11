@@ -17,7 +17,7 @@ public:
     void insertChild(TreeItem *child, int position) {childItems.insert(position,child);}
     void removeChild(int position)
     {
-        delete child(position);
+        delete childItems[position];
         childItems.removeAt(position);
     }
     void removeAllChilds()
@@ -28,8 +28,8 @@ public:
     void clear() {event=NULL;operation=NULL;}
 
     TreeItem *child(int row);
-    int childCount() const;
-    int columnCount() const;
+    //int childCount() const;
+    //int columnCount() const;
     //QVariant data(int column) const;
     int row() const;
     TreeItem *parent();
@@ -41,7 +41,7 @@ public:
 
 private:
     QList<TreeItem*> childItems;
-    QList<QVariant> itemData;
+    //QList<QVariant> itemData;
     TreeItem *parentItem;
     Event *event;
     Operation *operation;
