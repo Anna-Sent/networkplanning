@@ -13,9 +13,9 @@
 TreeModel::TreeModel(NetModel &netmodel, QObject *parent)
     : QAbstractItemModel(parent)
 {
-    QList<QVariant> rootData;
-    rootData << QString::fromUtf8("Код события") << QString::fromUtf8("Событие") << QString::fromUtf8("Код работы") << QString::fromUtf8("Работа") << QString::fromUtf8("Продолжительность");
-    rootItem = new TreeItem(rootData);
+    header.clear();
+    header << QString::fromUtf8("Код события") << QString::fromUtf8("Событие") << QString::fromUtf8("Код работы") << QString::fromUtf8("Работа") << QString::fromUtf8("Продолжительность");
+    rootItem = new TreeItem();
     this->netmodel = &netmodel;
     connect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
     setupModelData(rootItem);
@@ -35,10 +35,6 @@ TreeModel::~TreeModel()
 
 int TreeModel::columnCount(const QModelIndex &) const
 {
-    //if (parent.isValid())
-      //  return static_cast<TreeItem*>(parent.internalPointer())->columnCount();
-    //else
-      //  return rootItem->columnCount();
     return 5;
 }
 
@@ -72,7 +68,6 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     }
     else
         return QVariant();
-//    return item->data(index.column());
 }
 
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
@@ -163,8 +158,9 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
                                int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-        return rootItem->data(section);
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole
+        && section>=0 && section<columnCount())
+        return header[section];
 
     return QVariant();
 }
@@ -220,10 +216,7 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 void TreeModel::process(Event *e, TreeItem *parent, QSet<int> &set)
 {
     set += e->getN();
-    QList<QVariant> columnData;
-    columnData << e->getN() << e->getName();
-    TreeItem *item = new TreeItem(columnData, parent);
-    item->setEvent(e);
+    TreeItem *item = new TreeItem(e, *parent);
     parent->appendChild(item);
     foreach (Operation *o, e->getOutOperations())
     {
@@ -239,10 +232,7 @@ void TreeModel::process(Event *e, TreeItem *parent, QSet<int> &set)
 
 void TreeModel::process(Operation *o, TreeItem *parent)
 {
-    QList<QVariant> columnData;
-    columnData << "" << "" << o->getCode() << o->getName() << o->getWaitTime();
-    TreeItem *item = new TreeItem(columnData, parent);
-    item->setOperation(o);
+    TreeItem *item = new TreeItem(o, *parent);
     parent->appendChild(item);
 }
 
@@ -293,7 +283,6 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
     bool result = false;
     if (!netmodel)
         return result;
-//    beginInsertRows(parent, row, row+count-1);
     for (int i=row; i<row+count; ++i)
     {
         if (parent.isValid())
@@ -309,10 +298,7 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
                     QModelIndex parent1 = createIndex(parent.row(), 0, parent.internalPointer());
                     beginInsertRows(parent1, i, i);
                     event->insertOutOperation(o, i);
-                    QList<QVariant> columnData;
-                    columnData << "" << "" << o->getCode() << o->getName() << o->getWaitTime();
-                    TreeItem *item = new TreeItem(columnData, parentItem);
-                    item->setOperation(o);
+                    TreeItem *item = new TreeItem(o, *parentItem);
                     parentItem->insertChild(item, row);
                     endInsertRows();
                     result = result || true;
@@ -327,10 +313,7 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
             if (netmodel->insertEvent(this, e, i))
             {
                 beginInsertRows(parent, i, i);
-                QList<QVariant> columnData;
-                columnData << e->getN() << e->getName();
-                TreeItem *item = new TreeItem(columnData, rootItem);
-                item->setEvent(e);
+                TreeItem *item = new TreeItem(e, *rootItem);
                 rootItem->insertChild(item, row);
                 endInsertRows();
                 result = result || true;
@@ -339,7 +322,6 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
                 delete e;
         }
     }
-//    endInsertRows();
     return result;
 }
 
@@ -360,26 +342,22 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
                 Operation *o = e->getOutOperations()[i];
                 if (netmodel->removeOperation(this, o))
                 {
-//                    beginRemoveRows(parent, i, i);
                     parentItem->child(i)->clear();
                     parentItem->removeChild(i);
-//                    endRemoveRows();
                     result = result || true;
                 }
             }
         }
         else
         {
-            TreeItem *parentItem = rootItem;//static_cast<TreeItem*>(parent.internalPointer());
+            TreeItem *parentItem = rootItem;
             if (i<parentItem->childCount())
             {
                 Event *e = parentItem->child(i)->getEvent();
                 if (netmodel->removeEvent(this, e))
                 {
-//                    beginRemoveRows(parent, i, i);
                     parentItem->child(i)->clear();
                     parentItem->removeChild(i);
-//                    endRemoveRows();
                     result = result || true;
                 }
             }

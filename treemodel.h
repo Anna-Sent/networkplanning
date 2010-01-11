@@ -44,6 +44,7 @@ private:
 
     TreeItem *rootItem;
     NetModel *netmodel;
+    QList<QVariant> header;
 private slots:
     void beforeClear();
 };
