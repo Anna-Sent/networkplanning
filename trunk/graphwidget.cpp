@@ -269,7 +269,6 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
         achild->setPixmap(pixmap);
     }
     recreatePoints();
-
 }
 
 template<class Ty>
