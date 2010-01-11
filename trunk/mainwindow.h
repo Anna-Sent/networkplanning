@@ -25,6 +25,11 @@ private:
     NetModel netmodel;
     Dialog *dialog;
     QString filename;
+    void setFileName(const QString &fn)
+    {
+        filename = fn;
+        setWindowTitle(QString::fromUtf8("Сетевая модель ")+filename);
+    }
 private slots:
     void addEvent();
     void insertEvent();

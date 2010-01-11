@@ -18,6 +18,7 @@ class Dialog : public QDialog
 public:
     Dialog(NetModel &, QWidget *parent = 0);
     ~Dialog();
+    void setModel(NetModel &);
 private:
     Ui::Dialog *ui;
     FullPathesModel *fpmodel;
@@ -26,6 +27,7 @@ private:
     NetModel *netmodel;
 private slots:
     void setupLabelText();
+    void beforeClear();
 };
 
 #endif // DIALOG_H

@@ -16,6 +16,26 @@ Dialog::Dialog(NetModel &netmodel, QWidget *parent)
     ui->tableView3->setModel(comodel);
     setupLabelText();
     connect(&netmodel, SIGNAL(updated()), this, SLOT(setupLabelText()));
+    connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+}
+
+void Dialog::setModel(NetModel &netmodel)
+{
+    fpmodel->setModel(netmodel);
+    cemodel->setModel(netmodel);
+    comodel->setModel(netmodel);
+    this->netmodel = &netmodel;
+    setupLabelText();
+    connect(&netmodel, SIGNAL(updated()), this, SLOT(setupLabelText()));
+    connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+}
+
+void Dialog::beforeClear()
+{
+    disconnect(this, SLOT(updated()));
+    disconnect(this, SLOT(beforeClear()));
+    netmodel = NULL;
+    ui->label->setText(QString::fromUtf8("Сетевая модель не задана"));
 }
 
 void Dialog::setupLabelText()

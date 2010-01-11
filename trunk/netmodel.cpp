@@ -820,8 +820,8 @@ QDataStream &NetModel::readOperation(Operation **o, QDataStream &stream)
             connect(*o, NULL);
         else
             connect(*o, getEventByNumber(end));
-        setOperationName(this, *o, name);
-        setOperationWaitTime(this, *o, twait);
+        (*o)->setName(name); // setOperationName(this, *o, name);
+        (*o)->setWaitTime(twait); // setOperationWaitTime(this, *o, twait);
     }
     else
         *o = NULL;

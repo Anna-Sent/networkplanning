@@ -21,7 +21,7 @@ int CalcEventModel::colCount() const
 
 void CalcEventModel::setupModelData()
 {
-    if (netmodel->isCorrect())
+    if (netmodel && netmodel->isCorrect())
     {
         foreach (Event *event, *(netmodel->getEvents()))
         {

@@ -25,7 +25,7 @@ int CalcOperationModel::colCount() const
 
 void CalcOperationModel::setupModelData()
 {
-    if (netmodel->isCorrect())
+    if (netmodel && netmodel->isCorrect())
     {
         QList<Operation*> *operations = netmodel->getOperations();
         foreach (Operation *operation, *operations)

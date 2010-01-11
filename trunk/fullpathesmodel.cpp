@@ -20,7 +20,7 @@ int FullPathesModel::colCount() const
 
 void FullPathesModel::setupModelData()
 {
-    if (netmodel->isCorrect())
+    if (netmodel && netmodel->isCorrect())
     {
         QList<Path> *pathes = netmodel->getFullPathes();
         foreach (Path path, *pathes)
