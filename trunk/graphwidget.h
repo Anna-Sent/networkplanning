@@ -74,7 +74,8 @@ protected:
     void paintEvent(QPaintEvent *event);
 private:
     QLine adjustLine(QPoint p1,QPoint p2,int margin);
-    void drawArrow(QPainter& p,QLine l) const;
+    void drawArrow(QPainter& p,QLine l);
+    void recreatePoints();
 };
 
 #endif

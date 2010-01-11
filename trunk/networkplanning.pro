@@ -13,7 +13,8 @@ HEADERS = treeitem.h \
     fullpathesmodel.h \
     calceventmodel.h \
     calcoperationmodel.h \
-    calcmodel.h
+    calcmodel.h \
+    arrowpointwidget.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -29,7 +30,8 @@ SOURCES = treeitem.cpp \
     eventwidget.cpp \
     calceventmodel.cpp \
     calcoperationmodel.cpp \
-    calcmodel.cpp
+    calcmodel.cpp \
+    arrowpointwidget.cpp
 CONFIG += qt
 
 # install

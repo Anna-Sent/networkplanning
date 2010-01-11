@@ -42,46 +42,56 @@
 #include <QtGui>
 
 #include "graphwidget.h"
+#include "arrowpointwidget.h"
 #include <QDebug>
 #include <cmath>
 
 void GraphWidget::setModel(NetModel* model)
 {
 
-	_model=model;
-	if (!model) return;
-
-	QList<Event*>* events = _model->getEvents();
-	foreach(Event* ev,*events)
-	{
-                /*EventWidget *ic = new EventWidget(ev,model,this);
-                //ic->setText(QString::number(ev->getN()));
-		ic->move(ev->getPoint());
-		ic->show();
-                ic->setAttribute(Qt::WA_DeleteOnClose);*/
-            EventAdd(0,ev);
-	}
-        connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
-        connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
-        connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
-        connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
-        connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
-        connect(model, SIGNAL(updated()),this,SLOT(update()));
+    if (_model!=0)
+    {
+        foreach(QObject* o,children())
+        {
+            delete o;
+        }
+        disconnect(0,this,0);
     }
+    _model=model;
+    if (!model) return;
+
+    QList<Event*>* events = _model->getEvents();
+    foreach(Event* ev,*events)
+    {
+        /*EventWidget *ic = new EventWidget(ev,model,this);
+                //ic->setText(QString::number(ev->getN()));
+                ic->move(ev->getPoint());
+                ic->show();
+                ic->setAttribute(Qt::WA_DeleteOnClose);*/
+        EventAdd(0,ev);
+    }
+    connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
+    connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
+    connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
+    connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
+    connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
+    connect(model, SIGNAL(updated()),this,SLOT(update()));
+}
 
 void GraphWidget::updatePositions()
 {
-	
+
 }
 
 void GraphWidget::EventAdd(QObject *, Event * ev)
 {
-                EventWidget *ic = new EventWidget(ev,_model,this);
-                //ic->setText(QString::number(ev->getN()));
-                ic->move(ev->getPoint());
-                ic->show();
-                ic->setAttribute(Qt::WA_DeleteOnClose);
-                update();
+    EventWidget *ic = new EventWidget(ev,_model,this);
+    //ic->setText(QString::number(ev->getN()));
+    ic->move(ev->getPoint());
+    ic->show();
+    ic->setAttribute(Qt::WA_DeleteOnClose);
+    recreatePoints();
+    update();
 }
 
 void GraphWidget::EventAdd(QObject *, Event * ev,int)
@@ -98,7 +108,7 @@ GraphWidget::GraphWidget(QWidget *parent)
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
 
     setAcceptDrops(true);
-/*
+    /*
     QLabel *boatIcon = new QLabel(this);
     boatIcon->setPixmap(QPixmap(":/images/boat.png"));
     boatIcon->move(20, 20);
@@ -121,7 +131,7 @@ GraphWidget::GraphWidget(QWidget *parent)
 
 void GraphWidget::dragEnterEvent(QDragEnterEvent *event)
 {
-    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")||event->mimeData()->hasFormat("application/x-arrowpointdata")) {
         if (event->source() == this) {
             event->setDropAction(Qt::MoveAction);
             event->accept();
@@ -135,7 +145,7 @@ void GraphWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void GraphWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
+    if (event->mimeData()->hasFormat("application/x-dnditemdata")||event->mimeData()->hasFormat("application/x-arrowpointdata")) {
         if (event->source() == this) {
             event->setDropAction(Qt::MoveAction);
             event->accept();
@@ -152,7 +162,7 @@ void GraphWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasFormat("application/x-dnditemdata")) {
         QByteArray itemData = event->mimeData()->data("application/x-dnditemdata");
         QDataStream dataStream(&itemData, QIODevice::ReadOnly);
-        
+
         QPixmap pixmap;
         QPoint offset;
         //Event* ev;
@@ -174,43 +184,65 @@ void GraphWidget::dropEvent(QDropEvent *event)
         } else {
             event->acceptProposedAction();
         }
-    } else {
+    } else
+        if (event->mimeData()->hasFormat("application/x-arrowpointdata")) {
+        event->setDropAction(Qt::MoveAction);
+        //event->accept();
+        EventWidget *child = qobject_cast<EventWidget*>(childAt(event->pos()));
+        if (child) child->dropEvent(event);
+    } else
+    {
         event->ignore();
     }
     update();
+    recreatePoints();
 
 }
 
 //! [1]
 void GraphWidget::mousePressEvent(QMouseEvent *event)
 {
-    EventWidget *child = static_cast<EventWidget*>(childAt(event->pos()));
-    if (!child)
+    EventWidget *child = qobject_cast<EventWidget*>(childAt(event->pos()));
+    arrowpointwidget *child1 = qobject_cast<arrowpointwidget*>(childAt(event->pos()));
+    if (!(child||child1))
         return;
-
+    QLabel *achild=child?static_cast<QLabel*> (child):static_cast<QLabel*> (child1);
+    qDebug() << achild;
     qDebug() << child;
-
-    QPixmap pixmap = *child->pixmap();
-
+    QPixmap pixmap = *achild->pixmap();
     QByteArray itemData;
     QDataStream dataStream(&itemData, QIODevice::WriteOnly);
 
-    dataStream << pixmap << QPoint(event->pos() - child->pos());
-    Event * chev = child->event();
-    dataStream.writeRawData(reinterpret_cast<char*>(&chev),sizeof(chev));
-//! [1]
-
-//! [2]
+    dataStream << pixmap << QPoint(event->pos() - achild->pos());
     QMimeData *mimeData = new QMimeData;
-    mimeData->setData("application/x-dnditemdata", itemData);
-//! [2]
-        
-//! [3]
+    if (child)
+    {
+        Event * chev = child->event();
+        dataStream.writeRawData(reinterpret_cast<char*>(&chev),sizeof(chev));
+        mimeData->setData("application/x-dnditemdata", itemData);
+    }
+    if (child1)
+    {
+        Event * chev = child1->ev;
+        Operation * chop = child1->op;
+        dataStream << static_cast<int>(child1->role);
+        dataStream.writeRawData(reinterpret_cast<char*>(&chev  ),sizeof(chev));
+        dataStream.writeRawData(reinterpret_cast<char*>(&chop  ),sizeof(chop));
+        mimeData->setData("application/x-arrowpointdata", itemData);
+    }
+
+    //! [1]
+
+    //! [2]
+
+    //! [2]
+
+    //! [3]
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(pixmap);
-    drag->setHotSpot(event->pos() - child->pos());
-//! [3]
+    drag->setHotSpot(event->pos() - achild->pos());
+    //! [3]
 
     QPixmap tempPixmap = pixmap;
     QPainter painter;
@@ -218,14 +250,15 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
     painter.fillRect(pixmap.rect(), QColor(127, 127, 127, 255));
     painter.end();
 
-    child->setPixmap(tempPixmap);
+    achild->setPixmap(tempPixmap);
 
     if (drag->exec(Qt::CopyAction | Qt::MoveAction, Qt::CopyAction) == Qt::MoveAction)
-        child->close();
+        achild->close();
     else {
-        child->show();
-        child->setPixmap(pixmap);
+        achild->show();
+        achild->setPixmap(pixmap);
     }
+    recreatePoints();
 
 }
 
@@ -246,34 +279,66 @@ QLine GraphWidget::adjustLine(QPoint p1,QPoint p2,int margin)
     return QLine(p1+shift,p2-shift);
 }
 
-void GraphWidget::paintEvent(QPaintEvent *event)
+void GraphWidget::recreatePoints()
 {
-	
-	qDebug() << "paint";
-	if (!_model) return;
-QPainter painter;
-painter.begin(this);
-	QList<Event*>* events = _model->getEvents();
-	foreach(Event* ev,*events)
-	{
-		QList<Operation*> ops = ev->getOutOperations();
-		foreach(Operation * op,ops)
-		{
-			Event *be = op->getBeginEvent();
-			Event *ee = op->getEndEvent();
-                        QPoint center = QPoint(15,15);
-			if (be&&ee) {
-                                //painter.drawLine();
-                            drawArrow(painter,adjustLine(be->getPoint()+center,ee->getPoint()+center,15));
-			}
-		}
+    foreach(QObject* qo,children())
+    {
+        arrowpointwidget * ap = qobject_cast<arrowpointwidget *>(qo);
+        delete ap;
 
-	}
-	painter.end();
+    }
+    if (!_model) return;
+    foreach(Operation * op,*_model->getOperations())
+    {
+        Event *be = op->getBeginEvent();
+        Event *ee = op->getEndEvent();
+        QPoint center = QPoint(15,15);
+        if (be&&ee) {
+            //painter.drawLine();
+
+            QLine l = adjustLine(be->getPoint()+center,ee->getPoint()+center,15);
+            arrowpointwidget* ap = new arrowpointwidget(arrowpointwidget::EEnd,op,ee,this);
+            ap->move(l.p2());
+            ap->show();
+            ap = new arrowpointwidget(arrowpointwidget::EBegin,op,be,this);
+            ap->move(l.p1());
+            ap->show();
+        }
+    }
 }
 
-void GraphWidget::drawArrow(QPainter &p,QLine l) const
+void GraphWidget::paintEvent(QPaintEvent *event)
 {
+
+    qDebug() << "paint";
+    if (!_model) return;
+    QPainter painter;
+    painter.begin(this);
+    QObjectList ch = children();
+
+    QList<Event*>* events = _model->getEvents();
+    foreach(Event* ev,*events)
+    {
+        QList<Operation*> ops = ev->getOutOperations();
+        foreach(Operation * op,ops)
+        {
+            Event *be = op->getBeginEvent();
+            Event *ee = op->getEndEvent();
+            QPoint center = QPoint(15,15);
+            if (be&&ee) {
+                //painter.drawLine();
+                drawArrow(painter,adjustLine(be->getPoint()+center,ee->getPoint()+center,15));
+
+            }
+        }
+
+    }
+    painter.end();
+}
+
+void GraphWidget::drawArrow(QPainter &p,QLine l)
+{
+
     p.translate(l.p2());
     double angle = atan2(l.dx(),l.dy())/M_PI*180.0;
     p.rotate(-angle);
@@ -319,4 +384,5 @@ void GraphWidget::DeleteEvent(QObject *, Event * event)
             delete ev;
         }
     }
+    recreatePoints();
 }

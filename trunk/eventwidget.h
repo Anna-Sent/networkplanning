@@ -22,6 +22,7 @@ public:
     QPoint center() const;
     void move(const QPoint& pos) { _event->getPoint()=pos; QLabel::move(pos); }
     bool wrapsEvent(Event* ev) { return _event==ev; }
+    void dropEvent(QDropEvent *event);
 };
 
 #endif
