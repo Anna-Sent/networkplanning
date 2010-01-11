@@ -91,7 +91,7 @@ void MainWindow::open()
     {
         treemodel->setModel(netmodel);
         dialog->setModel(netmodel);
-        //ui->graphView->setModel(&netmodel);
+        ui->graphView->setModel(&netmodel);
     }
     // clear netmodel and all views
     // load netmodel
