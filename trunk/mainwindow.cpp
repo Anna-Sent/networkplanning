@@ -104,7 +104,7 @@ void MainWindow::save()
         setFileName(QFileDialog::getSaveFileName(this,
                                                 QString::fromUtf8("Сохранить модель"),
                                                 "",
-                                                QString::fromUtf8("Сетевые модели (*.mdl)")));
+                                                QString::fromUtf8("Сетевые модели *.mdl (*.mdl)")));
     }
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly))
