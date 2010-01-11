@@ -224,6 +224,8 @@ bool NetModel::add(Event* event)
 {
     if (event)
     {
+        if (event->getN()<0)
+            return false;
         foreach (Event *e, events)
             if (e->getN()==event->getN())
                 return false;
@@ -243,6 +245,8 @@ bool NetModel::insert(int i, Event* event)
 {
     if (event)
     {
+        if (event->getN()<0)
+            return false;
         foreach (Event *e, events)
             if (e->getN()==event->getN())
                 return false;
@@ -622,6 +626,8 @@ double NetModel::getFreeReserveTime(Operation *o)
 
 bool NetModel::setN(QObject *obj, Event *e, int n)
 {
+    if (n<0)
+        return false;
     foreach (Event *event, events)
     {
         if (event->getN()==n)
@@ -760,6 +766,112 @@ int NetModel::generateId()
     return std::numeric_limits<int>::max();
 }
 
+QDataStream &NetModel::writeEvent(Event *e, QDataStream &stream)
+{
+    stream << e->getN() << e->getName() << e->getPoint();
+    return stream;
+}
+
+QDataStream &NetModel::readEvent(Event **e, QDataStream &stream)
+{
+    int n;
+    QString name;
+    QPoint point;
+    stream >> n >> name >> point;
+    if (stream.status()==QDataStream::Ok)
+    {
+        *e = new Event(n);
+        (*e)->setName(name);
+        (*e)->getPoint()=point;
+    }
+    else
+        *e = NULL;
+    return stream;
+}
+
+QDataStream &NetModel::writeOperation(Operation *o, QDataStream &stream)
+{
+    if (o->getBeginEvent())
+        stream << o->getBeginEvent()->getN();
+    else
+        stream << -1;
+    if (o->getEndEvent())
+        stream << o->getEndEvent()->getN();
+    else
+        stream << -1;
+    stream << o->getWaitTime() << o->getName();
+    return stream;
+}
+
+QDataStream &NetModel::readOperation(Operation **o, QDataStream &stream)
+{
+    int begin, end;
+    double twait;
+    QString name;
+    stream >> begin >> end >> twait >> name;
+    if (stream.status()==QDataStream::Ok)
+    {
+        *o = new Operation();
+        if (begin==-1)
+            connect(NULL, *o);
+        else
+            connect(getEventByNumber(begin), *o);
+        if (end==-1)
+            connect(*o, NULL);
+        else
+            connect(*o, getEventByNumber(end));
+        setOperationName(this, *o, name);
+        setOperationWaitTime(this, *o, twait);
+    }
+    else
+        *o = NULL;
+    return stream;
+}
+
+QDataStream &NetModel::writeTo(QDataStream &stream)
+{
+    stream << events.count();
+    stream << operations.count();
+    foreach (Event *e, events)
+    {
+        writeEvent(e, stream);
+    }
+    foreach (Operation *o, operations)
+    {
+        writeOperation(o, stream);
+    }
+    return stream;
+}
+
+QDataStream &NetModel::readFrom(QDataStream &stream)
+{
+    int eventscount, operationscount;
+    stream >> eventscount >> operationscount;
+    if (stream.status()==QDataStream::Ok)
+    {
+        for (int i = 0; i < eventscount; ++i)
+        {
+            Event *e;
+            readEvent(&e, stream);
+            if (e && add(e));
+        }
+        for (int i = 0; i < operationscount; ++i)
+        {
+            Operation *o;
+            readOperation(&o, stream);
+        }
+    }
+    return stream;
+}
+
+void NetModel::clear()
+{
+    emit beforeClear();
+    qDeleteAll(events);
+    events.clear();
+    qDeleteAll(operations);
+    operations.clear();
+}
 
 
 

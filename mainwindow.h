@@ -24,6 +24,7 @@ private:
     TreeModel *treemodel;
     NetModel netmodel;
     Dialog *dialog;
+    QString filename;
 private slots:
     void addEvent();
     void insertEvent();
@@ -31,9 +32,15 @@ private slots:
     void addOperation();
     void insertOperation();
     void deleteOperation();
-    void check();
     void calc();
     void currentChanged(const QModelIndex &, const QModelIndex &);
+
+    void newModel();
+    void open();
+    void save();
+    void saveAs();
+    void print();
+    void exit();
 };
 
 #endif // MAINWINDOW_H

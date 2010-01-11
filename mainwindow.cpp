@@ -3,6 +3,7 @@
 #include "operationdelegate.h"
 #include "treeitem.h"
 #include "positioning.h"
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -17,6 +18,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnDeleteOperation, SIGNAL(clicked()), this, SLOT(deleteOperation()));
     //connect(ui->btnCheck, SIGNAL(clicked()), this, SLOT(check()));
     connect(ui->btnCalc, SIGNAL(clicked()), this, SLOT(calc()));
+    connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newModel()));
+    connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
+    connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
+    connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
+    connect(ui->actionPrint, SIGNAL(triggered()), this, SLOT(print()));
+    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(exit()));
 /*    connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
     connect(ui->treeView, SIGNAL(pressed(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
     connect(ui->treeView, SIGNAL(activated(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
@@ -65,55 +72,61 @@ MainWindow::MainWindow(QWidget *parent)
     dialog = new Dialog(netmodel, this);
 }
 
-void MainWindow::calc()
+void MainWindow::newModel()
 {
-    //QDialog *dialog = new QDialog();
-    //QTableWidget table(&dialog);
-    dialog->show();
-    //delete dialog;
+    netmodel.clear();
+    // clear netmodel and all views
+    // create new model?
 }
 
-void MainWindow::check()
+void MainWindow::open()
 {
-    QString s = netmodel.print();
-    if (netmodel.hasLoops())
-        s += "Имеются циклы\n";
-    if (netmodel.hasMultiEdges())
-        s += "Имеются работы с одинаковыми кодами\n";
-    if (!netmodel.hasOneBeginEvent())
-        s += "Исходное событие не определено\n";
-    if (!netmodel.hasOneEndEvent())
-        s += "Завершающее событие не определено\n";
-    if (netmodel.hasUnconnectedEvents())
-        s += "Некоторые события не соединены с работами\n";
-    if (netmodel.hasUnconnectedOperations())
-        s += "Некоторые работы не соединены с событиями\n";
-    if (netmodel.isCorrect())
+    // clear netmodel and all views
+    // load netmodel
+}
+
+void MainWindow::save()
+{
+    if (filename=="")
     {
-        s += "Сетевая модель корректна\n";
-        QList<Path> *pathes = netmodel.getFullPathes();
-        s += "Полные пути:\n";
-        int i=0;
-        foreach(Path path, *pathes)
-        {
-            s += QString::number(++i) + ": ";
-            s += path.code() + "\n";
-        }
-        delete pathes;
-        QList<Path> *criticPathes = netmodel.getCriticalPathes();
-        s += "Критические пути\n";
-        i=0;
-        foreach(Path path, *criticPathes)
-        {
-            s += QString::number(++i) + ": ";
-            s += path.code() + "\n";
-        }
-        delete criticPathes;
+        //QFileDialog dialog(this,
+          //      QString::fromUtf8("Сохранить модель"),
+            //    "",
+              //  QString::fromUtf8("Сетевые модели (*.mdl)"));
+        //dialog.setFileMode(QFileDialog::AnyFile);
+        //if (dialog.exec())
+            filename = QFileDialog::getSaveFileName(this,
+                QString::fromUtf8("Сохранить модель"),
+                "",
+                QString::fromUtf8("Сетевые модели (*.mdl)"));
     }
-    else
-        s += "Сетевая модель некорректна";
-    QString caption = "Сетевая модель";
-    QMessageBox::information(this, QString::fromUtf8(caption.toAscii()), QString::fromUtf8(s.toAscii()));
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly))
+        return;
+    QDataStream out(&file);
+    netmodel.writeTo(out);
+    if (out.status()!=QDataStream::Ok)
+        QMessageBox::critical(this, "Ошибка записи", "При записи модели произошла ошибка");
+}
+
+void MainWindow::saveAs()
+{
+    // set filename to ""
+    // save
+}
+
+void MainWindow::print()
+{
+}
+
+void MainWindow::exit()
+{
+    this->close();
+}
+
+void MainWindow::calc()
+{
+    dialog->show();
 }
 
 void MainWindow::insertEvent()

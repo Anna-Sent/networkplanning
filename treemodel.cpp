@@ -17,7 +17,14 @@ TreeModel::TreeModel(NetModel &netmodel, QObject *parent)
     rootData << QString::fromUtf8("Код события") << QString::fromUtf8("Событие") << QString::fromUtf8("Код работы") << QString::fromUtf8("Работа") << QString::fromUtf8("Продолжительность");
     rootItem = new TreeItem(rootData);
     this->netmodel = &netmodel;
+    connect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
     setupModelData(rootItem);
+}
+
+void TreeModel::beforeClear()
+{
+    rootItem->removeAllChilds();
+    netmodel = NULL;
 }
 
 TreeModel::~TreeModel()
@@ -84,9 +91,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
 bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!index.isValid())
-        return false;
-    if (role!=Qt::EditRole)
+    if (!index.isValid() || role!=Qt::EditRole || !netmodel)
         return false;
     QVariant v = value;
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
@@ -285,6 +290,8 @@ Returns true if the rows were successfully inserted; otherwise returns false.
 bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
 {
     bool result = false;
+    if (!netmodel)
+        return result;
 //    beginInsertRows(parent, row, row+count-1);
     for (int i=row; i<row+count; ++i)
     {
@@ -338,6 +345,8 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
 bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     bool result = false;
+    if (!netmodel)
+        return result;
     beginRemoveRows(parent, row, row+count-1);
     for (int i=row; i<row+count; ++i)
     {

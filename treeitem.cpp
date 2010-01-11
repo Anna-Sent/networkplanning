@@ -20,8 +20,7 @@ TreeItem::TreeItem(const QList<QVariant> &data, TreeItem *parent) :
 //! [1]
 TreeItem::~TreeItem()
 {
-    qDeleteAll(childItems);
-    childItems.clear();
+    removeAllChilds();
 }
 //! [1]
 
