@@ -9,7 +9,9 @@
 class TreeItem
 {
 public:
-    TreeItem(const QList<QVariant> &data, TreeItem *parent = 0);
+    TreeItem(TreeItem *parent = 0):parentItem(parent),event(NULL),operation(NULL) {}
+    TreeItem(Event *e, TreeItem &parent):parentItem(&parent),event(e),operation(NULL) {}
+    TreeItem(Operation *o, TreeItem &parent):parentItem(&parent),event(NULL),operation(o) {}
     ~TreeItem();
 
     void appendChild(TreeItem *child);
@@ -29,14 +31,14 @@ public:
     TreeItem *child(int row);
     int childCount() const;
     int columnCount() const;
-    QVariant data(int column) const;
+    //QVariant data(int column) const;
     int row() const;
     TreeItem *parent();
 
     Event *getEvent() {return event;}
     Operation *getOperation() {return operation;}
-    void setEvent(Event *e) {if (!operation) event=e;}
-    void setOperation(Operation *o) {if (!event) operation=o;}
+    //void setEvent(Event *e) {if (!operation) event=e;}
+    //void setOperation(Operation *o) {if (!event) operation=o;}
 
 private:
     QList<TreeItem*> childItems;
