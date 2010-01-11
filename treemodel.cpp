@@ -213,11 +213,16 @@ int TreeModel::rowCount(const QModelIndex &parent) const
         return 0;
 
     if (!parent.isValid())
-        parentItem = rootItem;
+        return netmodel->getEvents()->count(); //parentItem = rootItem;
     else
+    {
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
-
-    return parentItem->childCount();
+        if (parentItem->getEvent())
+            return parentItem->getEvent()->getOutOperations().count();
+        else
+            return 0;
+//        return childCount(parentItem);//parentItem->childCount();
+    }
 }
 
 void TreeModel::process(Event *e, TreeItem *parent)
@@ -338,7 +343,7 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
                 Operation *o = e->getOutOperations()[i];
                 if (netmodel->removeOperation(this, o))
                 {
-                    parentItem->child(i)->clear();
+                    //parentItem->child(i)->clear();
                     parentItem->removeChild(i);
                     result = result || true;
                 }
@@ -347,12 +352,12 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
         else
         {
             TreeItem *parentItem = rootItem;
-            if (i<parentItem->childCount())
+            if (i<netmodel->getEvents()->count())//parentItem->childCount())
             {
-                Event *e = parentItem->child(i)->getEvent();
+                Event *e = netmodel->getEvents()->at(i);// parentItem->child(i)->getEvent();
                 if (netmodel->removeEvent(this, e))
                 {
-                    parentItem->child(i)->clear();
+                    //parentItem->child(i)->clear();
                     parentItem->removeChild(i);
                     result = result || true;
                 }

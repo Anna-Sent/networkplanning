@@ -36,7 +36,6 @@ public:
     }
     void fill(QComboBox *, const QModelIndex &) const;
     TreeItem *getRootItem() {return rootItem;}
-
     void setModel(NetModel &);
 private:
     void setupModelData(TreeItem *parent);

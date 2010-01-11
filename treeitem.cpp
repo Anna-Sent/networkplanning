@@ -22,16 +22,22 @@ TreeItem *TreeItem::child(int row)
 {
     return childItems.value(row);
 }
-
+/*
 int TreeItem::childCount() const
 {
-    return childItems.count();
-}
-
+    if (event)
+        return event->getOutOperations().count();
+    else if (operation)
+        return 0;
+    else
+        return ;
+//    return childItems.count();
+}*/
+/*
 int TreeItem::columnCount() const
 {
     return itemData.count();
-}
+}*/
 
 TreeItem *TreeItem::parent()
 {
