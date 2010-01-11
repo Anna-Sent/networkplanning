@@ -24,6 +24,7 @@ TreeModel::TreeModel(NetModel &netmodel, QObject *parent)
 void TreeModel::beforeClear()
 {
     rootItem->removeAllChilds();
+    reset();
     netmodel = NULL;
 }
 
