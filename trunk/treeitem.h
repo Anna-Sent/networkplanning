@@ -19,6 +19,11 @@ public:
         delete child(position);
         childItems.removeAt(position);
     }
+    void removeAllChilds()
+    {
+        qDeleteAll(childItems);
+        childItems.clear();
+    }
     void clear() {event=NULL;operation=NULL;}
 
     TreeItem *child(int row);

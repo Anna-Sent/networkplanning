@@ -44,6 +44,8 @@ private:
 
     TreeItem *rootItem;
     NetModel *netmodel;
+private slots:
+    void beforeClear();
 };
 //! [0]
 

@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QMetaType>
 #include <QPoint>
+#include <QDataStream>
 
 class Operation;
 
@@ -82,6 +83,10 @@ private:
     bool insert(int, Operation*);
     bool insert(int, Event*);
     bool remove(Event*/*, bool deleteOutput = true*/);
+    QDataStream &writeEvent(Event *e, QDataStream &stream);
+    QDataStream &readEvent(Event **e, QDataStream &stream);
+    QDataStream &writeOperation(Operation *o, QDataStream &stream);
+    QDataStream &readOperation(Operation **o, QDataStream &stream);
 public:
     NetModel();
     ~NetModel();
@@ -93,6 +98,9 @@ public:
     void getBeginEndEvents(Event**,Event**);
     Event* getBeginEvent();
     Event* getEndEvent();
+    QDataStream &writeTo(QDataStream &stream);
+    QDataStream &readFrom(QDataStream &stream);
+    void clear();
     // graph editors
     void connect(Event*,Operation*);
     void connect(Operation*,Event*);
@@ -149,6 +157,7 @@ signals:
     void afterEventInsert(QObject *, Event *, int);
     void afterOperationInsert(QObject *, Operation *, int);
     void updated();
+    void beforeClear();
 };
 
 #endif // NETMODEL_H
