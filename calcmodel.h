@@ -18,6 +18,8 @@ public:
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
+
+    void setModel(NetModel&);
 private:
     void clearModelData();
 protected:
@@ -29,6 +31,7 @@ protected:
     virtual int colCount() const {return 0;}
 private slots:
     void update();
+    void beforeUpdate();
 };
 
 #endif // CALCMODEL_H

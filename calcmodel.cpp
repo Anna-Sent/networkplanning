@@ -2,10 +2,26 @@
 
 void CalcModel::setup(NetModel &netmodel)
 {
-    this->netmodel = &netmodel;
     setupHeader();
+    setModel(netmodel);
+}
+
+void CalcModel::setModel(NetModel &netmodel)
+{
+    this->netmodel = &netmodel;
     setupModelData();
     connect(this->netmodel, SIGNAL(updated()), this, SLOT(update()));
+    connect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeUpdate()));
+    reset();
+}
+
+void CalcModel::beforeUpdate()
+{
+    clearModelData();
+    disconnect(this, SLOT(beforeUpdate()));
+    disconnect(this, SLOT(update()));
+    netmodel = NULL;
+    reset();
 }
 
 void CalcModel::update()

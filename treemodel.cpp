@@ -16,16 +16,23 @@ TreeModel::TreeModel(NetModel &netmodel, QObject *parent)
     header.clear();
     header << QString::fromUtf8("Код события") << QString::fromUtf8("Событие") << QString::fromUtf8("Код работы") << QString::fromUtf8("Работа") << QString::fromUtf8("Продолжительность");
     rootItem = new TreeItem();
+    setModel(netmodel);
+}
+
+void TreeModel::setModel(NetModel &netmodel)
+{
     this->netmodel = &netmodel;
     connect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
     setupModelData(rootItem);
+    reset();
 }
 
 void TreeModel::beforeClear()
 {
     rootItem->removeAllChilds();
-    reset();
+    disconnect(this, SLOT(beforeClear()));
     netmodel = NULL;
+    reset();
 }
 
 TreeModel::~TreeModel()
@@ -213,21 +220,12 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     return parentItem->childCount();
 }
 
-void TreeModel::process(Event *e, TreeItem *parent, QSet<int> &set)
+void TreeModel::process(Event *e, TreeItem *parent)
 {
-    set += e->getN();
     TreeItem *item = new TreeItem(e, *parent);
     parent->appendChild(item);
     foreach (Operation *o, e->getOutOperations())
-    {
         process(o, item);
-    }
-    foreach (Operation *o, e->getOutOperations())
-    {
-        Event *next = o->getEndEvent();
-        if (!set.contains(next->getN()))
-            process(next, parent, set);
-    }
 }
 
 void TreeModel::process(Operation *o, TreeItem *parent)
@@ -238,10 +236,8 @@ void TreeModel::process(Operation *o, TreeItem *parent)
 
 void TreeModel::setupModelData(TreeItem *parent)
 {
-    QList<TreeItem*> parents;
-    parents << parent;
-    QSet<int> set;
-    process(netmodel->getBeginEvent(), parent, set);
+    foreach (Event *e, *netmodel->getEvents())
+        process(e, parent);
 }
 
 void TreeModel::fill(QComboBox *cbox, const QModelIndex &index) const

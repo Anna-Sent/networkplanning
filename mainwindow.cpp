@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btnAddOperation,  SIGNAL(clicked()), this, SLOT(addOperation()));
     connect(ui->btnInsertOperation, SIGNAL(clicked()), this, SLOT(insertOperation()));
     connect(ui->btnDeleteOperation, SIGNAL(clicked()), this, SLOT(deleteOperation()));
-    //connect(ui->btnCheck, SIGNAL(clicked()), this, SLOT(check()));
     connect(ui->btnCalc, SIGNAL(clicked()), this, SLOT(calc()));
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(newModel()));
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
@@ -24,13 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
     connect(ui->actionPrint, SIGNAL(triggered()), this, SLOT(print()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(exit()));
-/*    connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
-    connect(ui->treeView, SIGNAL(pressed(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
-    connect(ui->treeView, SIGNAL(activated(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
-    connect(ui->treeView, SIGNAL(collapsed(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
-    connect(ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
-    connect(ui->treeView, SIGNAL(entered(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));
-    connect(ui->treeView, SIGNAL(expanded(QModelIndex)), this, SLOT(treeViewClicked(QModelIndex)));*/
 
     qRegisterMetaType<Event*>("Event*");
     qRegisterMetaType<Operation*>("Operation*");
@@ -60,20 +52,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeView->setAcceptDrops(true);
     ui->treeView->setDropIndicatorShown(true);
     ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
-	Position *pos = new PlanarPosition;
-	pos->position(&netmodel);
-	delete pos;
-	ui->graphView->setModel(&netmodel);
+    Position *pos = new PlanarPosition;
+    pos->position(&netmodel);
+    delete pos;
+    ui->graphView->setModel(&netmodel);
 
     connect(ui->treeView->selectionModel(),
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
             this,
             SLOT(currentChanged(QModelIndex, QModelIndex)));
     dialog = new Dialog(netmodel, this);
+    setFileName("");
 }
 
 void MainWindow::newModel()
 {
+    setFileName("");
     netmodel.clear();
     // clear netmodel and all views
     // create new model?
@@ -81,6 +75,24 @@ void MainWindow::newModel()
 
 void MainWindow::open()
 {
+    newModel();
+    setFileName(QFileDialog::getOpenFileName(this,
+                                            QString::fromUtf8("Открыть модель"),
+                                            "",
+                                            QString::fromUtf8("Сетевые модели (*.mdl)")));
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    QDataStream in(&file);
+    netmodel.readFrom(in);
+    if (in.status()!=QDataStream::Ok)
+        QMessageBox::critical(this, "Ошибка чтения", "При чтении модели произошла ошибка");
+    else
+    {
+        treemodel->setModel(netmodel);
+        dialog->setModel(netmodel);
+        //ui->graphView->setModel(&netmodel);
+    }
     // clear netmodel and all views
     // load netmodel
 }
@@ -89,16 +101,10 @@ void MainWindow::save()
 {
     if (filename=="")
     {
-        //QFileDialog dialog(this,
-          //      QString::fromUtf8("Сохранить модель"),
-            //    "",
-              //  QString::fromUtf8("Сетевые модели (*.mdl)"));
-        //dialog.setFileMode(QFileDialog::AnyFile);
-        //if (dialog.exec())
-            filename = QFileDialog::getSaveFileName(this,
-                QString::fromUtf8("Сохранить модель"),
-                "",
-                QString::fromUtf8("Сетевые модели (*.mdl)"));
+        setFileName(QFileDialog::getSaveFileName(this,
+                                                QString::fromUtf8("Сохранить модель"),
+                                                "",
+                                                QString::fromUtf8("Сетевые модели (*.mdl)")));
     }
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly))
@@ -111,8 +117,8 @@ void MainWindow::save()
 
 void MainWindow::saveAs()
 {
-    // set filename to ""
-    // save
+    setFileName("");
+    save();
 }
 
 void MainWindow::print()
