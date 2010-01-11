@@ -5,7 +5,6 @@
 #include <QVariant>
 #include "netmodel.h"
 
-//! [0]
 class TreeItem
 {
 public:
@@ -47,26 +46,5 @@ private:
     Event *event;
     Operation *operation;
 };
-//! [0]
-/*
-class EventTreeItem : public TreeItem
-{
-    private:
-        Event *event;
-    public:
-        EventTreeItem(Event *e, const QList<QVariant> &data, TreeItem *parent = 0) :
-                TreeItem(data, parent), event(e) { }
-        Event *getEvent() {return event;}
-};
 
-class OperationTreeItem : public TreeItem
-{
-    private:
-        Operation *operation;
-    public:
-        OperationTreeItem(Operation *o, const QList<QVariant> &data, TreeItem *parent = 0) :
-                TreeItem(data, parent), operation(o) { }
-        Operation *getOperation() {return operation;}
-};
-*/
 #endif
