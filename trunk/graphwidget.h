@@ -66,6 +66,7 @@ public slots:
     void EventAdd(QObject *, Event *);
     void EventAdd(QObject *, Event *,int);
     void DeleteEvent(QObject *, Event *);
+    void clearModel();
 protected:
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);

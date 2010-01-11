@@ -76,6 +76,16 @@ void GraphWidget::setModel(NetModel* model)
     connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
     connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
     connect(model, SIGNAL(updated()),this,SLOT(update()));
+    connect(model, SIGNAL(beforeClear()),this,SLOT(clearModel()));
+}
+
+void GraphWidget::clearModel()
+{
+            foreach(QObject* o,children())
+        {
+            delete o;
+        }
+    update();
 }
 
 void GraphWidget::updatePositions()
