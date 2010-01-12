@@ -30,6 +30,7 @@ private:
         filename = fn;
         setWindowTitle(QString::fromUtf8("Сетевая модель ")+filename);
     }
+    void doSave();
 private slots:
     void addEvent();
     void insertEvent();

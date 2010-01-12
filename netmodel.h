@@ -61,11 +61,31 @@ public:
 class Path
 {
 private:
+    double _weight;
+    QString _code;
+    double calcWeight() const;
+    QString calcCode() const;
 public:
     QList<Event*> events;
     Path(QList<Event*> events);
-    QString code() const;
-    double weight() const;
+    QString code() const {return _code;}
+    double weight() const {return _weight;}
+    bool operator==(const Path &p)
+    {
+        if (events.count()==p.events.count())
+        {
+            for (int i=0;i<events.count();++i)
+            {
+                if (events[i]!=p.events[i])
+                    return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+        return true;
+    }
 };
 
 class NetModel : public QObject

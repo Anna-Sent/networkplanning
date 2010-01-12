@@ -31,7 +31,7 @@ protected:
     virtual int colCount() const {return 0;}
 private slots:
     void update();
-    void beforeUpdate();
+    void beforeClear();
 };
 
 #endif // CALCMODEL_H

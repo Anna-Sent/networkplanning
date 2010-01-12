@@ -48,10 +48,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeView->setModel(treemodel);
     ui->treeView->setItemDelegate(new OperationDelegate(2));
     ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui->treeView->setDragEnabled(true);
-    ui->treeView->setAcceptDrops(true);
-    ui->treeView->setDropIndicatorShown(true);
-    ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+    //ui->treeView->setDragEnabled(true);
+    //ui->treeView->setAcceptDrops(true);
+    //ui->treeView->setDropIndicatorShown(true);
+    //ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
     Position *pos = new PlanarPosition;
     pos->position(&netmodel);
     delete pos;
@@ -69,43 +69,39 @@ void MainWindow::newModel()
 {
     setFileName("");
     netmodel.clear();
-    // clear netmodel and all views
-    // create new model?
+    treemodel->setModel(netmodel);
+    dialog->setModel(netmodel);
+    ui->graphView->setModel(&netmodel);
 }
 
 void MainWindow::open()
 {
-    newModel();
-    setFileName(QFileDialog::getOpenFileName(this,
+    QString fn = QFileDialog::getOpenFileName(this,
                                             QString::fromUtf8("Открыть модель"),
                                             "",
-                                            QString::fromUtf8("Сетевые модели (*.mdl)")));
-    QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly))
-        return;
-    QDataStream in(&file);
-    netmodel.readFrom(in);
-    if (in.status()!=QDataStream::Ok)
-        QMessageBox::critical(this, "Ошибка чтения", "При чтении модели произошла ошибка");
-    else
+                                            QString::fromUtf8("Сетевые модели (*.mdl)"));
+    if (fn!=NULL)
     {
-        treemodel->setModel(netmodel);
-        dialog->setModel(netmodel);
-        ui->graphView->setModel(&netmodel);
+        setFileName(fn);
+        netmodel.clear(); // clear netmodel and all its views connected to it
+        QFile file(filename);
+        if (!file.open(QIODevice::ReadOnly))
+            return;
+        QDataStream in(&file);
+        netmodel.readFrom(in);
+        if (in.status()!=QDataStream::Ok)
+            QMessageBox::critical(this, "Ошибка чтения", "При чтении модели произошла ошибка");
+        else
+        {
+            treemodel->setModel(netmodel);
+            dialog->setModel(netmodel);
+            ui->graphView->setModel(&netmodel);
+        }
     }
-    // clear netmodel and all views
-    // load netmodel
 }
 
-void MainWindow::save()
+void MainWindow::doSave()
 {
-    if (filename=="")
-    {
-        setFileName(QFileDialog::getSaveFileName(this,
-                                                QString::fromUtf8("Сохранить модель"),
-                                                "",
-                                                QString::fromUtf8("Сетевые модели *.mdl (*.mdl)")));
-    }
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly))
         return;
@@ -115,10 +111,33 @@ void MainWindow::save()
         QMessageBox::critical(this, "Ошибка записи", "При записи модели произошла ошибка");
 }
 
+void MainWindow::save()
+{
+    if (filename=="")
+    {
+        QString fn = QFileDialog::getSaveFileName(this,
+                                                QString::fromUtf8("Сохранить модель"),
+                                                "",
+                                                QString::fromUtf8("Сетевые модели (*.mdl)"));
+        if (fn!=NULL)
+            setFileName(fn);
+        else
+            return ;
+    }
+    doSave();
+}
+
 void MainWindow::saveAs()
 {
-    setFileName("");
-    save();
+    QString fn = QFileDialog::getSaveFileName(this,
+                                              QString::fromUtf8("Сохранить модель"),
+                                              "",
+                                              QString::fromUtf8("Сетевые модели (*.mdl)"));
+    if (fn!=NULL)
+    {
+        setFileName(fn);
+        doSave();
+    }
 }
 
 void MainWindow::print()

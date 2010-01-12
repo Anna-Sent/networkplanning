@@ -15,10 +15,10 @@ void CalcModel::setModel(NetModel &netmodel)
     reset();
 }
 
-void CalcModel::beforeUpdate()
+void CalcModel::beforeClear()
 {
     clearModelData();
-    disconnect(this, SLOT(beforeUpdate()));
+    disconnect(this, SLOT(beforeClear()));
     disconnect(this, SLOT(update()));
     netmodel = NULL;
     reset();
