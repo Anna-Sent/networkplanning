@@ -32,7 +32,7 @@ void Dialog::setModel(NetModel &netmodel)
 
 void Dialog::beforeClear()
 {
-    disconnect(this, SLOT(updated()));
+    disconnect(this, SLOT(setupLabelText()));
     disconnect(this, SLOT(beforeClear()));
     netmodel = NULL;
     ui->label->setText(QString::fromUtf8("Сетевая модель не задана"));

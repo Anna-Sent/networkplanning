@@ -80,14 +80,14 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return Qt::ItemIsDropEnabled;
+        return 0;//Qt::ItemIsDropEnabled;
     if ((index.column()==0||index.column()==1)
         && static_cast<TreeItem*>(index.internalPointer())->getEvent())
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled |
+        return //Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled |
                 Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
     else if ((index.column()==2||index.column()==3||index.column()==4)
         && static_cast<TreeItem*>(index.internalPointer())->getOperation())
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled |
+        return //Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled |
                 Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable;
     return 0;
 }
@@ -211,18 +211,22 @@ int TreeModel::rowCount(const QModelIndex &parent) const
     TreeItem *parentItem;
     if (parent.column() > 0)
         return 0;
-
-    if (!parent.isValid())
-        return netmodel->getEvents()->count(); //parentItem = rootItem;
-    else
+    if (netmodel)
     {
-        parentItem = static_cast<TreeItem*>(parent.internalPointer());
-        if (parentItem->getEvent())
-            return parentItem->getEvent()->getOutOperations().count();
+        if (!parent.isValid())
+            return netmodel->getEvents()->count(); //parentItem = rootItem;
         else
-            return 0;
-//        return childCount(parentItem);//parentItem->childCount();
+        {
+            parentItem = static_cast<TreeItem*>(parent.internalPointer());
+            if (parentItem->getEvent())
+                return parentItem->getEvent()->getOutOperations().count();
+            else
+                return 0;
+            //        return childCount(parentItem);//parentItem->childCount();
+        }
     }
+    else
+        return 0;
 }
 
 void TreeModel::process(Event *e, TreeItem *parent)

@@ -94,9 +94,11 @@ QString Operation::getCode()
 Path::Path(QList<Event*> events)
 {
     this->events = events;
+    _weight = calcWeight();
+    _code = calcCode();
 }
 
-QString Path::code() const
+QString Path::calcCode() const
 {
     QString s;
     int count = events.count();
@@ -112,7 +114,7 @@ QString Path::code() const
     return s;
 }
 
-double Path::weight() const
+double Path::calcWeight() const
 {
     double weight=0;
     for (int i=0;i<events.count()-1;++i)
@@ -489,16 +491,22 @@ QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
     {
         getPathes(begin,end,pathes);
         double maxweight=0;
-        for (int i=0;i<pathes->count();++i)
+        foreach (Path p, *pathes)
         {
-            double cur = (*pathes)[i].weight();
-            if (cur-maxweight>1e-9)
+            double cur = p.weight();
+            if (cur>maxweight)
                 maxweight=cur;
         }
-        for (int i=0;i<pathes->count();++i)
+        QList<Path> copy = *pathes;
+        foreach (Path p, copy)
         {
-            if (abs((*pathes)[i].weight()-maxweight)>1e-9)
-                pathes->removeAt(i);
+            if (!qFuzzyCompare(p.weight(),maxweight))
+            {
+                pathes->removeAll(p);
+                qDebug() << p.weight() << " and " << maxweight << " are not eq";
+            }
+            else
+                qDebug() << p.weight() << " and " << maxweight << " are eq";
         }
     }
     return pathes;
@@ -853,7 +861,9 @@ QDataStream &NetModel::readFrom(QDataStream &stream)
         {
             Event *e;
             readEvent(&e, stream);
-            if (e && add(e));
+            if (e && add(e))
+            {
+            }
         }
         for (int i = 0; i < operationscount; ++i)
         {
