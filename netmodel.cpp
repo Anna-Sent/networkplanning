@@ -297,6 +297,7 @@ void NetModel::connect(Event* event, Operation* operation)
         add(operation);
         if (event) event->addOutOperation(operation);
         operation->setBeginEvent(event);
+        emit updated();
     }
 }
 
@@ -308,6 +309,7 @@ void NetModel::connect(Operation* operation, Event* event)
         add(operation);
         if (event) event->addInOperation(operation);
         operation->setEndEvent(event);
+        emit updated();
     }
 }
 
@@ -321,6 +323,7 @@ void NetModel::disconnect(Event* event,Operation* operation)
     }
     if (operation && operation->getBeginEvent()==event)
         operation->setBeginEvent(NULL);
+    emit updated();
 }
 
 void NetModel::disconnect(Operation* operation,Event* event)
@@ -333,6 +336,7 @@ void NetModel::disconnect(Operation* operation,Event* event)
     }
     if (operation && operation->getEndEvent()==event)
         operation->setEndEvent(NULL);
+    emit updated();
 }
 
 void NetModel::connect(Event *e1, Operation *o, Event *e2)
@@ -754,8 +758,8 @@ bool NetModel::removeOperation(QObject *view, Operation *o)
     emit beforeOperationDelete(view, o);
     if (remove(o))
     {
-        return true;
         emit updated();
+        return true;
     }
     else
         return false;
