@@ -6,6 +6,7 @@
 #include "fullpathesmodel.h"
 #include "calceventmodel.h"
 #include "calcoperationmodel.h"
+#include <QTextCursor>
 
 namespace Ui
 {
@@ -25,9 +26,14 @@ private:
     CalcEventModel *cemodel;
     CalcOperationModel *comodel;
     NetModel *netmodel;
+    void fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data);
+    void fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
+    void fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
+    void displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data);
 private slots:
     void setupLabelText();
     void beforeClear();
+    void display();
 };
 
 #endif // DIALOG_H
