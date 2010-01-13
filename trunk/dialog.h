@@ -3,9 +3,9 @@
 
 #include <QDialog>
 #include "netmodel.h"
-#include "fullpathesmodel.h"
-#include "calceventmodel.h"
-#include "calcoperationmodel.h"
+//#include "fullpathesmodel.h"
+//#include "calceventmodel.h"
+//#include "calcoperationmodel.h"
 #include <QTextCursor>
 
 namespace Ui
@@ -22,16 +22,15 @@ public:
     void setModel(NetModel &);
 private:
     Ui::Dialog *ui;
-    FullPathesModel *fpmodel;
-    CalcEventModel *cemodel;
-    CalcOperationModel *comodel;
     NetModel *netmodel;
     void fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data);
+    void _clearModel();
+    void _setModel(NetModel &);
 private slots:
-    void setupLabelText();
+    QString getLabelText();
     void beforeClear();
     void display();
 };

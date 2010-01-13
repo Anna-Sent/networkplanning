@@ -14,44 +14,7 @@
    <string>Расчет сетевого графика</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
-    <widget class="QTableView" name="tableView1"/>
-   </item>
-   <item row="3" column="0">
-    <widget class="QTableView" name="tableView3"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QTableView" name="tableView2"/>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label3">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="label1">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="label2">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
     <widget class="QTextBrowser" name="textBrowser"/>
    </item>
   </layout>
