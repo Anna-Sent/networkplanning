@@ -2,92 +2,69 @@
 #include "ui_dialog.h"
 #include <QTextFrame>
 #include <QTextTableCell>
-#include <QDate>
 
 Dialog::Dialog(NetModel &netmodel, QWidget *parent)
-    : QDialog(parent), ui(new Ui::Dialog), netmodel(&netmodel)
+    : QDialog(parent), ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    fpmodel = new FullPathesModel(netmodel);
-    cemodel = new CalcEventModel(netmodel);
-    comodel = new CalcOperationModel(netmodel);
-    ui->label1->setText(QString::fromUtf8("Расчет полных путей"));
-    ui->tableView1->setModel(fpmodel);
-    ui->label2->setText(QString::fromUtf8("Расчет событий"));
-    ui->tableView2->setModel(cemodel);
-    ui->label3->setText(QString::fromUtf8("Расчет работ"));
-    ui->tableView3->setModel(comodel);
-    setupLabelText();
+    _setModel(netmodel);
     display();
-    connect(&netmodel, SIGNAL(updated()), this, SLOT(setupLabelText()));
-    connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
-    connect(&netmodel, SIGNAL(updated()), this, SLOT(display()));
 }
 
 void Dialog::setModel(NetModel &netmodel)
 {
-    fpmodel->setModel(netmodel);
-    cemodel->setModel(netmodel);
-    comodel->setModel(netmodel);
-    this->netmodel = &netmodel;
-    setupLabelText();
+    if (this->netmodel)
+        _clearModel();
+    _setModel(netmodel);
     display();
-    connect(&netmodel, SIGNAL(updated()), this, SLOT(setupLabelText()));
-    connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
-    connect(&netmodel, SIGNAL(updated()), this, SLOT(display()));
 }
 
 void Dialog::beforeClear()
 {
-    disconnect(this, SLOT(setupLabelText()));
+    _clearModel();
+    display();
+}
+
+void Dialog::_clearModel()
+{
     disconnect(this, SLOT(display()));
     disconnect(this, SLOT(beforeClear()));
     netmodel = NULL;
-    ui->label->setText(QString::fromUtf8("Сетевая модель не задана"));
 }
 
-void Dialog::setupLabelText()
+void Dialog::_setModel(NetModel &netmodel)
 {
-    QString s = netmodel->print();
-    if (netmodel->hasLoops())
-        s += "Имеются циклы\n";
-    if (netmodel->hasMultiEdges())
-        s += "Имеются работы с одинаковыми кодами\n";
-    if (!netmodel->hasOneBeginEvent())
-        s += "Исходное событие не определено\n";
-    if (!netmodel->hasOneEndEvent())
-        s += "Завершающее событие не определено\n";
-    if (netmodel->hasUnconnectedEvents())
-        s += "Некоторые события не соединены с работами\n";
-    if (netmodel->hasUnconnectedOperations())
-        s += "Некоторые работы не соединены с событиями\n";
-    if (netmodel->isCorrect())
+    this->netmodel = &netmodel;
+    connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+    connect(&netmodel, SIGNAL(updated()), this, SLOT(display()));
+}
+
+QString Dialog::getLabelText()
+{
+    QString s;
+    if (netmodel)
     {
-        s += "Сетевая модель корректна\n";
-        QList<Path> *pathes = netmodel->getFullPathes();
-        s += "Полные пути:\n";
-        int i=0;
-        foreach(Path path, *pathes)
-        {
-            s += QString::number(++i) + ": ";
-            s += path.code() + "\n";
-        }
-        delete pathes;
-        QList<Path> *criticPathes = netmodel->getCriticalPathes();
-        s += "Критические пути\n";
-        i=0;
-        foreach(Path path, *criticPathes)
-        {
-            s += QString::number(++i) + ": ";
-            s += path.code() + "\n";
-        }
-        delete criticPathes;
+        s = netmodel->print();
+        if (netmodel->hasLoops())
+            s += "Имеются циклы\n";
+        if (netmodel->hasMultiEdges())
+            s += "Имеются работы с одинаковыми кодами\n";
+        if (!netmodel->hasOneBeginEvent())
+            s += "Исходное событие не определено\n";
+        if (!netmodel->hasOneEndEvent())
+            s += "Завершающее событие не определено\n";
+        if (netmodel->hasUnconnectedEvents())
+            s += "Некоторые события не соединены с работами\n";
+        if (netmodel->hasUnconnectedOperations())
+            s += "Некоторые работы не соединены с событиями\n";
+        if (netmodel->isCorrect())
+            s += "Сетевая модель корректна\n";
+        else
+            s += "Сетевая модель некорректна\n";
     }
     else
-        s += "Сетевая модель некорректна";
-    //QString caption = "Сетевая модель";
-    //QMessageBox::information(this, QString::fromUtf8(caption.toAscii()), QString::fromUtf8(s.toAscii()));
-    ui->label->setText(QString::fromUtf8(s.toAscii()));
+        s = "Сетевая модель не задана\n";
+    return QString::fromUtf8(s.toAscii());
 }
 
 void Dialog::display()
@@ -95,20 +72,21 @@ void Dialog::display()
     ui->textBrowser->clear();
     QTextCursor cursor = ui->textBrowser->textCursor();
     QTextFrame *topFrame = cursor.currentFrame();
-    //cursor.setPosition(cursor.atStart());
     cursor.beginEditBlock();
+    cursor.insertText(getLabelText());
+    cursor.setPosition(topFrame->lastPosition());
     QList<QVariant> header;
     QList< QList<QVariant> > data;
     fillFullPathesData(header, data);
-    cursor.insertText("1");
+    cursor.insertText(QString::fromUtf8("Расчет полных путей"));
     displayTable(cursor, header, data);
     cursor.setPosition(topFrame->lastPosition());
     fillEventsData(header, data);
-    cursor.insertText("2");
+    cursor.insertText(QString::fromUtf8("Расчет событий"));
     displayTable(cursor, header, data);
     cursor.setPosition(topFrame->lastPosition());
     fillOperationsData(header, data);
-    cursor.insertText("3");
+    cursor.insertText(QString::fromUtf8("Расчет работ"));
     displayTable(cursor, header, data);
     cursor.setPosition(topFrame->lastPosition());
     cursor.endEditBlock();
@@ -222,7 +200,4 @@ void Dialog::displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< Q
 Dialog::~Dialog()
 {
     delete ui;
-    delete fpmodel;
-    delete cemodel;
-    delete comodel;
 }
