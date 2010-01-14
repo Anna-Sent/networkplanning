@@ -436,6 +436,47 @@ bool NetModel::isCorrect()
             && !hasUnconnectedEvents() && !hasUnconnectedOperations());
 }
 
+bool NetModel::isCorrect(QString &s)
+{
+    s = "";
+    bool isCorrect = true;
+    if (hasLoops())
+    {
+        s += "Имеются циклы\n";
+        isCorrect = false;
+    }
+    if (hasMultiEdges())
+    {
+        s += "Имеются работы с одинаковыми кодами\n";
+        isCorrect = false;
+    }
+    if (!hasOneBeginEvent())
+    {
+        s += "Исходное событие не определено\n";
+        isCorrect = false;
+    }
+    if (!hasOneEndEvent())
+    {
+        s += "Завершающее событие не определено\n";
+        isCorrect = false;
+    }
+    if (hasUnconnectedEvents())
+    {
+        s += "Некоторые события не соединены с работами\n";
+        isCorrect = false;
+    }
+    if (hasUnconnectedOperations())
+    {
+        s += "Некоторые работы не соединены с событиями\n";
+        isCorrect = false;
+    }
+    if (!isCorrect)
+    {
+        s += "Сетевая модель некорректна\n";
+    }
+    return isCorrect;
+}
+
 QString NetModel::print()
 {
     QString s;

@@ -142,6 +142,16 @@ void MainWindow::saveAs()
 
 void MainWindow::print()
 {
+#ifndef QT_NO_PRINTER
+    QPrinter printer;
+    QPrintDialog *printDialog = new QPrintDialog(&printer, this);
+    printDialog->setWindowTitle(QString::fromUtf8("Печать сетевой модели"));
+    if (dialog->getTextBrowser()->textCursor().hasSelection())
+        printDialog->addEnabledOption(QAbstractPrintDialog::PrintSelection);
+    if (printDialog->exec() != QDialog::Accepted)
+        return;
+    dialog->getTextBrowser()->print(&printer);
+#endif
 }
 
 void MainWindow::exit()
