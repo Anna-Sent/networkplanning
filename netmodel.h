@@ -135,6 +135,7 @@ public:
     bool hasUnconnectedEvents();
     bool hasUnconnectedOperations();
     bool isCorrect();
+    bool isCorrect(QString &);
     // getters
     QList<Event*> *getEvents() {return &events;}
     QList<Operation*> *getOperations() {return &operations;}

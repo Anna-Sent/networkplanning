@@ -7,6 +7,7 @@
 //#include "calceventmodel.h"
 //#include "calcoperationmodel.h"
 #include <QTextCursor>
+#include "ui_dialog.h"
 
 namespace Ui
 {
@@ -20,6 +21,7 @@ public:
     Dialog(NetModel &, QWidget *parent = 0);
     ~Dialog();
     void setModel(NetModel &);
+    QTextBrowser *getTextBrowser() {return ui->textBrowser;}
 private:
     Ui::Dialog *ui;
     NetModel *netmodel;

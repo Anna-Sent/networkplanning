@@ -1,5 +1,4 @@
 #include "dialog.h"
-#include "ui_dialog.h"
 #include <QTextFrame>
 #include <QTextTableCell>
 
@@ -57,9 +56,7 @@ QString Dialog::getLabelText()
             s += "Некоторые события не соединены с работами\n";
         if (netmodel->hasUnconnectedOperations())
             s += "Некоторые работы не соединены с событиями\n";
-        if (netmodel->isCorrect())
-            s += "Сетевая модель корректна\n";
-        else
+        if (!netmodel->isCorrect())
             s += "Сетевая модель некорректна\n";
     }
     else
@@ -72,60 +69,79 @@ void Dialog::display()
     ui->textBrowser->clear();
     QTextCursor cursor = ui->textBrowser->textCursor();
     QTextFrame *topFrame = cursor.currentFrame();
+    QTextCharFormat format = cursor.charFormat();
+    format.setFontPointSize(12);
+    format.setFontWeight(QFont::Bold);
+    format.setForeground(Qt::black);
+    QTextCharFormat highlightedFormat = format;
+    highlightedFormat.setForeground(Qt::red);
+    QString error;
     cursor.beginEditBlock();
-    cursor.insertText(getLabelText());
-    cursor.setPosition(topFrame->lastPosition());
-    QList<QVariant> header;
-    QList< QList<QVariant> > data;
-    fillFullPathesData(header, data);
-    cursor.insertText(QString::fromUtf8("Расчет полных путей"));
-    displayTable(cursor, header, data);
-    cursor.setPosition(topFrame->lastPosition());
-    fillEventsData(header, data);
-    cursor.insertText(QString::fromUtf8("Расчет событий"));
-    displayTable(cursor, header, data);
-    cursor.setPosition(topFrame->lastPosition());
-    fillOperationsData(header, data);
-    cursor.insertText(QString::fromUtf8("Расчет работ"));
-    displayTable(cursor, header, data);
-    cursor.setPosition(topFrame->lastPosition());
+    if (!netmodel)
+    {
+        cursor.insertText(QString::fromUtf8("Сетевая модель не задана\n"), highlightedFormat);
+    }
+    else if (!netmodel->isCorrect(error))
+    {
+        cursor.insertText(QString::fromUtf8(error.toAscii()), highlightedFormat);
+    }
+    else
+    {
+        QList<QVariant> header;
+        QList< QList<QVariant> > data;
+
+        fillFullPathesData(header, data);
+        cursor.insertText(QString::fromUtf8("Расчет полных путей"), format);
+        displayTable(cursor, header, data);
+
+        cursor.setPosition(topFrame->lastPosition());
+
+        fillEventsData(header, data);
+        cursor.insertText(QString::fromUtf8("Расчет событий"), format);
+        displayTable(cursor, header, data);
+
+        cursor.setPosition(topFrame->lastPosition());
+
+        fillOperationsData(header, data);
+        cursor.insertText(QString::fromUtf8("Расчет работ"), format);
+        displayTable(cursor, header, data);
+
+        cursor.setPosition(topFrame->lastPosition());
+    }
     cursor.endEditBlock();
 }
 
+/*Before call this function check the netmodel is not null and is correct.*/
 void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data)
 {
     header.clear();
     header << "L" << "t(L)" << "R(L)";
     data.clear();
-    if (netmodel && netmodel->isCorrect())
+    QList<Path> *pathes = netmodel->getFullPathes();
+    foreach (Path p, *pathes)
     {
-        QList<Path> *pathes = netmodel->getFullPathes();
-        foreach (Path p, *pathes)
-        {
-            QList<QVariant> row;
-            row << p.code() << p.weight() << netmodel->getReserveTime(p);
-            data << row;
-        }
-        delete pathes;
+        QList<QVariant> row;
+        row << p.code() << p.weight() << netmodel->getReserveTime(p);
+        data << row;
     }
+    delete pathes;
 }
 
+/*Before call this function check the netmodel is not null and is correct.*/
 void Dialog::fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &data)
 {
     header.clear();
     header << "i" << QString::fromUtf8("t р.(i)") << QString::fromUtf8("t п.(i)") << "R(i)";
     data.clear();
-    if (netmodel && netmodel->isCorrect())
+    foreach (Event *e, *netmodel->getEvents())
     {
-        foreach (Event *e, *netmodel->getEvents())
-        {
-            QList<QVariant> row;
-            row << e->getN() << netmodel->getEarlyEndTime(e) << netmodel->getLaterEndTime(e) << netmodel->getReserveTime(e);
-            data << row;
-        }
+        QList<QVariant> row;
+        row << e->getN() << netmodel->getEarlyEndTime(e) << netmodel->getLaterEndTime(e) << netmodel->getReserveTime(e);
+        data << row;
     }
 }
 
+/*Before call this function check the netmodel is not null and is correct.*/
 void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> > &data)
 {
     header.clear();
@@ -134,16 +150,13 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
             << QString::fromUtf8("t п.о.(i-j)") << QString::fromUtf8("t п.(i-j)")
             << QString::fromUtf8("t с.(i-j)");
     data.clear();
-    if (netmodel && netmodel->isCorrect())
+    foreach (Operation *o, *netmodel->getOperations())
     {
-        foreach (Operation *o, *netmodel->getOperations())
-        {
-            QList<QVariant> row;
-            row << o->getCode() << o->getWaitTime() << netmodel->getEarlyStartTime(o) << netmodel->getLaterStartTime(o)
-                    << netmodel->getEarlyEndTime(o) << netmodel->getLaterEndTime(o) << netmodel->getFullReserveTime(o)
-                    << netmodel->getFreeReserveTime(o);
-            data << row;
-        }
+        QList<QVariant> row;
+        row << o->getCode() << o->getWaitTime() << netmodel->getEarlyStartTime(o) << netmodel->getLaterStartTime(o)
+                << netmodel->getEarlyEndTime(o) << netmodel->getLaterEndTime(o) << netmodel->getFullReserveTime(o)
+                << netmodel->getFreeReserveTime(o);
+        data << row;
     }
 }
 
@@ -153,30 +166,20 @@ void Dialog::displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< Q
     if (colcount<1)
         return ;
     foreach (QList<QVariant> row, data)
-        if (row.count()!=colcount)
+        if (row.count()>colcount)
             return ;
     QTextTableFormat tableFormat;
     tableFormat.setAlignment(Qt::AlignHCenter);
     tableFormat.setBackground(QColor("#e0e0e0"));
-    tableFormat.setCellPadding(2);
-    tableFormat.setCellSpacing(4);
-
-    QVector<QTextLength> constraints;
-    for (int i=0; i<colcount; ++i)
-        constraints.append(QTextLength(QTextLength::PercentageLength, 14));
-    tableFormat.setColumnWidthConstraints(constraints);
-
+    tableFormat.setCellPadding(4);
+    tableFormat.setCellSpacing(2);
     QTextTable *table = cursor.insertTable(1, colcount, tableFormat);
-
     QTextCharFormat format = cursor.charFormat();
-    format.setFontPointSize(12);//fontSize);
-
+    format.setFontPointSize(12);
+    format.setForeground(Qt::black);
+    format.setFontWeight(QFont::Normal);
     QTextCharFormat boldFormat = format;
     boldFormat.setFontWeight(QFont::Bold);
-
-    QTextCharFormat highlightedFormat = boldFormat;
-    highlightedFormat.setBackground(Qt::yellow);
-
     for (int i = 0; i < colcount; ++i)
     {
         QTextTableCell cell = table->cellAt(0, i);
