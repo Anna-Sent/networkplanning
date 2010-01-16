@@ -14,7 +14,10 @@ HEADERS = treeitem.h \
     calceventmodel.h \
     calcoperationmodel.h \
     calcmodel.h \
-    arrowpointwidget.h
+    arrowpointwidget.h \
+    diagramtextitem.h \
+    diagramitem.h \
+    arrow.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -31,7 +34,10 @@ SOURCES = treeitem.cpp \
     calceventmodel.cpp \
     calcoperationmodel.cpp \
     calcmodel.cpp \
-    arrowpointwidget.cpp
+    arrowpointwidget.cpp \
+    diagramtextitem.cpp \
+    diagramitem.cpp \
+    arrow.cpp
 CONFIG += qt
 
 # install
