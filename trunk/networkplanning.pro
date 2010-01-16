@@ -17,7 +17,8 @@ HEADERS = treeitem.h \
     arrowpointwidget.h \
     diagramtextitem.h \
     diagramitem.h \
-    arrow.h
+    arrow.h \
+    diagramscene.h
 RESOURCES = 
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -37,7 +38,8 @@ SOURCES = treeitem.cpp \
     arrowpointwidget.cpp \
     diagramtextitem.cpp \
     diagramitem.cpp \
-    arrow.cpp
+    arrow.cpp \
+    diagramscene.cpp
 CONFIG += qt
 
 # install
