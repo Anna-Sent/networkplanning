@@ -95,6 +95,7 @@ public slots:
     void ArrowDel(QObject *o, Operation* op);
     void OperationRedirect(QObject *o, Operation **op,Event* ev);
     void NChanged(QObject *o, Event *ev, int id);
+    void deleteItem();
 
 signals:
     void itemInserted(DiagramItem *item);

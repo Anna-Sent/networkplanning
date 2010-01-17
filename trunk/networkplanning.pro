@@ -19,7 +19,7 @@ HEADERS = treeitem.h \
     diagramitem.h \
     arrow.h \
     diagramscene.h
-RESOURCES = 
+RESOURCES = networkplanning.qrc
 SOURCES = treeitem.cpp \
     treemodel.cpp \
     main.cpp \
