@@ -31,8 +31,7 @@
        </widget>
       </item>
       <item>
-	      <widget class="QGraphicsView" name="graphView">
-	      </widget>
+       <widget class="QGraphicsView" name="graphView"/>
       </item>
      </layout>
     </item>
@@ -173,13 +172,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>GraphWidget</class>
-   <extends>QWidget</extends>
-   <header>graphwidget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

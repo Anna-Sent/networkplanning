@@ -88,8 +88,14 @@ QRectF Arrow::boundingRect() const
 //! [2]
 QPainterPath Arrow::shape() const
 {
+    QPen p = pen();
+    QPen op = pen();
+    p.setWidth(10);
+    QGraphicsLineItem * me = const_cast<Arrow *>(this);
+    me->setPen(p);
     QPainterPath path = QGraphicsLineItem::shape();
     path.addPolygon(arrowHead);
+    me->setPen(op);
     return path;
 }
 //! [2]
@@ -114,6 +120,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     QPen myPen = pen();
     myPen.setColor(myColor);
     qreal arrowSize = 20;
+    if (isSelected()) myPen.setWidth(myPen.width()*2);
     painter->setPen(myPen);
     painter->setBrush(myColor);
 //! [4] //! [5]
@@ -151,13 +158,13 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 //! [6] //! [7]
         painter->drawLine(line());
         painter->drawPolygon(arrowHead);
-        if (isSelected()) {
+        /*if (isSelected()) {
             painter->setPen(QPen(myColor, 1, Qt::DashLine));
         QLineF myLine = line();
-        myLine.translate(0, 4.0);
+        myLine.translate(4.0, 4.0);
         painter->drawLine(myLine);
-        myLine.translate(0,-8.0);
+        myLine.translate(-8.0,-8.0);
         painter->drawLine(myLine);
-    }
+    }*/
 }
 //! [7]

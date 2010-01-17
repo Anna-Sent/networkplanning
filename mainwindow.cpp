@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    createToolbar();
 
     connect(ui->btnAddEvent, SIGNAL(clicked()), this, SLOT(addEvent()));
     connect(ui->btnInsertEvent, SIGNAL(clicked()), this, SLOT(insertEvent()));
@@ -66,7 +67,14 @@ MainWindow::MainWindow(QWidget *parent)
             this,
             SLOT(currentChanged(QModelIndex, QModelIndex)));*/
     dialog = new Dialog(netmodel, this);
+
     setFileName("");
+}
+
+void MainWindow::createToolbar()
+{
+    actions=addToolBar("Actions");
+
 }
 
 void MainWindow::newModel()
