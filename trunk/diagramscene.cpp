@@ -112,7 +112,7 @@ void DiagramScene::setModel(NetModel* model)
     }
 
     connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
-    connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
+    connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(NChanged(QObject*,Event*,int)));
     connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
     connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
     connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
@@ -427,3 +427,10 @@ bool DiagramScene::isItemChange(int type)
     return false;
 }
 //! [14]
+void DiagramScene::NChanged(QObject *o, Event *ev, int id)
+{
+    int idx = _model->getEvents()->indexOf(ev);
+    DiagramItem *di = devents.at(idx);
+    assert(di->wrapsEvent(ev));
+    di->updateText();
+}

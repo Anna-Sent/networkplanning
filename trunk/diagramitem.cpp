@@ -175,3 +175,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change,
     return value;
 }
 //! [6]
+void DiagramItem::updateText()
+{
+     text->setPlainText(QString::number(_event->getN()));
+}
