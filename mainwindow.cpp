@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    createToolbar();
 
     connect(ui->btnAddEvent, SIGNAL(clicked()), this, SLOT(addEvent()));
     connect(ui->btnInsertEvent, SIGNAL(clicked()), this, SLOT(insertEvent()));
@@ -60,6 +59,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene=new DiagramScene(0);
     ui->graphView->setScene(scene);
     scene->setModel(&netmodel);
+    connect(scene, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(itemInserted(DiagramItem*)));
     /*ui->graphView->setModel(&netmodel);
 
     connect(ui->treeView->selectionModel(),
@@ -69,12 +69,107 @@ MainWindow::MainWindow(QWidget *parent)
     dialog = new Dialog(netmodel, this);
 
     setFileName("");
+    createToolbar();
 }
+
+void MainWindow::deleteItem()
+{
+    scene->deleteItem();
+}
+
+
+void MainWindow::sceneScaleChanged(const QString &scale)
+{
+    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
+    QMatrix oldMatrix = ui->graphView->matrix();
+    ui->graphView->resetMatrix();
+    ui->graphView->translate(oldMatrix.dx(), oldMatrix.dy());
+    ui->graphView->scale(newScale, newScale);
+}
+
+QWidget* MainWindow::createBtnWidget(const QString& text, DiagramItem::DiagramType type)
+{
+    QToolButton *itemButton = new QToolButton;
+    DiagramItem item(type ,0,0,0,0);
+    QIcon icon(item.image());
+
+    buttonGroup->addButton(itemButton, type);
+    itemButton->setIcon(icon);
+    itemButton->setIconSize(QSize(50,50));
+    itemButton->setCheckable(true);
+    return itemButton;
+}
+
+void MainWindow::buttonGroupClicked(int id)
+{
+    QList<QAbstractButton *> buttons = buttonGroup->buttons();
+    foreach (QAbstractButton *button, buttons) {
+    if (buttonGroup->button(id) != button)
+        button->setChecked(false);
+    }
+        scene->setItemType(DiagramItem::DiagramType(id));
+        scene->setMode(DiagramScene::InsertItem);
+
+}
+
+void MainWindow::itemInserted(DiagramItem *item)
+{
+    pointerTypeGroup->button(int(DiagramScene::MoveItem))->setChecked(true);
+    scene->setMode(DiagramScene::Mode(pointerTypeGroup->checkedId()));
+    QToolButton *tb = static_cast<QToolButton*>(buttonGroup->button(int(item->diagramType())));
+    tb->setChecked(false);
+    tb->update();
+}
+
 
 void MainWindow::createToolbar()
 {
     actions=addToolBar("Actions");
+    deleteAction = new QAction(QIcon(":/images/delete.png"),
+                               tr("&Delete"), this);
+    deleteAction->setShortcut(tr("Delete"));
+    deleteAction->setStatusTip(tr("Delete item from diagram"));
+    connect(deleteAction, SIGNAL(triggered()),
+        this, SLOT(deleteItem()));
+    actions->addAction(deleteAction);
+    buttonGroup = new QButtonGroup;
+    connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
+    actions->addWidget(createBtnWidget(tr(""), DiagramItem::Circle));
+    buttonGroup->setExclusive(false);
 
+    QToolButton *pointerButton = new QToolButton;
+    pointerButton->setCheckable(true);
+    pointerButton->setChecked(true);
+    pointerButton->setIcon(QIcon(":/images/pointer.png"));
+    QToolButton *linePointerButton = new QToolButton;
+    linePointerButton->setCheckable(true);
+    linePointerButton->setIcon(QIcon(":/images/linepointer.png"));
+
+    pointerTypeGroup = new QButtonGroup;
+    pointerTypeGroup->addButton(pointerButton, int(DiagramScene::MoveItem));
+    pointerTypeGroup->addButton(linePointerButton,
+                                int(DiagramScene::InsertLine));
+    connect(pointerTypeGroup, SIGNAL(buttonClicked(int)),
+            this, SLOT(pointerGroupClicked(int)));
+
+    sceneScaleCombo = new QComboBox;
+    QStringList scales;
+    scales << tr("50%") << tr("75%") << tr("100%") << tr("125%") << tr("150%");
+    sceneScaleCombo->addItems(scales);
+    sceneScaleCombo->setCurrentIndex(2);
+    connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)),
+            this, SLOT(sceneScaleChanged(const QString &)));
+
+    pointerToolbar = addToolBar(tr("Pointer type"));
+    pointerToolbar->addWidget(pointerButton);
+    pointerToolbar->addWidget(linePointerButton);
+    pointerToolbar->addWidget(sceneScaleCombo);
+
+}
+
+void MainWindow::pointerGroupClicked(int)
+{
+    scene->setMode(DiagramScene::Mode(pointerTypeGroup->checkedId()));
 }
 
 void MainWindow::newModel()

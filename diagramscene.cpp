@@ -74,6 +74,7 @@ void DiagramScene::clearModel()
     qDeleteAll(devents);
     darrows.clear();
     devents.clear();
+    disconnect(_model, 0, this, 0);
 }
 
 void DiagramScene::setModel(NetModel* model)
@@ -119,7 +120,7 @@ void DiagramScene::setModel(NetModel* model)
     connect(model, SIGNAL(updated()),this,SLOT(update()));
     connect(model, SIGNAL(beforeClear()),this,SLOT(clearModel()));
     connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*,int)), this, SLOT(ArrowAdd(QObject*,Operation*,int)));
-    connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*)), this, SLOT(ArrowAdd(QObject*,Operation*)));
+    connect(model, SIGNAL(afterOperationAdd(QObject*,Operation*)), this, SLOT(ArrowAdd(QObject*,Operation*)));
     connect(model, SIGNAL(beforeOperationDelete(QObject*,Operation*)), this, SLOT(ArrowDel(QObject*,Operation*)));
     connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)), this, SLOT(EventDel(QObject*,Event*)));
     connect(model, SIGNAL(operationEndEventChanged(QObject*,Operation**,Event*)), this, SLOT(OperationRedirect(QObject*,Operation**,Event*)));
@@ -142,6 +143,7 @@ void DiagramScene::EventAdd(QObject *, Event * ev,int index)
     devents.insert(index,item);
     assert(devents.indexOf(item)==index);
     assert(devents.indexOf(item)==_model->getEvents()->indexOf(ev));
+    emit itemInserted(item);
 }
 
 void DiagramScene::EventAdd(QObject *o,Event *ev)
@@ -165,6 +167,7 @@ void DiagramScene::ArrowAdd(QObject *, Operation * ev,int index)
     if (endItem) endItem->addArrow(arrow);
     arrow->setZValue(-1000.0);
     arrow->updatePosition();
+    arrow->setOperation(ev);
     //startItem->update(startItem->boundingRect());
     darrows.insert(index,arrow);
     assert(darrows.indexOf(arrow)==index);
@@ -244,6 +247,24 @@ void DiagramScene::OperationRedirect(QObject*o, Operation **op, Event *ev)
         ndi->addArrow(arr);
         arr->updatePosition();
     } else arr->setEndItem(0);
+
+}
+
+void DiagramScene::deleteItem()
+{
+     foreach (QGraphicsItem *item, selectedItems()) {
+         if (item->type()==DiagramItem::Type)
+         {
+             DiagramItem* di =  qgraphicsitem_cast<DiagramItem *>(item);
+             if (di->diagramType()==DiagramItem::Circle)
+                 _model->removeEvent(this,di->event());
+         } else
+         if (item->type()==Arrow::Type)
+         {
+             Arrow* di =  qgraphicsitem_cast<Arrow *>(item);
+             _model->removeOperation(this,di->getOperation());
+         }
+    }
 
 }
 
@@ -328,15 +349,20 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton)
         return;
-/*
+
     DiagramItem *item;
+    Event *ev;
     switch (myMode) {
         case InsertItem:
-            item = new DiagramItem(myItemType, myItemMenu);
+            /*item = new DiagramItem(myItemType, myItemMenu);
             item->setBrush(myItemColor);
             addItem(item);
-            item->setPos(mouseEvent->scenePos());
-            emit itemInserted(item);
+            item->setPos(mouseEvent->scenePos());*/
+            //
+            ev = new Event();
+            ev->setN(_model->generateId());
+            ev->getPoint()=mouseEvent->scenePos().toPoint();
+            _model->addEvent(this,ev);
             break;
 //! [6] //! [7]
         case InsertLine:
@@ -362,7 +388,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 //! [8] //! [9]
     default:
         ;
-    }*/
+    }
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 //! [9]
@@ -402,13 +428,23 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 qgraphicsitem_cast<DiagramItem *>(startItems.first());
             DiagramItem *endItem =
                 qgraphicsitem_cast<DiagramItem *>(endItems.first());
-            Arrow *arrow = new Arrow(startItem, endItem,0,this);
+/*            Arrow *arrow = new Arrow(startItem, endItem,0,this);
             arrow->setColor(myLineColor);
             startItem->addArrow(arrow);
             endItem->addArrow(arrow);
             arrow->setZValue(-1000.0);
             addItem(arrow);
-            arrow->updatePosition();
+            arrow->updatePosition();*/
+            Event * se = startItem->event();
+            Event * ee = endItem->event();
+            Operation *op = _model->getOperationByEvents(se,ee);
+            if (op==NULL)
+            {
+                Operation *op = new Operation();
+                op->setBeginEvent(se);
+                op->setEndEvent(ee);
+                _model->addOperation(this,op);
+            }
         }
     }
 //! [12] //! [13]

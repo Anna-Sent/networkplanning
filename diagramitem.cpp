@@ -51,7 +51,7 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
              QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsPolygonItem(parent, scene)
 {
-    assert(scene);
+    //assert(scene);
     myDiagramType = diagramType;
     myContextMenu = contextMenu;
     _event = ev;
@@ -80,9 +80,11 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
         case Circle:
             path.addEllipse(QPointF(0,0),25,25);
             myPolygon = path.toFillPolygon();
-            text = new DiagramTextItem(this,this->scene());
-            text->setPlainText(QString::number(ev->getN()));
-            text->setPos(-10,-10);
+            if (ev) {
+                text = new DiagramTextItem(this,this->scene());
+                text->setPlainText(QString::number(ev->getN()));
+                text->setPos(-10,-10);
+            }
             break;
         default:
             myPolygon << QPointF(-120, -80) << QPointF(-70, 80)
@@ -140,11 +142,11 @@ void DiagramItem::addArrow(Arrow *arrow)
 //! [4]
 QPixmap DiagramItem::image() const
 {
-    QPixmap pixmap(250, 250);
+    QPixmap pixmap(60, 60);
     pixmap.fill(Qt::transparent);
     QPainter painter(&pixmap);
-    painter.setPen(QPen(Qt::black, 8));
-    painter.translate(125, 125);
+    painter.setPen(QPen(Qt::black, 2));
+    painter.translate(30, 30);
     painter.drawPolyline(myPolygon);
 
     return pixmap;
@@ -156,7 +158,7 @@ void DiagramItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     scene()->clearSelection();
     setSelected(true);
-    myContextMenu->exec(event->screenPos());
+    if (myContextMenu) myContextMenu->exec(event->screenPos());
 }
 //! [5]
 

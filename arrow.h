@@ -78,6 +78,8 @@ public:
     DiagramItem *endItem() const
         { return myEndItem; }
     void setEndItem(DiagramItem *);
+    Operation * getOperation() {return _op;}
+    void setOperation(Operation *op) {_op=op;}
 
 
 public slots:
@@ -92,6 +94,7 @@ private:
     DiagramItem *myEndItem;
     QColor myColor;
     QPolygonF arrowHead;
+    Operation * _op;
 };
 //! [0]
 
