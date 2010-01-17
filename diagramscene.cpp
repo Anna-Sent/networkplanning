@@ -136,8 +136,9 @@ void DiagramScene::EventAdd(QObject *, Event * ev,int index)
     update();*/
     DiagramItem *item;
     item = new DiagramItem(DiagramItem::Circle,ev,0,0,this);
+    item->setBrush(myItemColor);
     item->setPos(ev->getPoint());
-    item->setZValue(0);
+    item->setZValue(1000.0);
     devents.insert(index,item);
     assert(devents.indexOf(item)==index);
     assert(devents.indexOf(item)==_model->getEvents()->indexOf(ev));
@@ -163,7 +164,6 @@ void DiagramScene::ArrowAdd(QObject *, Operation * ev,int index)
     startItem->addArrow(arrow);
     if (endItem) endItem->addArrow(arrow);
     arrow->setZValue(-1000.0);
-    addItem(arrow);
     arrow->updatePosition();
     //startItem->update(startItem->boundingRect());
     darrows.insert(index,arrow);
