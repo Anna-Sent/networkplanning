@@ -27,12 +27,14 @@ private:
     Dialog *dialog;
     QString filename;
     DiagramScene *scene;
+    QToolBar * actions;
     void setFileName(const QString &fn)
     {
         filename = fn;
         setWindowTitle(QString::fromUtf8("Сетевая модель ")+filename);
     }
     void doSave();
+    void createToolbar();
 private slots:
     void addEvent();
     void insertEvent();
