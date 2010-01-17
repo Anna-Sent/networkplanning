@@ -31,7 +31,8 @@
        </widget>
       </item>
       <item>
-       <widget class="GraphWidget" name="graphView" native="true"/>
+	      <widget class="QGraphicsView" name="graphView">
+	      </widget>
       </item>
      </layout>
     </item>

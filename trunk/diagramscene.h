@@ -45,6 +45,7 @@
 #include <QGraphicsScene>
 #include "diagramitem.h"
 #include "diagramtextitem.h"
+#include "netmodel.h"
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
@@ -77,11 +78,22 @@ public:
     void setTextColor(const QColor &color);
     void setItemColor(const QColor &color);
     void setFont(const QFont &font);
+    void setModel(NetModel * model);
+    void removeArrow(Arrow *arr);
+    void removeEvent(DiagramItem *di);
 
 public slots:
+    void clearModel();
     void setMode(Mode mode);
     void setItemType(DiagramItem::DiagramType type);
     void editorLostFocus(DiagramTextItem *item);
+    void EventAdd(QObject *, Event*);
+    void EventAdd(QObject *o, Event*e,int);
+    void EventDel(QObject *o, Event*e);
+    void ArrowAdd(QObject *o, Operation* op,int);
+    void ArrowAdd(QObject *o, Operation* op);
+    void ArrowDel(QObject *o, Operation* op);
+    void OperationRedirect(QObject *o, Operation **op,Event* ev);
 
 signals:
     void itemInserted(DiagramItem *item);
@@ -107,6 +119,9 @@ private:
     QColor myTextColor;
     QColor myItemColor;
     QColor myLineColor;
+    NetModel* _model;
+    QList<DiagramItem*> devents;
+    QList<Arrow*> darrows;
 };
 //! [0]
 
