@@ -86,6 +86,7 @@ public:
         { return Type;}
     bool wrapsEvent(Event* ev) { return _event==ev; }
     Event * event() const {return _event;}
+    void updateText();
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
