@@ -43,6 +43,7 @@
 
 #include "arrow.h"
 #include <math.h>
+#include <assert.h>
 
 const qreal Pi = 3.14;
 
@@ -51,6 +52,7 @@ Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem,
          QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsLineItem(parent, scene)
 {
+    assert(scene);
     myStartItem = startItem;
     myEndItem = endItem;
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -58,6 +60,18 @@ Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem,
     setPen(QPen(myColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 }
 //! [0]
+
+/*Arrow::Arrow(Operation * op,QGraphicsItem *parent = 0, QGraphicsScene *scene = 0)
+{
+    my
+}*/
+
+void Arrow::setEndItem(DiagramItem* di)
+{
+    myEndItem = di;
+    updatePosition();
+}
+
 
 //! [1]
 QRectF Arrow::boundingRect() const
@@ -83,6 +97,7 @@ QPainterPath Arrow::shape() const
 //! [3]
 void Arrow::updatePosition()
 {
+    if (myStartItem==0||myEndItem==0) return;
     QLineF line(mapFromItem(myStartItem, 0, 0), mapFromItem(myEndItem, 0, 0));
     setLine(line);
 }
@@ -92,6 +107,7 @@ void Arrow::updatePosition()
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
           QWidget *)
 {
+    if (myStartItem==0||myEndItem==0) return;
     if (myStartItem->collidesWithItem(myEndItem))
         return;
 

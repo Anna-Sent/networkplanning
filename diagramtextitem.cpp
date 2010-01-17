@@ -48,7 +48,7 @@
 DiagramTextItem::DiagramTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsTextItem(parent, scene)
 {
-    setFlag(QGraphicsItem::ItemIsMovable);
+    /*setFlag(QGraphicsItem::ItemIsMovable);*/
     setFlag(QGraphicsItem::ItemIsSelectable);
 }
 //! [0]

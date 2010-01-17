@@ -43,6 +43,7 @@
 
 #include "diagramscene.h"
 #include "arrow.h"
+#include <assert.h>
 
 //! [0]
 DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
@@ -50,7 +51,7 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
 {
     myItemMenu = itemMenu;
     myMode = MoveItem;
-    myItemType = DiagramItem::Step;
+    //myItemType = DiagramItem::Step;
     line = 0;
     textItem = 0;
     myItemColor = Qt::white;
@@ -58,6 +59,193 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     myLineColor = Qt::black;
 }
 //! [0]
+
+void DiagramScene::clearModel()
+{
+    foreach(Arrow *ar,darrows)
+    {
+        removeArrow(ar);
+    }
+    foreach(DiagramItem *ar,devents)
+    {
+        removeEvent(ar);
+    }
+    qDeleteAll(darrows);
+    qDeleteAll(devents);
+    darrows.clear();
+    devents.clear();
+}
+
+void DiagramScene::setModel(NetModel* model)
+{
+
+    if (_model!=0)
+    {
+        foreach(QObject* o,children())
+        {
+            delete o;
+        }
+        disconnect(0,this,0);
+    }
+    _model=model;
+    if (!model) return;
+
+    QList<Event*>* events = _model->getEvents();
+    //for(int evi=0;evi<events->size();++evi)
+    foreach(Event* ev,*events)
+    {
+        /*EventWidget *ic = new EventWidget(ev,model,this);
+                //ic->setText(QString::number(ev->getN()));
+                ic->move(ev->getPoint());
+                ic->show();
+                ic->setAttribute(Qt::WA_DeleteOnClose);*/
+        EventAdd(0,ev);
+    }
+    foreach(Operation* op,*_model->getOperations())
+    {
+        /*EventWidget *ic = new EventWidget(ev,model,this);
+                //ic->setText(QString::number(ev->getN()));
+                ic->move(ev->getPoint());
+                ic->show();
+                ic->setAttribute(Qt::WA_DeleteOnClose);*/
+        ArrowAdd(0,op);
+    }
+
+    connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
+    connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(eventIdChanged(QObject *, Event *, const int)));
+    connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
+    connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
+    connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
+    connect(model, SIGNAL(updated()),this,SLOT(update()));
+    connect(model, SIGNAL(beforeClear()),this,SLOT(clearModel()));
+    connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*,int)), this, SLOT(ArrowAdd(QObject*,Operation*,int)));
+    connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*)), this, SLOT(ArrowAdd(QObject*,Operation*)));
+    connect(model, SIGNAL(beforeOperationDelete(QObject*,Operation*)), this, SLOT(ArrowDel(QObject*,Operation*)));
+    connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)), this, SLOT(EventDel(QObject*,Event*)));
+    connect(model, SIGNAL(operationEndEventChanged(QObject*,Operation**,Event*)), this, SLOT(OperationRedirect(QObject*,Operation**,Event*)));
+}
+
+void DiagramScene::EventAdd(QObject *, Event * ev,int index)
+{
+    /*EventWidget *ic = new EventWidget(ev,_model,this);
+    //ic->setText(QString::number(ev->getN()));
+    ic->move(ev->getPoint());
+    ic->show();
+    ic->setAttribute(Qt::WA_DeleteOnClose);
+    recreatePoints();
+    update();*/
+    DiagramItem *item;
+    item = new DiagramItem(DiagramItem::Circle,ev,0,0,this);
+    item->setPos(ev->getPoint());
+    item->setZValue(0);
+    devents.insert(index,item);
+    assert(devents.indexOf(item)==index);
+    assert(devents.indexOf(item)==_model->getEvents()->indexOf(ev));
+}
+
+void DiagramScene::EventAdd(QObject *o,Event *ev)
+{
+    EventAdd(o,ev,devents.size());
+}
+
+void DiagramScene::ArrowAdd(QObject *, Operation * ev,int index)
+{
+    DiagramItem *startItem,*endItem;
+    int sid = _model->getEvents()->indexOf(ev->getBeginEvent());
+    int eid = _model->getEvents()->indexOf(ev->getEndEvent());
+    if (sid<0) return;
+    startItem = devents.at(sid);
+    if (eid>=0)
+        endItem = devents.at(eid);
+    else endItem=0;
+    Arrow *arrow = new Arrow(startItem, endItem,0,this);
+    arrow->setColor(myLineColor);
+    startItem->addArrow(arrow);
+    if (endItem) endItem->addArrow(arrow);
+    arrow->setZValue(-1000.0);
+    addItem(arrow);
+    arrow->updatePosition();
+    //startItem->update(startItem->boundingRect());
+    darrows.insert(index,arrow);
+    assert(darrows.indexOf(arrow)==index);
+    assert(darrows.indexOf(arrow)==_model->getOperations()->indexOf(ev));
+/*    DiagramItem *item;
+    item = new DiagramItem(DiagramItem::Circle,ev,0,0,this);
+    item->setPos(ev->getPoint());
+    devents.insert(index,item);*/
+}
+
+void DiagramScene::ArrowAdd(QObject *o, Operation * ev)
+{
+    ArrowAdd(o,ev,darrows.size());
+}
+
+void DiagramScene::ArrowDel(QObject *o, Operation *op)
+{
+    int aid = _model->getOperations()->indexOf(op);
+    if (aid<0) return;
+    Arrow *arr = darrows.at(aid);
+    assert(arr->startItem()->wrapsEvent(op->getBeginEvent()));
+    if (arr->endItem()) assert(arr->endItem()->wrapsEvent(op->getEndEvent()));
+    removeArrow(arr);
+    delete arr;
+}
+
+void DiagramScene::EventDel(QObject *,Event *ev)
+{
+    int eid = _model->getEvents()->indexOf(ev);
+    if (eid<0) return;
+    DiagramItem *di = devents.at(eid);
+    assert(di->wrapsEvent(ev));
+    //devents.at(eid)->removeArrows();
+    di->removeArrows();
+    removeEvent(di);
+    delete di;
+    //devents.removeAt(eid);
+}
+
+void DiagramScene::removeArrow(Arrow *arr)
+{
+    if (arr)
+    {
+        int count = darrows.count();
+        darrows.removeAll(arr);
+        removeItem(arr);
+        assert(count-darrows.count()==1);
+    }
+}
+
+void DiagramScene::removeEvent(DiagramItem *di)
+{
+    if (di)
+    {
+        devents.removeAll(di);
+        removeItem(di);
+    }
+}
+
+
+void DiagramScene::OperationRedirect(QObject*o, Operation **op, Event *ev)
+{
+    /*ArrowDel(o,*op);
+    ArrowAdd(*/
+    int aid = _model->getOperations()->indexOf(*op);
+    if (aid<0) return;
+    Arrow* arr = darrows.at(aid);
+    DiagramItem *di = arr->endItem();
+    if (di)
+    {
+        di->removeArrow(arr);
+    }
+    int nid = _model->getEvents()->indexOf(ev);
+    if (nid>=0) {
+        DiagramItem * ndi = devents.at(nid);
+        arr->setEndItem(ndi);
+        ndi->addArrow(arr);
+        arr->updatePosition();
+    } else arr->setEndItem(0);
+
+}
 
 //! [1]
 void DiagramScene::setLineColor(const QColor &color)
@@ -128,10 +316,10 @@ void DiagramScene::editorLostFocus(DiagramTextItem *item)
     cursor.clearSelection();
     item->setTextCursor(cursor);
 
-    if (item->toPlainText().isEmpty()) {
+    /*if (item->toPlainText().isEmpty()) {
         removeItem(item);
         item->deleteLater();
-    }
+    }*/
 }
 //! [5]
 
@@ -140,7 +328,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton)
         return;
-
+/*
     DiagramItem *item;
     switch (myMode) {
         case InsertItem:
@@ -174,7 +362,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 //! [8] //! [9]
     default:
         ;
-    }
+    }*/
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 //! [9]
@@ -214,7 +402,7 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
                 qgraphicsitem_cast<DiagramItem *>(startItems.first());
             DiagramItem *endItem =
                 qgraphicsitem_cast<DiagramItem *>(endItems.first());
-            Arrow *arrow = new Arrow(startItem, endItem);
+            Arrow *arrow = new Arrow(startItem, endItem,0,this);
             arrow->setColor(myLineColor);
             startItem->addArrow(arrow);
             endItem->addArrow(arrow);

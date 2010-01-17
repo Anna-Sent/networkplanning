@@ -45,6 +45,7 @@
 #include <QGraphicsLineItem>
 
 #include "diagramitem.h"
+#include "netmodel.h"
 
 QT_BEGIN_NAMESPACE
 class QGraphicsPolygonItem;
@@ -63,6 +64,8 @@ public:
 
     Arrow(DiagramItem *startItem, DiagramItem *endItem,
       QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+    Arrow(Operation * op,QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+
 
     int type() const
         { return Type; }
@@ -74,6 +77,7 @@ public:
         { return myStartItem; }
     DiagramItem *endItem() const
         { return myEndItem; }
+    void setEndItem(DiagramItem *);
 
 
 public slots:

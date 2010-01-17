@@ -45,6 +45,9 @@
 #include <QGraphicsPixmapItem>
 #include <QList>
 
+//#include "netmodel.h"
+class Event;
+class DiagramTextItem;
 QT_BEGIN_NAMESPACE
 class QPixmap;
 class QGraphicsItem;
@@ -66,9 +69,9 @@ class DiagramItem : public QGraphicsPolygonItem
 {
 public:
     enum { Type = UserType + 15 };
-    enum DiagramType { Step, Conditional, StartEnd, Io };
+    enum DiagramType { /*Step, Conditional, StartEnd, Io,*/ Circle };
 
-    DiagramItem(DiagramType diagramType, QMenu *contextMenu,
+    DiagramItem(DiagramType diagramType, Event* ev, QMenu *contextMenu,
         QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
 
     void removeArrow(Arrow *arrow);
@@ -81,6 +84,8 @@ public:
     QPixmap image() const;
     int type() const
         { return Type;}
+    bool wrapsEvent(Event* ev) { return _event==ev; }
+    Event * event() const {return _event;}
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
@@ -91,6 +96,8 @@ private:
     QPolygonF myPolygon;
     QMenu *myContextMenu;
     QList<Arrow *> arrows;
+    DiagramTextItem *text;
+    Event *_event;
 };
 //! [0]
 

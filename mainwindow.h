@@ -5,6 +5,7 @@
 #include "treemodel.h"
 #include "netmodel.h"
 #include "dialog.h"
+#include "diagramscene.h"
 
 namespace Ui
 {
@@ -25,6 +26,7 @@ private:
     NetModel netmodel;
     Dialog *dialog;
     QString filename;
+    DiagramScene *scene;
     void setFileName(const QString &fn)
     {
         filename = fn;

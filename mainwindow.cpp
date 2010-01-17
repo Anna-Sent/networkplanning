@@ -4,6 +4,7 @@
 #include "treeitem.h"
 #include "positioning.h"
 #include <QFileDialog>
+#include "diagramscene.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -55,12 +56,15 @@ MainWindow::MainWindow(QWidget *parent)
     Position *pos = new PlanarPosition;
     pos->position(&netmodel);
     delete pos;
-    ui->graphView->setModel(&netmodel);
+    scene=new DiagramScene(0);
+    ui->graphView->setScene(scene);
+    scene->setModel(&netmodel);
+    /*ui->graphView->setModel(&netmodel);
 
     connect(ui->treeView->selectionModel(),
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
             this,
-            SLOT(currentChanged(QModelIndex, QModelIndex)));
+            SLOT(currentChanged(QModelIndex, QModelIndex)));*/
     dialog = new Dialog(netmodel, this);
     setFileName("");
 }
@@ -71,7 +75,7 @@ void MainWindow::newModel()
     netmodel.clear();
     treemodel->setModel(netmodel);
     dialog->setModel(netmodel);
-    ui->graphView->setModel(&netmodel);
+    //ui->graphView->setModel(&netmodel);
 }
 
 void MainWindow::open()
@@ -95,7 +99,7 @@ void MainWindow::open()
         {
             treemodel->setModel(netmodel);
             dialog->setModel(netmodel);
-            ui->graphView->setModel(&netmodel);
+            scene->setModel(&netmodel);
         }
     }
 }

@@ -43,18 +43,22 @@
 
 #include "diagramitem.h"
 #include "arrow.h"
-
+#include "diagramtextitem.h"
+#include "diagramscene.h"
+#include <assert.h>
 //! [0]
-DiagramItem::DiagramItem(DiagramType diagramType, QMenu *contextMenu,
+DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu,
              QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsPolygonItem(parent, scene)
 {
+    assert(scene);
     myDiagramType = diagramType;
     myContextMenu = contextMenu;
+    _event = ev;
 
     QPainterPath path;
     switch (myDiagramType) {
-        case StartEnd:
+        /*case StartEnd:
             path.moveTo(200, 50);
             path.arcTo(150, 0, 50, 50, 0, 90);
             path.arcTo(50, 0, 50, 50, 90, 90);
@@ -72,6 +76,13 @@ DiagramItem::DiagramItem(DiagramType diagramType, QMenu *contextMenu,
             myPolygon << QPointF(-100, -100) << QPointF(100, -100)
                       << QPointF(100, 100) << QPointF(-100, 100)
                       << QPointF(-100, -100);
+            break;*/
+        case Circle:
+            path.addEllipse(QPointF(0,0),25,25);
+            myPolygon = path.toFillPolygon();
+            text = new DiagramTextItem(this,this->scene());
+            text->setPlainText(QString::number(ev->getN()));
+            text->setPos(-10,-10);
             break;
         default:
             myPolygon << QPointF(-120, -80) << QPointF(-70, 80)
@@ -90,8 +101,20 @@ void DiagramItem::removeArrow(Arrow *arrow)
 {
     int index = arrows.indexOf(arrow);
 
+
     if (index != -1)
+    {
+        if (arrow->startItem()==this)
+        {
+            QGraphicsScene *qgs=scene();
+            DiagramScene *ds = dynamic_cast<DiagramScene*> (qgs);
+            assert(ds);
+            if (ds) ds->removeArrow(arrow);
+            delete arrow;
+        } else
+            arrow->setEndItem(0);
         arrows.removeAt(index);
+    }
 }
 //! [1]
 
@@ -99,11 +122,11 @@ void DiagramItem::removeArrow(Arrow *arrow)
 void DiagramItem::removeArrows()
 {
     foreach (Arrow *arrow, arrows) {
-        arrow->startItem()->removeArrow(arrow);
-        arrow->endItem()->removeArrow(arrow);
-        scene()->removeItem(arrow);
-        delete arrow;
+        //arrow->endItem()->removeArrow(arrow);
+        //arrow->startItem()->removeArrow(arrow);
+        removeArrow(arrow);
     }
+    assert(arrows.count()==0);
 }
 //! [2]
 
@@ -145,6 +168,8 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change,
         foreach (Arrow *arrow, arrows) {
             arrow->updatePosition();
         }
+
+        _event->getPoint()=value.toPointF().toPoint();
     }
 
     return value;
