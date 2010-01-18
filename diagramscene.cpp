@@ -112,11 +112,10 @@ void DiagramScene::setModel(NetModel* model)
         ArrowAdd(0,op);
     }
 
-    connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
+    //connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
     connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(NChanged(QObject*,Event*,int)));
     connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
     connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
-    connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)),this, SLOT(DeleteEvent(QObject*,Event*)));
     connect(model, SIGNAL(updated()),this,SLOT(update()));
     connect(model, SIGNAL(beforeClear()),this,SLOT(clearModel()));
     connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*,int)), this, SLOT(ArrowAdd(QObject*,Operation*,int)));
@@ -190,6 +189,7 @@ void DiagramScene::ArrowDel(QObject *o, Operation *op)
     Arrow *arr = darrows.at(aid);
     assert(arr->startItem()->wrapsEvent(op->getBeginEvent()));
     if (arr->endItem()) assert(arr->endItem()->wrapsEvent(op->getEndEvent()));
+    arr->startItem()->removeArrow(arr);
     removeArrow(arr);
     delete arr;
 }
@@ -256,8 +256,18 @@ void DiagramScene::deleteItem()
          if (item->type()==DiagramItem::Type)
          {
              DiagramItem* di =  qgraphicsitem_cast<DiagramItem *>(item);
-             if (di->diagramType()==DiagramItem::Circle)
+             if (di->diagramType()==DiagramItem::Circle) {
+                 Event * eve = di->event();
+                 foreach(Operation *op,eve->getOutOperations())
+                 {
+                     _model->removeOperation(this,op);
+                 }
+                 foreach(Operation *op,eve->getInOperations())
+                 {
+                     _model->removeOperation(this,op);
+                 }
                  _model->removeEvent(this,di->event());
+             }
          } else
          if (item->type()==Arrow::Type)
          {

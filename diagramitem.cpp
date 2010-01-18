@@ -108,13 +108,18 @@ void DiagramItem::removeArrow(Arrow *arrow)
     {
         if (arrow->startItem()==this)
         {
-            QGraphicsScene *qgs=scene();
+            if (arrow->endItem()) {
+                arrow->endItem()->removeArrow(arrow);
+            }
+            /*QGraphicsScene *qgs=scene();
             DiagramScene *ds = dynamic_cast<DiagramScene*> (qgs);
             assert(ds);
             if (ds) ds->removeArrow(arrow);
-            delete arrow;
+            delete arrow;*/
         } else
+        {
             arrow->setEndItem(0);
+        }
         arrows.removeAt(index);
     }
 }
