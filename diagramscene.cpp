@@ -93,14 +93,14 @@ void DiagramScene::setModel(NetModel* model)
 
     QList<Event*>* events = _model->getEvents();
     //for(int evi=0;evi<events->size();++evi)
-    foreach(Event* ev,*events)
+    for (int i=0; i < events->count(); ++i)
     {
         /*EventWidget *ic = new EventWidget(ev,model,this);
                 //ic->setText(QString::number(ev->getN()));
                 ic->move(ev->getPoint());
                 ic->show();
                 ic->setAttribute(Qt::WA_DeleteOnClose);*/
-        EventAdd(0,ev);
+        EventAdd(this, i);
     }
     foreach(Operation* op,*_model->getOperations())
     {
@@ -114,8 +114,8 @@ void DiagramScene::setModel(NetModel* model)
 
     //connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
     connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(NChanged(QObject*,Event*,int)));
-    connect(model, SIGNAL(afterEventAdd(QObject*,Event*)), this, SLOT(EventAdd(QObject*,Event*)));
-    connect(model, SIGNAL(afterEventInsert(QObject*,Event*,int)), this, SLOT(EventAdd(QObject*,Event*,int)));
+    connect(model, SIGNAL(afterEventAdd(QObject*)), this, SLOT(EventAdd(QObject*)));
+    connect(model, SIGNAL(afterEventInsert(QObject*,int)), this, SLOT(EventAdd(QObject*,int)));
     connect(model, SIGNAL(updated()),this,SLOT(update()));
     connect(model, SIGNAL(beforeClear()),this,SLOT(clearModel()));
     connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*,int)), this, SLOT(ArrowAdd(QObject*,Operation*,int)));
@@ -125,7 +125,7 @@ void DiagramScene::setModel(NetModel* model)
     connect(model, SIGNAL(operationEndEventChanged(QObject*,Operation**,Event*)), this, SLOT(OperationRedirect(QObject*,Operation**,Event*)));
 }
 
-void DiagramScene::EventAdd(QObject *, Event * ev,int index)
+void DiagramScene::EventAdd(QObject *, int index)
 {
     /*EventWidget *ic = new EventWidget(ev,_model,this);
     //ic->setText(QString::number(ev->getN()));
@@ -134,6 +134,7 @@ void DiagramScene::EventAdd(QObject *, Event * ev,int index)
     ic->setAttribute(Qt::WA_DeleteOnClose);
     recreatePoints();
     update();*/
+    Event *ev = _model->event(index);
     DiagramItem *item;
     item = new DiagramItem(DiagramItem::Circle,ev,0,0,this);
     item->setBrush(myItemColor);
@@ -145,9 +146,9 @@ void DiagramScene::EventAdd(QObject *, Event * ev,int index)
     emit itemInserted(item);
 }
 
-void DiagramScene::EventAdd(QObject *o,Event *ev)
+void DiagramScene::EventAdd(QObject *o)
 {
-    EventAdd(o,ev,devents.size());
+    EventAdd(o, devents.size());
 }
 
 void DiagramScene::ArrowAdd(QObject *, Operation * ev,int index)
@@ -361,7 +362,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         return;
 
     DiagramItem *item;
-    Event *ev;
+    //Event *ev;
     switch (myMode) {
         case InsertItem:
             /*item = new DiagramItem(myItemType, myItemMenu);
@@ -369,10 +370,14 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             addItem(item);
             item->setPos(mouseEvent->scenePos());*/
             //
-            ev = new Event();
-            ev->setN(_model->generateId());
-            ev->getPoint()=mouseEvent->scenePos().toPoint();
-            _model->addEvent(this,ev);
+            //ev = new Event();
+            //ev->setN(_model->generateId());
+            if (_model->addEvent(this))
+            {
+                Event *ev = _model->last();
+                ev->getPoint()=mouseEvent->scenePos().toPoint();
+                devents.last()->setPos(mouseEvent->scenePos());
+            }
             break;
 //! [6] //! [7]
         case InsertLine:

@@ -87,8 +87,8 @@ public slots:
     void setMode(Mode mode);
     void setItemType(DiagramItem::DiagramType type);
     void editorLostFocus(DiagramTextItem *item);
-    void EventAdd(QObject *, Event*);
-    void EventAdd(QObject *o, Event*e,int);
+    void EventAdd(QObject */*, Event*/);
+    void EventAdd(QObject *o/*, Event*e*/, int);
     void EventDel(QObject *o, Event*e);
     void ArrowAdd(QObject *o, Operation* op,int);
     void ArrowAdd(QObject *o, Operation* op);
