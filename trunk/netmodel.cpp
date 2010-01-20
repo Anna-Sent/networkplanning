@@ -266,7 +266,6 @@ bool NetModel::insert(int i, Event* event)
 
 bool NetModel::remove(Event* event/*, bool deleteOutput*/)
 {
-    bool deleteOutput = true;
     int index=events.indexOf(event);
     if (index!=-1)
     {
@@ -275,12 +274,8 @@ bool NetModel::remove(Event* event/*, bool deleteOutput*/)
             disconnect(o, event);
         event->getInOperations().clear();
         QList<Operation*> out = event->getOutOperations();
-        if (deleteOutput)
-            foreach (Operation *o, out)
-                remove(o);
-        else
-            foreach (Operation *o, out)
-                disconnect(event, o);
+        foreach (Operation *o, out)
+            disconnect(event, o);
         event->getOutOperations().clear();
         events.removeAt(index);
         delete event;
@@ -734,28 +729,36 @@ bool NetModel::setOperationWaitTime(QObject *obj, Operation *o, double twait)
     return true;
 }
 
-bool NetModel::addEvent(QObject *obj, Event *e)
+bool NetModel::addEvent(QObject *obj/*, Event *e*/)
 {
+    Event *e = new Event(generateId());
     if (add(e))
     {
-        emit afterEventAdd(obj, e);
+        emit afterEventAdd(obj/*, e*/);
         emit updated();
         return true;
     }
     else
+    {
+        delete e;
         return false;
+    }
 }
 
-bool NetModel::insertEvent(QObject *obj, Event *e, int i)
+bool NetModel::insertEvent(QObject *obj/*, Event *e*/, int i)
 {
+    Event *e = new Event(generateId());
     if (insert(i, e))
     {
-        emit afterEventInsert(obj, e, i);
+        emit afterEventInsert(obj/*, e*/, i);
         emit updated();
         return true;
     }
     else
+    {
+        delete e;
         return false;
+    }
 }
 
 bool NetModel::removeEvent(QObject *obj, Event *e)

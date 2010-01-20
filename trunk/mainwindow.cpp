@@ -28,9 +28,12 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<Event*>("Event*");
     qRegisterMetaType<Operation*>("Operation*");
 
-    Event *e1 = new Event(0);
-    Event *e2 = new Event(1);
-    Event *e3 = new Event(2);
+    netmodel.addEvent(this);
+    Event *e1 = netmodel.last(); //new Event(0);
+    netmodel.addEvent(this);
+    Event *e2 = netmodel.last(); //new Event(1);
+    netmodel.addEvent(this);
+    Event *e3 = netmodel.last();// new Event(2);
     //Event *e4 = new Event(3);
     //Event *e5 = new Event(4);
     //Event *e6 = new Event(5);

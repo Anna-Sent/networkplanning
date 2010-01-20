@@ -23,9 +23,57 @@ void TreeModel::setModel(NetModel &netmodel)
 {
     this->netmodel = &netmodel;
     connect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+    connect(this->netmodel, SIGNAL(eventIdChanged(QObject *, Event *, int)), this, SLOT(eventIdChanged(QObject *, Event *, int)));
+    connect(this->netmodel, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
+    connect(this->netmodel, SIGNAL(operationEndEventChanged(QObject *, Operation **, Event *)), this, SLOT(operationEndEventChanged(QObject *, Operation **, Event *)));
+    connect(this->netmodel, SIGNAL(operationNameChanged(QObject *, Operation *, const QString &)), this, SLOT(operationNameChanged(QObject *, Operation *, const QString &)));
+    connect(this->netmodel, SIGNAL(operationWaitTimeChanged(QObject *, Operation *, double)), this, SLOT(operationWaitTimeChanged(QObject *, Operation *, double)));
+    connect(this->netmodel, SIGNAL(afterEventAdd(QObject *)), this, SLOT(afterEventAdd(QObject *)));
+    connect(this->netmodel, SIGNAL(beforeEventDelete(QObject *, Event *)), this, SLOT(beforeEventDelete(QObject *, Event *)));
+    connect(this->netmodel, SIGNAL(afterOperationAdd(QObject *, Operation *)), this, SLOT(afterOperationAdd(QObject *, Operation *)));
+    connect(this->netmodel, SIGNAL(beforeOperationDelete(QObject *, Operation *)), this, SLOT(beforeOperationDelete(QObject *, Operation *)));
+    connect(this->netmodel, SIGNAL(afterEventInsert(QObject *, int)), this, SLOT(afterEventInsert(QObject *, int)));
+    connect(this->netmodel, SIGNAL(afterOperationInsert(QObject *, Operation *, int)), this, SLOT(afterOperationInsert(QObject *, Operation *, int)));
+    connect(this->netmodel, SIGNAL(updated()), this, SLOT(updated()));
     setupModelData(rootItem);
     reset();
 }
+
+void TreeModel::eventIdChanged(QObject *, Event *, int)
+{}
+
+void TreeModel::eventNameChanged(QObject *, Event *, const QString &)
+{}
+
+void TreeModel::operationEndEventChanged(QObject *, Operation **, Event *)
+{}
+
+void TreeModel::operationNameChanged(QObject *, Operation *, const QString &)
+{}
+
+void TreeModel::operationWaitTimeChanged(QObject *, Operation *, double)
+{}
+
+void TreeModel::afterEventAdd(QObject *)
+{}
+
+void TreeModel::beforeEventDelete(QObject *, Event *)
+{}
+
+void TreeModel::afterOperationAdd(QObject *, Operation *)
+{}
+
+void TreeModel::beforeOperationDelete(QObject *, Operation *)
+{}
+
+void TreeModel::afterEventInsert(QObject *, int)
+{}
+
+void TreeModel::afterOperationInsert(QObject *, Operation *, int)
+{}
+
+void TreeModel::updated()
+{}
 
 void TreeModel::beforeClear()
 {
@@ -314,17 +362,18 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
         }
         else
         {
-            Event *e = new Event(netmodel->generateId());
-            if (netmodel->insertEvent(this, e, i))
+            //Event *e = new Event(netmodel->generateId());
+            if (netmodel->insertEvent(this, /*e,*/ i))
             {
                 beginInsertRows(parent, i, i);
+                Event *e = netmodel->event(i);
                 TreeItem *item = new TreeItem(e, *rootItem);
                 rootItem->insertChild(item, row);
                 endInsertRows();
                 result = result || true;
             }
-            else
-                delete e;
+            //else
+            //    delete e;
         }
     }
     return result;
@@ -359,6 +408,11 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
             if (i<netmodel->getEvents()->count())//parentItem->childCount())
             {
                 Event *e = netmodel->getEvents()->at(i);// parentItem->child(i)->getEvent();
+                QList<Operation*> out = e->getOutOperations();
+                foreach (Operation* o, out)
+                {
+                    netmodel->removeOperation(this, o);
+                }
                 if (netmodel->removeEvent(this, e))
                 {
                     //parentItem->child(i)->clear();

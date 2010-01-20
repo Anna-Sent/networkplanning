@@ -46,6 +46,18 @@ private:
     NetModel *netmodel;
     QList<QVariant> header;
 private slots:
+    void eventIdChanged(QObject *, Event *, int);
+    void eventNameChanged(QObject *, Event *, const QString &);
+    void operationEndEventChanged(QObject *, Operation **, Event *);
+    void operationNameChanged(QObject *, Operation *, const QString &);
+    void operationWaitTimeChanged(QObject *, Operation *, double);
+    void afterEventAdd(QObject *);
+    void beforeEventDelete(QObject *, Event *);
+    void afterOperationAdd(QObject *, Operation *);
+    void beforeOperationDelete(QObject *, Operation *);
+    void afterEventInsert(QObject *, int);
+    void afterOperationInsert(QObject *, Operation *, int);
+    void updated();
     void beforeClear();
 };
 //! [0]

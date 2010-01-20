@@ -10,6 +10,7 @@
 #include <QDataStream>
 
 class Operation;
+class NetModel;
 
 class Event
 {
@@ -18,21 +19,22 @@ private:
     int n;
     QString name;
     QPoint point;
-public:
-    QPoint& getPoint() {return point;}
     Event();
     Event(int);
-    int getN();
     void setN(int n) {this->n=n;}
     void addInOperation(Operation*);
     void addOutOperation(Operation*);
     void insertInOperation(Operation *o, int i) {inputOperations.insert(i, o);}
+    bool hasEdge(Event*);
+    void setName(const QString &name) {this->name=name;}
+    friend class NetModel;
+public:
     void insertOutOperation(Operation *o, int i) {outputOperations.insert(i, o);}
+    QPoint& getPoint() {return point;}
+    int getN();
     QList<Operation*>& getInOperations();
     QList<Operation*>& getOutOperations();
-    bool hasEdge(Event*);
     QString getName() {return name;}
-    void setName(const QString &name) {this->name=name;}
 };
 
 Q_DECLARE_METATYPE(Event*);
@@ -138,6 +140,10 @@ public:
     bool isCorrect(QString &);
     // getters
     QList<Event*> *getEvents() {return &events;}
+    int getEventsCount() {return events.count();}
+    Event *event(int i) {return i>=0&&i<events.count()?events[i]:NULL;}
+    Event *first() {return events.isEmpty()?NULL:events.first();}
+    Event *last() {return events.isEmpty()?NULL:events.last();}
     QList<Operation*> *getOperations() {return &operations;}
     // for net
     QList<Path> *getFullPathes();
@@ -159,11 +165,11 @@ public slots:
     bool setOperationEndEvent(QObject *, Operation **, Event *);
     bool setOperationName(QObject *, Operation *, const QString &);
     bool setOperationWaitTime(QObject *, Operation *, double);
-    bool addEvent(QObject *, Event *);
+    bool addEvent(QObject */*, Event */);
     bool removeEvent(QObject *, Event *);
     bool addOperation(QObject *, Operation *);
     bool removeOperation(QObject *, Operation */*, bool deleteOutput = true*/);
-    bool insertEvent(QObject *, Event *, int);
+    bool insertEvent(QObject *, /*Event *,*/ int);
     bool insertOperation(QObject *, Operation *, int);
 signals:
     void eventIdChanged(QObject *, Event *, int);
@@ -171,11 +177,11 @@ signals:
     void operationEndEventChanged(QObject *, Operation **, Event *);
     void operationNameChanged(QObject *, Operation *, const QString &);
     void operationWaitTimeChanged(QObject *, Operation *, double);
-    void afterEventAdd(QObject *, Event *);
+    void afterEventAdd(QObject */*, Event */);
     void beforeEventDelete(QObject *, Event *);
     void afterOperationAdd(QObject *, Operation *);
     void beforeOperationDelete(QObject *, Operation */*, bool deleteOutput = true*/);
-    void afterEventInsert(QObject *, Event *, int);
+    void afterEventInsert(QObject *,/* Event *,*/ int);
     void afterOperationInsert(QObject *, Operation *, int);
     void updated();
     void beforeClear();
