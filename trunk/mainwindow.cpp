@@ -181,6 +181,7 @@ void MainWindow::newModel()
     netmodel.clear();
     treemodel->setModel(netmodel);
     dialog->setModel(netmodel);
+    scene->setModel(&netmodel);
     //ui->graphView->setModel(&netmodel);
 }
 
