@@ -169,15 +169,8 @@ bool NetModel::add(Operation* operation)
     {
         if (operations.indexOf(operation)==-1)
         {
-            if (operation->getBeginEvent() && operation->getEndEvent())
-            {
-                Operation *o= getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent());
-                if (o)
-                {
-                    delete operation;
-                    operation = o;
-                }
-            }
+            if (operation->getBeginEvent()&&operation->getEndEvent()&&getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent()))
+                return false;
             operations << operation;
             return true;
         }
@@ -192,15 +185,8 @@ bool NetModel::insert(int i, Operation* operation)
 {
     if (operations.indexOf(operation)==-1)
     {
-        if (operation->getBeginEvent() && operation->getEndEvent())
-        {
-            Operation *o= getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent());
-            if (o)
-            {
-                delete operation;
-                operation = o;
-            }
-        }
+        if (operation->getBeginEvent()&&operation->getEndEvent()&&getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent()))
+            return false;
         operations.insert(i, operation);
         return true;
     }
@@ -543,10 +529,7 @@ QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
             if (!qFuzzyCompare(p.weight(),maxweight))
             {
                 pathes->removeAll(p);
-                qDebug() << p.weight() << " and " << maxweight << " are not eq";
             }
-            else
-                qDebug() << p.weight() << " and " << maxweight << " are eq";
         }
     }
     return pathes;
@@ -698,19 +681,16 @@ bool NetModel::setName(QObject *obj, Event *e, const QString &name)
 bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
 {
     //if (!e) return false;
-    Operation *o1 = getOperationByEvents((*o)->getBeginEvent(), e);
-    if (o1)
-    {
+    if (getOperationByEvents((*o)->getBeginEvent(), e))
         return false;
-    }
     else
     {
         disconnect(*o, (*o)->getEndEvent());
         connect(*o, e);
+        emit operationEndEventChanged(obj, o, e);
+        emit updated();
+        return true;
     }
-    emit operationEndEventChanged(obj, o, e);
-    emit updated();
-    return true;
 }
 
 bool NetModel::setOperationName(QObject *obj, Operation *o, const QString &name)

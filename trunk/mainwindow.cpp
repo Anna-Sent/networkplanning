@@ -7,7 +7,7 @@
 #include "diagramscene.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+        : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
@@ -107,11 +107,11 @@ void MainWindow::buttonGroupClicked(int id)
 {
     QList<QAbstractButton *> buttons = buttonGroup->buttons();
     foreach (QAbstractButton *button, buttons) {
-    if (buttonGroup->button(id) != button)
-        button->setChecked(false);
+        if (buttonGroup->button(id) != button)
+            button->setChecked(false);
     }
-        scene->setItemType(DiagramItem::DiagramType(id));
-        scene->setMode(DiagramScene::InsertItem);
+    scene->setItemType(DiagramItem::DiagramType(id));
+    scene->setMode(DiagramScene::InsertItem);
 
 }
 
@@ -124,16 +124,14 @@ void MainWindow::itemInserted(DiagramItem *item)
     tb->update();
 }
 
-
 void MainWindow::createToolbar()
 {
     actions=addToolBar("Actions");
-    deleteAction = new QAction(QIcon(":/images/delete.png"),
-                               tr("&Delete"), this);
+    deleteAction = new QAction(QIcon(":/images/delete.png"), QString::fromUtf8("Удалить"), this);
     deleteAction->setShortcut(tr("Delete"));
-    deleteAction->setStatusTip(tr("Delete item from diagram"));
+    deleteAction->setStatusTip(QString::fromUtf8("Удалить выбранный элемент"));
     connect(deleteAction, SIGNAL(triggered()),
-        this, SLOT(deleteItem()));
+            this, SLOT(deleteItem()));
     actions->addAction(deleteAction);
     buttonGroup = new QButtonGroup;
     connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
@@ -157,7 +155,7 @@ void MainWindow::createToolbar()
 
     sceneScaleCombo = new QComboBox;
     QStringList scales;
-    scales << tr("50%") << tr("75%") << tr("100%") << tr("125%") << tr("150%");
+    scales << "50%" << "75%" << "100%" << "125%" << "150%";
     sceneScaleCombo->addItems(scales);
     sceneScaleCombo->setCurrentIndex(2);
     connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)),
@@ -167,7 +165,6 @@ void MainWindow::createToolbar()
     pointerToolbar->addWidget(pointerButton);
     pointerToolbar->addWidget(linePointerButton);
     pointerToolbar->addWidget(sceneScaleCombo);
-
 }
 
 void MainWindow::pointerGroupClicked(int)
@@ -188,9 +185,9 @@ void MainWindow::newModel()
 void MainWindow::open()
 {
     QString fn = QFileDialog::getOpenFileName(this,
-                                            QString::fromUtf8("Открыть модель"),
-                                            "",
-                                            QString::fromUtf8("Сетевые модели (*.mdl)"));
+                                              QString::fromUtf8("Открыть модель"),
+                                              "",
+                                              QString::fromUtf8("Сетевые модели (*.mdl)"));
     if (fn!=NULL)
     {
         setFileName(fn);
@@ -227,9 +224,9 @@ void MainWindow::save()
     if (filename=="")
     {
         QString fn = QFileDialog::getSaveFileName(this,
-                                                QString::fromUtf8("Сохранить модель"),
-                                                "",
-                                                QString::fromUtf8("Сетевые модели (*.mdl)"));
+                                                  QString::fromUtf8("Сохранить модель"),
+                                                  "",
+                                                  QString::fromUtf8("Сетевые модели (*.mdl)"));
         if (fn!=NULL)
             setFileName(fn);
         else
@@ -279,141 +276,79 @@ void MainWindow::insertEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    if (selected.isValid())
-    {
-        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-        if (item->getEvent())
-        {
-            model->insertRow(selected.row(), selected.parent());
-        }
-    }
-    else
-    {
-        model->insertRow(0, selected);
-        ui->treeView->selectionModel()->setCurrentIndex(
-                    model->index(0,0),
-                    QItemSelectionModel::Select);
-        ui->treeView->selectionModel()->setCurrentIndex(
-                    model->index(0,1),
-                    QItemSelectionModel::Select);
-    }
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        model->insertRow(selected.row(), QModelIndex());
 }
 
 void MainWindow::addEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
-    QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    if (selected.isValid())
-    {
-        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-        if (item->getEvent())
-        {
-            model->insertRow(netmodel.getEvents()->count(), selected.parent());
-        }
-        else if (item->getOperation())
-        {
-            model->insertRow(netmodel.getEvents()->count(), selected.parent().parent());
-        }
-    }
-    else
-    {
-        model->insertRow(0, selected);
-        ui->treeView->selectionModel()->setCurrentIndex(
-                    model->index(0,0),
-                    QItemSelectionModel::Select);
-        ui->treeView->selectionModel()->setCurrentIndex(
-                    model->index(0,1),
-                    QItemSelectionModel::Select);
-    }
+    model->insertRow(netmodel.getEventsCount(), QModelIndex());
 }
 
 void MainWindow::deleteEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    if (selected.isValid())
-    {
-        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-        if (item->getEvent())
-            model->removeRow(selected.row(), selected.parent());
-    }
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        model->removeRow(selected.row(), QModelIndex());
 }
 
 void MainWindow::insertOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    if (selected.isValid())
-    {
-        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-        if (item->getEvent())
-            model->insertRow(0, selected);
-        else if (item->getOperation())
-            model->insertRow(selected.row(), selected.parent());
-    }
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        model->insertRow(0, selected);
+    else if (item->getOperation())
+        model->insertRow(selected.row(), selected.parent());
 }
 
 void MainWindow::addOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    if (selected.isValid())
-    {
-        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-        if (item->getEvent())
-            model->insertRow(item->getEvent()->getOutOperations().count(), selected);
-        else if (item->getOperation())
-            model->insertRow(
-                    item->getOperation()->getBeginEvent()->getOutOperations().count(),
-                    selected.parent());
-    }
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        model->insertRow(item->getEvent()->getOutOperations().count(), selected);
+    else if (item->getOperation())
+        model->insertRow(
+                item->getOperation()->getBeginEvent()->getOutOperations().count(),
+                selected.parent());
 }
 
 void MainWindow::deleteOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    if (selected.isValid())
-    {
-        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-        if (item->getOperation())
-            model->removeRow(selected.row(), selected.parent());
-    }
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getOperation())
+        model->removeRow(selected.row(), selected.parent());
 }
 
 void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
 {
-    if (current.isValid())
+    TreeItem *item = static_cast<TreeItem*>(current.internalPointer());
+    if (item->getEvent())
     {
-        TreeItem *item = static_cast<TreeItem*>(current.internalPointer());
-        if (item->getEvent())
-        {
-            ui->btnAddEvent->setEnabled(true);
-            ui->btnInsertEvent->setEnabled(true);
-            ui->btnDeleteEvent->setEnabled(true);
-            ui->btnAddOperation->setEnabled(true);
-            ui->btnInsertOperation->setEnabled(true);
-            ui->btnDeleteOperation->setEnabled(false);
-            //ui->btnCheck->setEnabled(true);
-        }
-        else if (item->getOperation())
-        {
-            ui->btnAddEvent->setEnabled(true);
-            ui->btnInsertEvent->setEnabled(false);
-            ui->btnDeleteEvent->setEnabled(false);
-            ui->btnAddOperation->setEnabled(true);
-            ui->btnInsertOperation->setEnabled(true);
-            ui->btnDeleteOperation->setEnabled(true);
-            //ui->btnCheck->setEnabled(true);
-        }
-        else
-        {
-            //ui->btnAddEvent->setEnabled(true);
-            //ui->btnAddOperation->setEnabled(false);
-            //ui->btnCheck->setEnabled(true);
-            //ui->btnDeleteEvent->setEnabled(false);
-            //ui->btnDeleteOperation->setEnabled(false);
-        }
+        ui->btnAddEvent->setEnabled(true);
+        ui->btnInsertEvent->setEnabled(true);
+        ui->btnDeleteEvent->setEnabled(true);
+        ui->btnAddOperation->setEnabled(true);
+        ui->btnInsertOperation->setEnabled(true);
+        ui->btnDeleteOperation->setEnabled(false);
+    }
+    else if (item->getOperation())
+    {
+        ui->btnAddEvent->setEnabled(true);
+        ui->btnInsertEvent->setEnabled(false);
+        ui->btnDeleteEvent->setEnabled(false);
+        ui->btnAddOperation->setEnabled(true);
+        ui->btnInsertOperation->setEnabled(true);
+        ui->btnDeleteOperation->setEnabled(true);
     }
     else
     {
@@ -423,7 +358,6 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
         ui->btnAddOperation->setEnabled(false);
         ui->btnInsertOperation->setEnabled(false);
         ui->btnDeleteOperation->setEnabled(false);
-        //ui->btnCheck->setEnabled(true);
     }
 }
 
