@@ -28,6 +28,7 @@ public:
     void clear() {event=NULL;operation=NULL;}
 
     TreeItem *child(int row);
+    int childCount() {return childItems.count();}
     //int childCount() const;
     //int columnCount() const;
     //QVariant data(int column) const;

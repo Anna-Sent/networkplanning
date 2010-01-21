@@ -184,8 +184,8 @@ bool NetModel::add(Operation* operation)
         else
             return false;
     }
-else
-    return false;
+    else
+        return false;
 }
 
 bool NetModel::insert(int i, Operation* operation)
