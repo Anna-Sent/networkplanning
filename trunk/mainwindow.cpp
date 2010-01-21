@@ -307,11 +307,11 @@ void MainWindow::addEvent()
         TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
         if (item->getEvent())
         {
-            model->insertRow(/*item->parent()->childCount()*/netmodel.getEvents()->count(), selected.parent());
+            model->insertRow(netmodel.getEvents()->count(), selected.parent());
         }
         else if (item->getOperation())
         {
-            model->insertRow(/*model->getRootItem()->childCount()*/netmodel.getEvents()->count(), selected.parent().parent());
+            model->insertRow(netmodel.getEvents()->count(), selected.parent().parent());
         }
     }
     else
@@ -360,11 +360,11 @@ void MainWindow::addOperation()
     {
         TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
         if (item->getEvent())
-            model->insertRow(/*item->childCount()*/item->getEvent()->getOutOperations().count(), selected);
+            model->insertRow(item->getEvent()->getOutOperations().count(), selected);
         else if (item->getOperation())
             model->insertRow(
-                    item->getOperation()->getBeginEvent()->getOutOperations().count()
-                    /*item->parent()->childCount()*/, selected.parent());
+                    item->getOperation()->getBeginEvent()->getOutOperations().count(),
+                    selected.parent());
     }
 }
 

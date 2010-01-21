@@ -39,41 +39,131 @@ void TreeModel::setModel(NetModel &netmodel)
     reset();
 }
 
-void TreeModel::eventIdChanged(QObject *, Event *, int)
-{}
+void TreeModel::eventIdChanged(QObject *sender, Event *, int)
+{
+    //if (this!=sender) reset();
+}
 
-void TreeModel::eventNameChanged(QObject *, Event *, const QString &)
-{}
+void TreeModel::eventNameChanged(QObject *sender, Event *, const QString &)
+{
+    //if (this!=sender) reset();
+}
 
-void TreeModel::operationEndEventChanged(QObject *, Operation **, Event *)
-{}
+void TreeModel::operationEndEventChanged(QObject *sender, Operation **, Event *)
+{
+    //if (this!=sender) reset();
+}
 
-void TreeModel::operationNameChanged(QObject *, Operation *, const QString &)
-{}
+void TreeModel::operationNameChanged(QObject *sender, Operation *, const QString &)
+{
+    //if (this!=sender) reset();
+}
 
-void TreeModel::operationWaitTimeChanged(QObject *, Operation *, double)
-{}
+void TreeModel::operationWaitTimeChanged(QObject *sender, Operation *, double)
+{
+    //if (this!=sender) reset();
+}
 
-void TreeModel::afterEventAdd(QObject *)
-{}
+void TreeModel::afterEventAdd(QObject *sender)
+{
+    if (this!=sender)
+    {
+        Event *e = netmodel->last();
+        rootItem->appendChild(new TreeItem(e, *rootItem));
+        //reset();
+    }
+}
 
-void TreeModel::beforeEventDelete(QObject *, Event *)
-{}
+void TreeModel::beforeEventDelete(QObject *sender, Event *e)
+{
+    if (sender!=this)
+    {
+        for (int i=0;i<rootItem->childCount();++i)
+            if (e==rootItem->child(i)->getEvent())
+            {
+            rootItem->removeChild(i);
+            //reset();
+            break;
+        }
+    }
+}
 
-void TreeModel::afterOperationAdd(QObject *, Operation *)
-{}
+void TreeModel::afterOperationAdd(QObject *sender, Operation *o)
+{
+    if (sender!=this)
+    {
+        Event *e = o->getBeginEvent();
+        for (int i=0;i<rootItem->childCount();++i)
+        {
+            TreeItem *parent = rootItem->child(i);
+            if (e==parent->getEvent())
+            {
+                parent->appendChild(new TreeItem(o, *parent));
+                //reset();
+                break;
+            }
+        }
+    }
+}
 
-void TreeModel::beforeOperationDelete(QObject *, Operation *)
-{}
+void TreeModel::beforeOperationDelete(QObject *sender, Operation *o)
+{
+    if (sender!=this)
+    {
+        Event *e = o->getBeginEvent();
+        for (int i=0;i<rootItem->childCount();++i)
+        {
+            TreeItem *parent = rootItem->child(i);
+            if (e==parent->getEvent())
+            {
+                for (int j=0;j<parent->childCount();++j)
+                {
+                    Operation *o1 = parent->child(j)->getOperation();
+                    if (o==o1)
+                    {
+                        parent->removeChild(j);
+                        //reset();
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
 
-void TreeModel::afterEventInsert(QObject *, int)
-{}
+void TreeModel::afterEventInsert(QObject *sender, int i)
+{
+    if (sender!=this)
+    {
+        Event *e = netmodel->event(i);
+        rootItem->insertChild(new TreeItem(e, *rootItem), i);
+        //reset();
+    }
+}
 
-void TreeModel::afterOperationInsert(QObject *, Operation *, int)
-{}
+void TreeModel::afterOperationInsert(QObject *sender, Operation *o, int index)
+{
+    if (sender!=this)
+    {
+        Event *e = o->getBeginEvent();
+        for (int i=0;i<rootItem->childCount();++i)
+        {
+            TreeItem *parent = rootItem->child(i);
+            if (e==parent->getEvent())
+            {
+                parent->insertChild(new TreeItem(o, *parent), index);
+                //reset();
+                break;
+            }
+        }
+    }
+}
 
 void TreeModel::updated()
-{}
+{
+    reset();
+}
 
 void TreeModel::beforeClear()
 {
