@@ -274,11 +274,11 @@ void NetModel::connect(Event* event, Operation* operation)
 {
     if (operation && operation->getBeginEvent()==NULL)
     {
-        add(event);
-        add(operation);
+        //add(event);
+        //add(operation);
         if (event) event->addOutOperation(operation);
         operation->setBeginEvent(event);
-        emit updated();
+        //emit updated();
     }
 }
 
@@ -286,11 +286,11 @@ void NetModel::connect(Operation* operation, Event* event)
 {
     if (operation && operation->getEndEvent()==NULL)
     {
-        add(event);
-        add(operation);
+        //add(event);
+        //add(operation);
         if (event) event->addInOperation(operation);
         operation->setEndEvent(event);
-        emit updated();
+        //emit updated();
     }
 }
 
@@ -655,7 +655,7 @@ double NetModel::getFreeReserveTime(Operation *o)
     return getEarlyEndTime(o->getEndEvent())-getEarlyEndTime(o->getBeginEvent())-o->getWaitTime();
 }
 
-bool NetModel::setN(QObject *obj, Event *e, int n)
+bool NetModel::setN(Event *e, int n)
 {
     if (n<0)
         return false;
@@ -665,20 +665,20 @@ bool NetModel::setN(QObject *obj, Event *e, int n)
             return false;
     }
     e->setN(n);
-    emit eventIdChanged(obj, e, n);
+    emit eventIdChanged(e, n);
     emit updated();
     return true;
 }
 
-bool NetModel::setName(QObject *obj, Event *e, const QString &name)
+bool NetModel::setName(Event *e, const QString &name)
 {
     e->setName(name);
-    emit eventNameChanged(obj, e, name);
+    emit eventNameChanged(e, name);
     emit updated();
     return true;
 }
 
-bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
+bool NetModel::setOperationEndEvent(Operation **o, Event *e)
 {
     //if (!e) return false;
     if (getOperationByEvents((*o)->getBeginEvent(), e))
@@ -687,34 +687,34 @@ bool NetModel::setOperationEndEvent(QObject *obj, Operation **o, Event *e)
     {
         disconnect(*o, (*o)->getEndEvent());
         connect(*o, e);
-        emit operationEndEventChanged(obj, o, e);
+        emit operationEndEventChanged(o, e);
         emit updated();
         return true;
     }
 }
 
-bool NetModel::setOperationName(QObject *obj, Operation *o, const QString &name)
+bool NetModel::setOperationName(Operation *o, const QString &name)
 {
     o->setName(name);
-    emit operationNameChanged(obj, o, name);
+    emit operationNameChanged(o, name);
     emit updated();
     return true;
 }
 
-bool NetModel::setOperationWaitTime(QObject *obj, Operation *o, double twait)
+bool NetModel::setOperationWaitTime(Operation *o, double twait)
 {
     o->setWaitTime(twait);
-    emit operationWaitTimeChanged(obj, o, twait);
+    emit operationWaitTimeChanged(o, twait);
     emit updated();
     return true;
 }
 
-bool NetModel::addEvent(QObject *obj/*, Event *e*/)
+bool NetModel::addEvent()
 {
     Event *e = new Event(generateId());
     if (add(e))
     {
-        emit afterEventAdd(obj/*, e*/);
+        emit afterEventAdd();
         emit updated();
         return true;
     }
@@ -725,12 +725,12 @@ bool NetModel::addEvent(QObject *obj/*, Event *e*/)
     }
 }
 
-bool NetModel::insertEvent(QObject *obj/*, Event *e*/, int i)
+bool NetModel::insertEvent(int i)
 {
     Event *e = new Event(generateId());
     if (insert(i, e))
     {
-        emit afterEventInsert(obj/*, e*/, i);
+        emit afterEventInsert(i);
         emit updated();
         return true;
     }
@@ -741,9 +741,9 @@ bool NetModel::insertEvent(QObject *obj/*, Event *e*/, int i)
     }
 }
 
-bool NetModel::removeEvent(QObject *obj, Event *e)
+bool NetModel::removeEvent(Event *e)
 {
-    emit beforeEventDelete(obj, e);
+    emit beforeEventDelete(e);
     if (remove(e))
     {
         emit updated();
@@ -753,11 +753,11 @@ bool NetModel::removeEvent(QObject *obj, Event *e)
         return false;
 }
 
-bool NetModel::addOperation(QObject *view, Operation *o)
+bool NetModel::addOperation(Operation *o)
 {
     if (add(o))
     {
-        emit afterOperationAdd(view, o);
+        emit afterOperationAdd(o);
         emit updated();
         return true;
     }
@@ -765,11 +765,11 @@ bool NetModel::addOperation(QObject *view, Operation *o)
         return false;
 }
 
-bool NetModel::insertOperation(QObject *view, Operation *o, int i)
+bool NetModel::insertOperation(Operation *o, int i)
 {
     if (insert(i, o))
     {
-        emit afterOperationInsert(view, o, i);
+        emit afterOperationInsert(o, i);
         emit updated();
         return true;
     }
@@ -777,9 +777,9 @@ bool NetModel::insertOperation(QObject *view, Operation *o, int i)
         return false;
 }
 
-bool NetModel::removeOperation(QObject *view, Operation *o)
+bool NetModel::removeOperation(Operation *o)
 {
-    emit beforeOperationDelete(view, o);
+    emit beforeOperationDelete(o);
     if (remove(o))
     {
         emit updated();

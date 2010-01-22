@@ -100,7 +100,7 @@ void DiagramScene::setModel(NetModel* model)
                 ic->move(ev->getPoint());
                 ic->show();
                 ic->setAttribute(Qt::WA_DeleteOnClose);*/
-        EventAdd(this, i);
+        EventAdd(i);
     }
     foreach(Operation* op,*_model->getOperations())
     {
@@ -109,23 +109,23 @@ void DiagramScene::setModel(NetModel* model)
                 ic->move(ev->getPoint());
                 ic->show();
                 ic->setAttribute(Qt::WA_DeleteOnClose);*/
-        ArrowAdd(0,op);
+        ArrowAdd(op);
     }
 
     //connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
-    connect(model, SIGNAL(eventIdChanged (QObject *, Event *, const int)), this, SLOT(NChanged(QObject*,Event*,int)));
-    connect(model, SIGNAL(afterEventAdd(QObject*)), this, SLOT(EventAdd(QObject*)));
-    connect(model, SIGNAL(afterEventInsert(QObject*,int)), this, SLOT(EventAdd(QObject*,int)));
+    connect(model, SIGNAL(eventIdChanged (Event *, const int)), this, SLOT(NChanged(Event*,int)));
+    connect(model, SIGNAL(afterEventAdd()), this, SLOT(EventAdd()));
+    connect(model, SIGNAL(afterEventInsert(int)), this, SLOT(EventAdd(int)));
     connect(model, SIGNAL(updated()),this,SLOT(update()));
     connect(model, SIGNAL(beforeClear()),this,SLOT(clearModel()));
-    connect(model, SIGNAL(afterOperationInsert(QObject*,Operation*,int)), this, SLOT(ArrowAdd(QObject*,Operation*,int)));
-    connect(model, SIGNAL(afterOperationAdd(QObject*,Operation*)), this, SLOT(ArrowAdd(QObject*,Operation*)));
-    connect(model, SIGNAL(beforeOperationDelete(QObject*,Operation*)), this, SLOT(ArrowDel(QObject*,Operation*)));
-    connect(model, SIGNAL(beforeEventDelete(QObject*,Event*)), this, SLOT(EventDel(QObject*,Event*)));
-    connect(model, SIGNAL(operationEndEventChanged(QObject*,Operation**,Event*)), this, SLOT(OperationRedirect(QObject*,Operation**,Event*)));
+    connect(model, SIGNAL(afterOperationInsert(Operation*,int)), this, SLOT(ArrowAdd(Operation*,int)));
+    connect(model, SIGNAL(afterOperationAdd(Operation*)), this, SLOT(ArrowAdd(Operation*)));
+    connect(model, SIGNAL(beforeOperationDelete(Operation*)), this, SLOT(ArrowDel(Operation*)));
+    connect(model, SIGNAL(beforeEventDelete(Event*)), this, SLOT(EventDel(Event*)));
+    connect(model, SIGNAL(operationEndEventChanged(Operation**,Event*)), this, SLOT(OperationRedirect(Operation**,Event*)));
 }
 
-void DiagramScene::EventAdd(QObject *, int index)
+void DiagramScene::EventAdd(int index)
 {
     /*EventWidget *ic = new EventWidget(ev,_model,this);
     //ic->setText(QString::number(ev->getN()));
@@ -146,12 +146,12 @@ void DiagramScene::EventAdd(QObject *, int index)
     emit itemInserted(item);
 }
 
-void DiagramScene::EventAdd(QObject *o)
+void DiagramScene::EventAdd()
 {
-    EventAdd(o, devents.size());
+    EventAdd(devents.size());
 }
 
-void DiagramScene::ArrowAdd(QObject *, Operation * ev,int index)
+void DiagramScene::ArrowAdd(Operation * ev,int index)
 {
     DiagramItem *startItem,*endItem;
     int sid = _model->getEvents()->indexOf(ev->getBeginEvent());
@@ -178,12 +178,12 @@ void DiagramScene::ArrowAdd(QObject *, Operation * ev,int index)
     devents.insert(index,item);*/
 }
 
-void DiagramScene::ArrowAdd(QObject *o, Operation * ev)
+void DiagramScene::ArrowAdd(Operation * ev)
 {
-    ArrowAdd(o,ev,darrows.size());
+    ArrowAdd(ev,darrows.size());
 }
 
-void DiagramScene::ArrowDel(QObject *o, Operation *op)
+void DiagramScene::ArrowDel(Operation *op)
 {
     int aid = _model->getOperations()->indexOf(op);
     if (aid<0) return;
@@ -195,7 +195,7 @@ void DiagramScene::ArrowDel(QObject *o, Operation *op)
     delete arr;
 }
 
-void DiagramScene::EventDel(QObject *,Event *ev)
+void DiagramScene::EventDel(Event *ev)
 {
     int eid = _model->getEvents()->indexOf(ev);
     if (eid<0) return;
@@ -229,7 +229,7 @@ void DiagramScene::removeEvent(DiagramItem *di)
 }
 
 
-void DiagramScene::OperationRedirect(QObject*o, Operation **op, Event *ev)
+void DiagramScene::OperationRedirect(Operation **op, Event *ev)
 {
     /*ArrowDel(o,*op);
     ArrowAdd(*/
@@ -261,19 +261,19 @@ void DiagramScene::deleteItem()
                  Event * eve = di->event();
                  foreach(Operation *op,eve->getOutOperations())
                  {
-                     _model->removeOperation(this,op);
+                     _model->removeOperation(op);
                  }
                  foreach(Operation *op,eve->getInOperations())
                  {
-                     _model->removeOperation(this,op);
+                     _model->removeOperation(op);
                  }
-                 _model->removeEvent(this,di->event());
+                 _model->removeEvent(di->event());
              }
          } else
          if (item->type()==Arrow::Type)
          {
              Arrow* di =  qgraphicsitem_cast<Arrow *>(item);
-             _model->removeOperation(this,di->getOperation());
+             _model->removeOperation(di->getOperation());
          }
     }
 
@@ -372,7 +372,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             //
             //ev = new Event();
             //ev->setN(_model->generateId());
-            if (_model->addEvent(this))
+            if (_model->addEvent())
             {
                 Event *ev = _model->last();
                 ev->getPoint()=mouseEvent->scenePos().toPoint();
@@ -456,9 +456,10 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
             if (op==NULL)
             {
                 Operation *op = new Operation();
-                op->setBeginEvent(se);
-                op->setEndEvent(ee);
-                _model->addOperation(this,op);
+                //op->setBeginEvent(se);
+                //op->setEndEvent(ee);
+                _model->connect(se, op, ee);
+                _model->addOperation(op);
             }
         }
     }
@@ -478,7 +479,7 @@ bool DiagramScene::isItemChange(int type)
     return false;
 }
 //! [14]
-void DiagramScene::NChanged(QObject *o, Event *ev, int id)
+void DiagramScene::NChanged(Event *ev, int id)
 {
     int idx = _model->getEvents()->indexOf(ev);
     DiagramItem *di = devents.at(idx);

@@ -37,6 +37,13 @@ public:
     void fill(QComboBox *, const QModelIndex &) const;
     TreeItem *getRootItem() {return rootItem;}
     void setModel(NetModel &);
+
+    void addEvent(const QModelIndex &selected);
+    void insertEvent(const QModelIndex &selected);
+    void addOperation(const QModelIndex &selected);
+    void insertOperation(const QModelIndex &selected);
+    void removeEvent(const QModelIndex &selected);
+    void removeOperation(const QModelIndex &selected);
 private:
     void setupModelData(TreeItem *parent);
     void process(Event *, TreeItem *);
@@ -46,17 +53,17 @@ private:
     NetModel *netmodel;
     QList<QVariant> header;
 private slots:
-    void eventIdChanged(QObject *, Event *, int);
-    void eventNameChanged(QObject *, Event *, const QString &);
-    void operationEndEventChanged(QObject *, Operation **, Event *);
-    void operationNameChanged(QObject *, Operation *, const QString &);
-    void operationWaitTimeChanged(QObject *, Operation *, double);
-    void afterEventAdd(QObject *);
-    void beforeEventDelete(QObject *, Event *);
-    void afterOperationAdd(QObject *, Operation *);
-    void beforeOperationDelete(QObject *, Operation *);
-    void afterEventInsert(QObject *, int);
-    void afterOperationInsert(QObject *, Operation *, int);
+    void eventIdChanged(Event *, int);
+    void eventNameChanged(Event *, const QString &);
+    void operationEndEventChanged(Operation **, Event *);
+    void operationNameChanged(Operation *, const QString &);
+    void operationWaitTimeChanged(Operation *, double);
+    void afterEventAdd();
+    void beforeEventDelete(Event *);
+    void afterOperationAdd(Operation *);
+    void beforeOperationDelete(Operation *);
+    void afterEventInsert(int);
+    void afterOperationInsert(Operation *, int);
     void updated();
     void beforeClear();
 };

@@ -23,139 +23,193 @@ void TreeModel::setModel(NetModel &netmodel)
 {
     this->netmodel = &netmodel;
     connect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
-    connect(this->netmodel, SIGNAL(eventIdChanged(QObject *, Event *, int)), this, SLOT(eventIdChanged(QObject *, Event *, int)));
-    connect(this->netmodel, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
-    connect(this->netmodel, SIGNAL(operationEndEventChanged(QObject *, Operation **, Event *)), this, SLOT(operationEndEventChanged(QObject *, Operation **, Event *)));
-    connect(this->netmodel, SIGNAL(operationNameChanged(QObject *, Operation *, const QString &)), this, SLOT(operationNameChanged(QObject *, Operation *, const QString &)));
-    connect(this->netmodel, SIGNAL(operationWaitTimeChanged(QObject *, Operation *, double)), this, SLOT(operationWaitTimeChanged(QObject *, Operation *, double)));
-    connect(this->netmodel, SIGNAL(afterEventAdd(QObject *)), this, SLOT(afterEventAdd(QObject *)));
-    connect(this->netmodel, SIGNAL(beforeEventDelete(QObject *, Event *)), this, SLOT(beforeEventDelete(QObject *, Event *)));
-    connect(this->netmodel, SIGNAL(afterOperationAdd(QObject *, Operation *)), this, SLOT(afterOperationAdd(QObject *, Operation *)));
-    connect(this->netmodel, SIGNAL(beforeOperationDelete(QObject *, Operation *)), this, SLOT(beforeOperationDelete(QObject *, Operation *)));
-    connect(this->netmodel, SIGNAL(afterEventInsert(QObject *, int)), this, SLOT(afterEventInsert(QObject *, int)));
-    connect(this->netmodel, SIGNAL(afterOperationInsert(QObject *, Operation *, int)), this, SLOT(afterOperationInsert(QObject *, Operation *, int)));
+    connect(this->netmodel, SIGNAL(eventIdChanged(Event *, int)),
+            this, SLOT(eventIdChanged(Event *, int)));
+    connect(this->netmodel, SIGNAL(eventNameChanged(Event *, const QString &)),
+            this, SLOT(eventNameChanged(Event *, const QString &)));
+    connect(this->netmodel, SIGNAL(operationEndEventChanged(Operation **, Event *)),
+            this, SLOT(operationEndEventChanged(Operation **, Event *)));
+    connect(this->netmodel, SIGNAL(operationNameChanged(Operation *, const QString &)),
+            this, SLOT(operationNameChanged(Operation *, const QString &)));
+    connect(this->netmodel, SIGNAL(operationWaitTimeChanged(Operation *, double)),
+            this, SLOT(operationWaitTimeChanged(Operation *, double)));
+    connect(this->netmodel, SIGNAL(afterEventAdd()),
+            this, SLOT(afterEventAdd()));
+    connect(this->netmodel, SIGNAL(beforeEventDelete(Event *)),
+            this, SLOT(beforeEventDelete(Event *)));
+    connect(this->netmodel, SIGNAL(afterOperationAdd(Operation *)),
+            this, SLOT(afterOperationAdd(Operation *)));
+    connect(this->netmodel, SIGNAL(beforeOperationDelete(Operation *)),
+            this, SLOT(beforeOperationDelete(Operation *)));
+    connect(this->netmodel, SIGNAL(afterEventInsert(int)),
+            this, SLOT(afterEventInsert(int)));
+    connect(this->netmodel, SIGNAL(afterOperationInsert(Operation *, int)),
+            this, SLOT(afterOperationInsert(Operation *, int)));
     connect(this->netmodel, SIGNAL(updated()), this, SLOT(updated()));
     setupModelData(rootItem);
     reset();
 }
 
-void TreeModel::eventIdChanged(QObject *sender, Event *, int)
+void TreeModel::addEvent(const QModelIndex &selected)
 {
-    if (this!=sender) reset();
+    netmodel->addEvent();
 }
 
-void TreeModel::eventNameChanged(QObject *sender, Event *, const QString &)
+void TreeModel::insertEvent(const QModelIndex &selected)
 {
-    if (this!=sender) reset();
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        insertRow(selected.row(), QModelIndex());
 }
 
-void TreeModel::operationEndEventChanged(QObject *sender, Operation **, Event *)
+void TreeModel::addOperation(const QModelIndex &selected)
 {
-    if (this!=sender) reset();
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        insertRow(item->getEvent()->getOutOperations().count(), selected);
+    else if (item->getOperation())
+        insertRow(
+                item->getOperation()->getBeginEvent()->getOutOperations().count(),
+                selected.parent());
 }
 
-void TreeModel::operationNameChanged(QObject *sender, Operation *, const QString &)
+void TreeModel::insertOperation(const QModelIndex &selected)
 {
-    if (this!=sender) reset();
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getEvent())
+        insertRow(0, selected);
+    else if (item->getOperation())
+        insertRow(selected.row(), selected.parent());
 }
 
-void TreeModel::operationWaitTimeChanged(QObject *sender, Operation *, double)
+void TreeModel::removeEvent(const QModelIndex &selected)
 {
-    if (this!=sender) reset();
-}
-
-void TreeModel::afterEventAdd(QObject *sender)
-{
-    if (this!=sender)
+    if (selected.isValid())
     {
-        Event *e = netmodel->last();
-        rootItem->appendChild(new TreeItem(e, *rootItem));
-        reset();
+        TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+        Event *e = item->getEvent();
+        if (e)
+        {
+            QList<Operation*> out = e->getOutOperations();
+            foreach (Operation* o, out)
+            {
+                netmodel->removeOperation(o);
+            }
+            netmodel->removeEvent(e);//model->removeRow(selected.row(), QModelIndex());
+        }
     }
 }
 
-void TreeModel::beforeEventDelete(QObject *sender, Event *e)
+void TreeModel::removeOperation(const QModelIndex &selected)
 {
-    if (sender!=this)
+    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
+    if (item->getOperation())
+        removeRow(selected.row(), selected.parent());
+}
+
+void TreeModel::eventIdChanged(Event *, int)
+{
+    reset();
+}
+
+void TreeModel::eventNameChanged(Event *, const QString &)
+{
+    reset();
+}
+
+void TreeModel::operationEndEventChanged(Operation **, Event *)
+{
+    reset();
+}
+
+void TreeModel::operationNameChanged(Operation *, const QString &)
+{
+    reset();
+}
+
+void TreeModel::operationWaitTimeChanged(Operation *, double)
+{
+    reset();
+}
+
+void TreeModel::afterEventAdd()
+{
+    Event *e = netmodel->last();
+    rootItem->appendChild(new TreeItem(e, *rootItem));
+    reset();
+}
+
+void TreeModel::beforeEventDelete(Event *e)
+{
+    for (int i=0;i<rootItem->childCount();++i)
+        if (e==rootItem->child(i)->getEvent())
+        {
+        rootItem->removeChild(i);
+        reset();
+        break;
+    }
+}
+
+void TreeModel::afterOperationAdd(Operation *o)
+{
+    Event *e = o->getBeginEvent();
+    for (int i=0;i<rootItem->childCount();++i)
     {
-        for (int i=0;i<rootItem->childCount();++i)
-            if (e==rootItem->child(i)->getEvent())
-            {
-            rootItem->removeChild(i);
+        TreeItem *parent = rootItem->child(i);
+        if (e==parent->getEvent())
+        {
+            //beginInsertRows(index(i,0,QModelIndex()),parent->childCount(),parent->childCount());
+            //parent->appendChild(new TreeItem(o, *parent));
+            process(o,parent);
+            //endInsertRows();
+
             reset();
             break;
         }
     }
 }
 
-void TreeModel::afterOperationAdd(QObject *sender, Operation *o)
+void TreeModel::beforeOperationDelete(Operation *o)
 {
-    if (sender!=this)
+    Event *e = o->getBeginEvent();
+    for (int i=0;i<rootItem->childCount();++i)
     {
-        Event *e = o->getBeginEvent();
-        for (int i=0;i<rootItem->childCount();++i)
+        TreeItem *parent = rootItem->child(i);
+        if (e==parent->getEvent())
         {
-            TreeItem *parent = rootItem->child(i);
-            if (e==parent->getEvent())
+            for (int j=0;j<parent->childCount();++j)
             {
-                parent->appendChild(new TreeItem(o, *parent));
-                reset();
-                break;
-            }
-        }
-    }
-}
-
-void TreeModel::beforeOperationDelete(QObject *sender, Operation *o)
-{
-    if (sender!=this)
-    {
-        Event *e = o->getBeginEvent();
-        for (int i=0;i<rootItem->childCount();++i)
-        {
-            TreeItem *parent = rootItem->child(i);
-            if (e==parent->getEvent())
-            {
-                for (int j=0;j<parent->childCount();++j)
+                Operation *o1 = parent->child(j)->getOperation();
+                if (o==o1)
                 {
-                    Operation *o1 = parent->child(j)->getOperation();
-                    if (o==o1)
-                    {
-                        parent->removeChild(j);
-                        reset();
-                        break;
-                    }
+                    parent->removeChild(j);
+                    reset();
+                    break;
                 }
-                break;
             }
+            break;
         }
     }
 }
 
-void TreeModel::afterEventInsert(QObject *sender, int i)
+void TreeModel::afterEventInsert(int i)
 {
-    if (sender!=this)
-    {
-        Event *e = netmodel->event(i);
-        rootItem->insertChild(new TreeItem(e, *rootItem), i);
-        reset();
-    }
+    Event *e = netmodel->event(i);
+    rootItem->insertChild(new TreeItem(e, *rootItem), i);
+    reset();
 }
 
-void TreeModel::afterOperationInsert(QObject *sender, Operation *o, int index)
+void TreeModel::afterOperationInsert(Operation *o, int index)
 {
-    if (sender!=this)
+    Event *e = o->getBeginEvent();
+    for (int i=0;i<rootItem->childCount();++i)
     {
-        Event *e = o->getBeginEvent();
-        for (int i=0;i<rootItem->childCount();++i)
+        TreeItem *parent = rootItem->child(i);
+        if (e==parent->getEvent())
         {
-            TreeItem *parent = rootItem->child(i);
-            if (e==parent->getEvent())
-            {
-                parent->insertChild(new TreeItem(o, *parent), index);
-                reset();
-                break;
-            }
+            parent->insertChild(new TreeItem(o, *parent), index);
+            reset();
+            break;
         }
     }
 }
@@ -242,7 +296,7 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
         {
             case 0:
                     if (v.convert(QVariant::Int)
-                        && netmodel->setN(this, item->getEvent(), v.toInt()))
+                        && netmodel->setN(item->getEvent(), v.toInt()))
                     {
                         emit dataChanged(index,index);
                         return true;
@@ -251,7 +305,7 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
                         return false;
             case 1:
                     if (v.convert(QVariant::String)
-                        && netmodel->setName(this, item->getEvent(), v.toString()))
+                        && netmodel->setName(item->getEvent(), v.toString()))
                     {
                         emit dataChanged(index,index);
                         return true;
@@ -269,7 +323,7 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
                 {
                     Event *e = v.value<Event*>();
                     Operation *o = item->getOperation();
-                    bool res = netmodel->setOperationEndEvent(this, &o, e);
+                    bool res = netmodel->setOperationEndEvent(&o, e);
                     if (res)
                     {
                         emit dataChanged(index,index);
@@ -278,7 +332,7 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
                 }
             case 3:
                 if (v.convert(QVariant::String)
-                    && netmodel->setOperationName(this, item->getOperation(), v.toString()))
+                    && netmodel->setOperationName(item->getOperation(), v.toString()))
                 {
                     emit dataChanged(index,index);
                     return true;
@@ -287,7 +341,7 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
                     return false;
             case 4:
                 if (v.convert(QVariant::Double)
-                    && netmodel->setOperationWaitTime(this, item->getOperation(), v.toDouble()))
+                    && netmodel->setOperationWaitTime(item->getOperation(), v.toDouble()))
                 {
                     emit dataChanged(index,index);
                     return true;
@@ -436,7 +490,7 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
             {
                 Operation *o = new Operation();
                 o->setBeginEvent(event);
-                if (netmodel->insertOperation(this, o, i))
+                if (netmodel->insertOperation(o, i))
                 {
                     QModelIndex parent1 = createIndex(parent.row(), 0, parent.internalPointer());
                     beginInsertRows(parent1, i, i);
@@ -453,7 +507,7 @@ bool TreeModel::insertRows(int row, int count, const QModelIndex &parent)
         else
         {
             //Event *e = new Event(netmodel->generateId());
-            if (netmodel->insertEvent(this, /*e,*/ i))
+            if (netmodel->insertEvent(i))
             {
                 beginInsertRows(parent, i, i);
                 Event *e = netmodel->event(i);
@@ -484,7 +538,7 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
             if (e && i<e->getOutOperations().count())
             {
                 Operation *o = e->getOutOperations()[i];
-                if (netmodel->removeOperation(this, o))
+                if (netmodel->removeOperation(o))
                 {
                     //parentItem->child(i)->clear();
                     parentItem->removeChild(i);
@@ -501,9 +555,9 @@ bool TreeModel::removeRows(int row, int count, const QModelIndex &parent)
                 QList<Operation*> out = e->getOutOperations();
                 foreach (Operation* o, out)
                 {
-                    netmodel->removeOperation(this, o);
+                    netmodel->removeOperation(o);
                 }
-                if (netmodel->removeEvent(this, e))
+                if (netmodel->removeEvent(e))
                 {
                     //parentItem->child(i)->clear();
                     parentItem->removeChild(i);

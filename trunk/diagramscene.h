@@ -87,14 +87,14 @@ public slots:
     void setMode(Mode mode);
     void setItemType(DiagramItem::DiagramType type);
     void editorLostFocus(DiagramTextItem *item);
-    void EventAdd(QObject */*, Event*/);
-    void EventAdd(QObject *o/*, Event*e*/, int);
-    void EventDel(QObject *o, Event*e);
-    void ArrowAdd(QObject *o, Operation* op,int);
-    void ArrowAdd(QObject *o, Operation* op);
-    void ArrowDel(QObject *o, Operation* op);
-    void OperationRedirect(QObject *o, Operation **op,Event* ev);
-    void NChanged(QObject *o, Event *ev, int id);
+    void EventAdd();
+    void EventAdd(int);
+    void EventDel(Event*e);
+    void ArrowAdd(Operation* op,int);
+    void ArrowAdd(Operation* op);
+    void ArrowDel(Operation* op);
+    void OperationRedirect(Operation **op,Event* ev);
+    void NChanged(Event *ev, int id);
     void deleteItem();
 
 signals:
