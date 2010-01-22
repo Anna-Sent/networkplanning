@@ -28,18 +28,21 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<Event*>("Event*");
     qRegisterMetaType<Operation*>("Operation*");
 
-    netmodel.addEvent(this);
+    netmodel.addEvent();
     Event *e1 = netmodel.last(); //new Event(0);
-    netmodel.addEvent(this);
+    netmodel.addEvent();
     Event *e2 = netmodel.last(); //new Event(1);
-    netmodel.addEvent(this);
+    netmodel.addEvent();
     Event *e3 = netmodel.last();// new Event(2);
     //Event *e4 = new Event(3);
     //Event *e5 = new Event(4);
     //Event *e6 = new Event(5);
     Operation *o1 = new Operation(1);
+    netmodel.addOperation(o1);
     Operation *o2 = new Operation(2);
+    netmodel.addOperation(o2);
     Operation *o3 = new Operation(3);
+    netmodel.addOperation(o3);
     //Operation *o4 = new Operation(4);
     //Operation *o5 = new Operation(5);
     //Operation *o6 = new Operation(6);
@@ -276,88 +279,76 @@ void MainWindow::insertEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-    if (item->getEvent())
-        model->insertRow(selected.row(), QModelIndex());
+    model->insertEvent(selected);
 }
 
 void MainWindow::addEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
-    model->insertRow(netmodel.getEventsCount(), QModelIndex());
+    QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
+    model->addEvent(selected);
 }
 
 void MainWindow::deleteEvent()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-    if (item->getEvent())
-        model->removeRow(selected.row(), QModelIndex());
+    model->removeEvent(selected);
 }
 
 void MainWindow::insertOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-    if (item->getEvent())
-        model->insertRow(0, selected);
-    else if (item->getOperation())
-        model->insertRow(selected.row(), selected.parent());
+    model->insertOperation(selected);
 }
 
 void MainWindow::addOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-    if (item->getEvent())
-        model->insertRow(item->getEvent()->getOutOperations().count(), selected);
-    else if (item->getOperation())
-        model->insertRow(
-                item->getOperation()->getBeginEvent()->getOutOperations().count(),
-                selected.parent());
+    model->addOperation(selected);
 }
 
 void MainWindow::deleteOperation()
 {
     TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    TreeItem *item = static_cast<TreeItem*>(selected.internalPointer());
-    if (item->getOperation())
-        model->removeRow(selected.row(), selected.parent());
+    model->removeOperation(selected);
 }
 
 void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
 {
-    TreeItem *item = static_cast<TreeItem*>(current.internalPointer());
-    if (item->getEvent())
+    if (current.isValid())
     {
-        ui->btnAddEvent->setEnabled(true);
-        ui->btnInsertEvent->setEnabled(true);
-        ui->btnDeleteEvent->setEnabled(true);
-        ui->btnAddOperation->setEnabled(true);
-        ui->btnInsertOperation->setEnabled(true);
-        ui->btnDeleteOperation->setEnabled(false);
-    }
-    else if (item->getOperation())
-    {
-        ui->btnAddEvent->setEnabled(true);
-        ui->btnInsertEvent->setEnabled(false);
-        ui->btnDeleteEvent->setEnabled(false);
-        ui->btnAddOperation->setEnabled(true);
-        ui->btnInsertOperation->setEnabled(true);
-        ui->btnDeleteOperation->setEnabled(true);
-    }
-    else
-    {
-        ui->btnAddEvent->setEnabled(true);
-        ui->btnInsertEvent->setEnabled(true);
-        ui->btnDeleteEvent->setEnabled(false);
-        ui->btnAddOperation->setEnabled(false);
-        ui->btnInsertOperation->setEnabled(false);
-        ui->btnDeleteOperation->setEnabled(false);
+        TreeItem *item = static_cast<TreeItem*>(current.internalPointer());
+        if (item->getEvent())
+        {
+            ui->btnAddEvent->setEnabled(true);
+            ui->btnInsertEvent->setEnabled(true);
+            ui->btnDeleteEvent->setEnabled(true);
+            ui->btnAddOperation->setEnabled(true);
+            ui->btnInsertOperation->setEnabled(true);
+            ui->btnDeleteOperation->setEnabled(false);
+        }
+        else if (item->getOperation())
+        {
+            ui->btnAddEvent->setEnabled(true);
+            ui->btnInsertEvent->setEnabled(false);
+            ui->btnDeleteEvent->setEnabled(false);
+            ui->btnAddOperation->setEnabled(true);
+            ui->btnInsertOperation->setEnabled(true);
+            ui->btnDeleteOperation->setEnabled(true);
+        }
+        else
+        {
+            ui->btnAddEvent->setEnabled(true);
+            ui->btnInsertEvent->setEnabled(true);
+            ui->btnDeleteEvent->setEnabled(false);
+            ui->btnAddOperation->setEnabled(false);
+            ui->btnInsertOperation->setEnabled(false);
+            ui->btnDeleteOperation->setEnabled(false);
+        }
     }
 }
 
