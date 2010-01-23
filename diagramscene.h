@@ -82,6 +82,7 @@ public:
     void removeArrow(Arrow *arr);
     void removeEvent(DiagramItem *di);
     NetModel *model() const {return _model; }
+    void editing(bool);
 
 public slots:
     void clearModel();
@@ -103,6 +104,7 @@ signals:
     void itemInserted(DiagramItem *item);
     void textInserted(QGraphicsTextItem *item);
     void itemSelected(QGraphicsItem *item);
+    void actionsEnabled(bool);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);

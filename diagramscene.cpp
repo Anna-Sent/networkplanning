@@ -214,8 +214,15 @@ void DiagramScene::OperationRedirect(Operation **op, Event *ev)
 
 }
 
+void DiagramScene::editing(bool r)
+{
+    emit actionsEnabled(!r);
+}
+
 void DiagramScene::deleteItem()
 {
+    QGraphicsItem* gi = focusItem();
+    if (dynamic_cast<DiagramTextItem*>(gi)) return;
      foreach (QGraphicsItem *item, selectedItems()) {
          if (item->type()==DiagramItem::Type)
          {

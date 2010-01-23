@@ -221,6 +221,26 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setPos ( event->pos() );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
-        QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
+
+        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        if (ds)
+        {
+            ds->editing(true);
+        }
+        //QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
     }
+}
+
+void DiagramItem::setValue(QString& val)
+{
+        bool ok=false;
+        int num = val.toInt(&ok,10);
+        if (!ok) return;
+        //emit changeN(i->event(),num);
+        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        if (ds)
+        {
+            ds->model()->setN(_event,num);
+            ds->editing(false);
+        }
 }

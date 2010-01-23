@@ -69,7 +69,6 @@ public:
 signals:
     void lostFocus(DiagramTextItem *item);
     void selectedChange(QGraphicsItem *item);
-    void changeN(Event *, int);
 
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);

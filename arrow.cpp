@@ -45,6 +45,8 @@
 #include <math.h>
 #include <assert.h>
 #include "diagramtextitem.h"
+#include "netmodel.h"
+#include "diagramscene.h"
 
 const qreal Pi = 3.14;
 
@@ -184,6 +186,25 @@ void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setPos ( event->pos() );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
+        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        if (ds)
+        {
+            ds->editing(true);
+        }
         //QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
     }
+}
+
+void Arrow::setValue(QString &str)
+{
+        bool ok=false;
+        double num = str.toDouble(&ok);
+        if (!ok) return;
+        //emit changeN(i->event(),num);
+        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        if (ds)
+        {
+            ds->model()->setOperationWaitTime(_op,num);
+            ds->editing(false);
+        }
 }

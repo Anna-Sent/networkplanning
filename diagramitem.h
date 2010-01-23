@@ -88,7 +88,7 @@ public:
     Event * event() const {return _event;}
     void updateText();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem * style, QWidget *widget);
-
+    void setValue(QString &val);
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);

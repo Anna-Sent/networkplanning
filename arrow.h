@@ -80,6 +80,7 @@ public:
     void setEndItem(DiagramItem *);
     Operation * getOperation() {return _op;}
     void setOperation(Operation *op) {_op=op;}
+    void setValue(QString &str);
 
 
 public slots:
