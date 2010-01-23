@@ -59,6 +59,10 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->treeView->setAcceptDrops(true);
     //ui->treeView->setDropIndicatorShown(true);
     //ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+    connect(ui->treeView->selectionModel(),
+            SIGNAL(currentChanged(QModelIndex, QModelIndex)),
+            this,
+            SLOT(currentChanged(QModelIndex, QModelIndex)));
     Position *pos = new PlanarPosition;
     pos->position(&netmodel);
     delete pos;
@@ -67,11 +71,7 @@ MainWindow::MainWindow(QWidget *parent)
     scene->setModel(&netmodel);
     connect(scene, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(itemInserted(DiagramItem*)));
     /*ui->graphView->setModel(&netmodel);
-
-    connect(ui->treeView->selectionModel(),
-            SIGNAL(currentChanged(QModelIndex, QModelIndex)),
-            this,
-            SLOT(currentChanged(QModelIndex, QModelIndex)));*/
+*/
     dialog = new Dialog(netmodel, this);
 
     setFileName("");
