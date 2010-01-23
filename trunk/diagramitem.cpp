@@ -114,7 +114,8 @@ void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *sty
     QBrush brush;
     switch (myDiagramType) {
         case Circle:
-            painter->drawText(QRect(-30,-30,60,60),Qt::AlignCenter,QString::number(_event->getN()) );
+            if (!editing)
+                painter->drawText(QRect(-30,-30,60,60),Qt::AlignCenter,QString::number(_event->getN()) ,&textBox);
             break;
     }
 }
@@ -218,9 +219,10 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setPlainText(QString::number(_event->getN()));
         f->setZValue ( 1000.0 );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
-        f->setPos ( event->pos() );
+        f->setPos ( /*event->pos()*/textBox.topLeft() );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
+        editing=true;
 
         DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
         if (ds)
@@ -243,4 +245,5 @@ void DiagramItem::setValue(QString& val)
             ds->model()->setN(_event,num);
             ds->editing(false);
         }
+        editing=false;
 }

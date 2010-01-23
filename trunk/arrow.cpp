@@ -146,13 +146,20 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         p1 = p2;
     }
 
-    QPointF mid = (intersectPoint - myStartItem->pos())/2;
+    QPointF mid = centerLine.pointAt(0.5);
     QLineF diff = centerLine.normalVector().unitVector();
     //qreal asc = painter->fontMetrics().ascent();
     diff.setLength(20.0);
-    diff.translate(mid);
+    //diff.translate(mid);
+    qreal ddy = diff.dy();
+    qreal ddx = diff.dx();
+    if (ddy>0) {
+        ddx=-ddx;
+        ddy=-ddy;
+    }
     textLabel.clear();
-    painter->drawText(QRectF(diff.p2(),QSizeF(200.0,200.0)),Qt::AlignLeft||Qt::AlignTop,QString::number(_op->getWaitTime()),&textLabelR);
+    if (!editing)
+        painter->drawText(QRectF(mid+QPointF(ddx,ddy),QSizeF(200.0,200.0)),Qt::AlignLeft||Qt::AlignTop,QString::number(_op->getWaitTime()),&textLabelR);
     QPainterPath path;
     path.addPolygon(textLabelR);
     textLabel=path.toFillPolygon();
@@ -192,10 +199,11 @@ void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setPlainText(QString::number(_op->getWaitTime()));
         f->setZValue ( 1000.0 );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
-        f->setPos ( event->pos() );
+        f->setPos ( /*event->pos()*/textLabelR.topLeft() );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
         DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        editing=true;
         if (ds)
         {
             ds->editing(true);
@@ -211,6 +219,7 @@ void Arrow::setValue(QString &str)
         if (!ok) return;
         //emit changeN(i->event(),num);
         DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        editing=false;
         if (ds)
         {
             ds->model()->setOperationWaitTime(_op,num);
