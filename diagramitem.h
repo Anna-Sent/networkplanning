@@ -101,6 +101,8 @@ private:
     QList<Arrow *> arrows;
     DiagramTextItem *text;
     Event *_event;
+    QRectF textBox;
+    bool editing;
 };
 //! [0]
 

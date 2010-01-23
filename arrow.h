@@ -99,6 +99,7 @@ private:
     QPolygonF textLabel;
     QRectF textLabelR;
     Operation * _op;
+    bool editing;
 };
 //! [0]
 
