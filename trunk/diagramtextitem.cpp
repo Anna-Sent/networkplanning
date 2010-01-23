@@ -48,8 +48,8 @@
 DiagramTextItem::DiagramTextItem(QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsTextItem(parent, scene)
 {
-    /*setFlag(QGraphicsItem::ItemIsMovable);*/
-    setFlag(QGraphicsItem::ItemIsSelectable);
+   /* setFlag(QGraphicsItem::ItemIsMovable);
+    setFlag(QGraphicsItem::ItemIsSelectable); */
 }
 //! [0]
 
@@ -59,6 +59,8 @@ QVariant DiagramTextItem::itemChange(GraphicsItemChange change,
 {
     if (change == QGraphicsItem::ItemSelectedHasChanged)
         emit selectedChange(this);
+    /*if (change == QGraphicsItem::ItemPositionChange) {
+    }*/
     return value;
 }
 //! [1]
@@ -67,6 +69,7 @@ QVariant DiagramTextItem::itemChange(GraphicsItemChange change,
 void DiagramTextItem::focusOutEvent(QFocusEvent *event)
 {
     setTextInteractionFlags(Qt::NoTextInteraction);
+    editingFinished();
     emit lostFocus(this);
     QGraphicsTextItem::focusOutEvent(event);
 }
@@ -80,3 +83,40 @@ void DiagramTextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsTextItem::mouseDoubleClickEvent(event);
 }
 //! [5]
+
+
+void DiagramTextItem::editingFinished()
+{
+    Arrow *a;
+    DiagramItem *i;
+  QString text = toPlainText().split( "\n" ).first();
+
+  if ( parentItem() != NULL ) {
+    switch ( parentItem()->type() ) {
+    case DiagramItem::Type: {
+        i=static_cast<DiagramItem*>(parentItem());
+        bool ok;
+        int num = text.toInt(&ok,10);
+        //i->event()->setN(num);
+        emit changeN(i->event(),num);
+        break;
+    }
+/*    case SceneItem_NodeType:
+      w = ( SceneItem_Node* )parentItem();
+      if ( text != "" )
+        (( GraphicsScene* )scene() )->setData( w->index, text, customRole::CustomLabelRole );
+      break;*/
+    default:
+      qDebug() << __FUNCTION__ << "ERROR, case not handled yet";
+      break;
+    }
+    this->deleteLater();
+  }
+}
+
+void DiagramTextItem::keyPressEvent ( QKeyEvent * event )
+{
+    //qDebug() << event->key() << Qt::Key_Enter;
+    if (event->key()==Qt::Key_Return) editingFinished();
+    QGraphicsTextItem::keyPressEvent(event);
+}

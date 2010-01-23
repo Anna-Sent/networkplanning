@@ -81,6 +81,7 @@ public:
     void setModel(NetModel * model);
     void removeArrow(Arrow *arr);
     void removeEvent(DiagramItem *di);
+    NetModel *model() const {return _model; }
 
 public slots:
     void clearModel();
