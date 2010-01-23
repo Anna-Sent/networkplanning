@@ -138,6 +138,9 @@ public:
     Event *first() {return events.isEmpty()?NULL:events.first();}
     Event *last() {return events.isEmpty()?NULL:events.last();}
     // for net
+    void sort(QList<Path> &);
+    QList<Event*> *getSortedEvents();
+    QList<Operation*> *getSortedOperatioins();
     QList<Path> *getFullPathes();
     QList<Path> *getCriticalPathes();
     double getCriticalPathWeight();
