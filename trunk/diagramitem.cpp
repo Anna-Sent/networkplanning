@@ -237,12 +237,11 @@ void DiagramItem::setValue(QString& val)
 {
         bool ok=false;
         int num = val.toInt(&ok,10);
-        if (!ok) return;
         //emit changeN(i->event(),num);
         DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
         if (ds)
         {
-            ds->model()->setN(_event,num);
+            if (ok) ds->model()->setN(_event,num);
             ds->editing(false);
         }
         editing=false;
