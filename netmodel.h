@@ -46,6 +46,9 @@ private:
     Event *beginEvent, *endEvent;
     double tmin, tmax, twait;
     QString name;
+    void setWaitTime(double twait) {this->twait=twait;}
+    void setName(const QString &name) {this->name=name;}
+    friend class NetModel;
 public:
     Operation();
     Operation(double);
@@ -54,10 +57,8 @@ public:
     void setBeginEvent(Event* e);
     void setEndEvent(Event* e);
     double getWaitTime();
-    void setWaitTime(double twait) {this->twait=twait;}
     QString getCode();
     QString getName() {return name;}
-    void setName(const QString &name) {this->name=name;}
 };
 
 class Path
@@ -96,39 +97,30 @@ class NetModel : public QObject
 private:
     QList<Event*> events;
     QList<Operation*> operations;
-    QList<Path> *getMaxPathes(Event*,Event*);
+    QList<Path> *getMaxPathes(Event *, Event *);
     double getMaxPathWeight(Event *, Event *);
-    void getPathes(Event*,Event*,QList<Path>*);
-    bool add(Operation*);
-    bool remove(Operation*);
-    bool add(Event*);
-    bool insert(int, Operation*);
-    bool insert(int, Event*);
-    bool remove(Event*/*, bool deleteOutput = true*/);
+    void getPathes(Event *, Event *, QList<Path> *);
+    bool add(Operation *);
+    bool remove(Operation *);
+    bool add(Event *);
+    bool insert(int, Event *);
+    bool remove(Event *);
     QDataStream &writeEvent(Event *e, QDataStream &stream);
     QDataStream &readEvent(Event **e, QDataStream &stream);
     QDataStream &writeOperation(Operation *o, QDataStream &stream);
     QDataStream &readOperation(Operation **o, QDataStream &stream);
+    int generateId();
 public:
     NetModel();
     ~NetModel();
-    // utils
-    int generateId();
     Event* getEventByNumber(int n);
-    Operation* getOperationByEvents(Event*,Event*);
+    Operation* getOperationByEvents(Event *, Event *);
+    void getBeginEndEvents(Event **, Event **);
+    Event *getBeginEvent();
+    Event *getEndEvent();
     QString print();
-    void getBeginEndEvents(Event**,Event**);
-    Event* getBeginEvent();
-    Event* getEndEvent();
     QDataStream &writeTo(QDataStream &stream);
     QDataStream &readFrom(QDataStream &stream);
-    void clear();
-    // graph editors
-    void connect(Event*,Operation*);
-    void connect(Operation*,Event*);
-    void connect(Event*,Operation*,Event*);
-    void disconnect(Event*,Operation*);
-    void disconnect(Operation*,Event*);
     // checkers
     bool hasLoops();
     bool hasMultiEdges();
@@ -139,12 +131,12 @@ public:
     bool isCorrect();
     bool isCorrect(QString &);
     // getters
+    QList<Operation*> *getOperations() {return &operations;}
     QList<Event*> *getEvents() {return &events;}
     int getEventsCount() {return events.count();}
     Event *event(int i) {return i>=0&&i<events.count()?events[i]:NULL;}
     Event *first() {return events.isEmpty()?NULL:events.first();}
     Event *last() {return events.isEmpty()?NULL:events.last();}
-    QList<Operation*> *getOperations() {return &operations;}
     // for net
     QList<Path> *getFullPathes();
     QList<Path> *getCriticalPathes();
@@ -159,7 +151,14 @@ public:
     double getReserveTime(Event*);
     double getFullReserveTime(Operation*);
     double getFreeReserveTime(Operation*);
+public:
+    void connect(Event*,Operation*);
+    void connect(Operation*,Event*);
+    void connect(Event*,Operation*,Event*);
+    void disconnect(Event*,Operation*);
+    void disconnect(Operation*,Event*);
 public slots:
+    void clear();
     bool setN(Event *, int);
     bool setName(Event *, const QString &);
     bool setOperationEndEvent(Operation **, Event *);
@@ -172,6 +171,7 @@ public slots:
     bool insertEvent(int);
     bool insertOperation(Operation *, int);
 signals:
+    void beforeClear();
     void eventIdChanged(Event *, int);
     void eventNameChanged(Event *, const QString &);
     void operationEndEventChanged(Operation **, Event *);
@@ -184,7 +184,6 @@ signals:
     void afterEventInsert(int);
     void afterOperationInsert(Operation *, int);
     void updated();
-    void beforeClear();
 };
 
 #endif // NETMODEL_H

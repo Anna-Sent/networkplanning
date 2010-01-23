@@ -181,19 +181,6 @@ bool NetModel::add(Operation* operation)
         return false;
 }
 
-bool NetModel::insert(int i, Operation* operation)
-{
-    if (operations.indexOf(operation)==-1)
-    {
-        if (operation->getBeginEvent()&&operation->getEndEvent()&&getOperationByEvents(operation->getBeginEvent(), operation->getEndEvent()))
-            return false;
-        operations.insert(i, operation);
-        return true;
-    }
-    else
-        return false;
-}
-
 bool NetModel::remove(Operation* operation)
 {
     int index=operations.indexOf(operation);
@@ -304,7 +291,7 @@ void NetModel::disconnect(Event* event,Operation* operation)
     }
     if (operation && operation->getBeginEvent()==event)
         operation->setBeginEvent(NULL);
-    emit updated();
+    //emit updated();
 }
 
 void NetModel::disconnect(Operation* operation,Event* event)
@@ -317,7 +304,7 @@ void NetModel::disconnect(Operation* operation,Event* event)
     }
     if (operation && operation->getEndEvent()==event)
         operation->setEndEvent(NULL);
-    emit updated();
+    //emit updated();
 }
 
 void NetModel::connect(Event *e1, Operation *o, Event *e2)
@@ -767,8 +754,10 @@ bool NetModel::addOperation(Operation *o)
 
 bool NetModel::insertOperation(Operation *o, int i)
 {
-    if (insert(i, o))
+    if (add(o))
     {
+        if (o->beginEvent)
+            o->beginEvent->insertOutOperation(o, i);
         emit afterOperationInsert(o, i);
         emit updated();
         return true;
