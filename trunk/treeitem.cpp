@@ -1,11 +1,3 @@
-/*
-    treeitem.cpp
-
-    A container for items of data supplied by the simple tree model.
-*/
-
-#include <QStringList>
-
 #include "treeitem.h"
 
 TreeItem::~TreeItem()
@@ -32,6 +24,5 @@ int TreeItem::row() const
 {
     if (parentItem)
         return parentItem->childItems.indexOf(const_cast<TreeItem*>(this));
-
     return 0;
 }

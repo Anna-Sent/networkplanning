@@ -28,8 +28,8 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    bool insertRows (int row, int count, const QModelIndex &parent = QModelIndex());
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    //bool insertRows (int row, int count, const QModelIndex &parent = QModelIndex());
+    //bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
     Qt::DropActions supportedDropActions() const
     {
         return /*Qt::CopyAction |*/ Qt::MoveAction;
@@ -46,8 +46,8 @@ public:
     void removeOperation(const QModelIndex &selected);
 private:
     void setupModelData(TreeItem *parent);
-    void process(Event *, TreeItem *);
-    void process(Operation*,TreeItem*);
+    //void process(Event *, TreeItem *);
+    //void process(Operation*,TreeItem*);
 
     TreeItem *rootItem;
     NetModel *netmodel;
