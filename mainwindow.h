@@ -50,6 +50,7 @@ private:
     void createToolbar();
     QWidget * createBtnWidget(const QString &text, DiagramItem::DiagramType type);
 private slots:
+    void about();
     void addEvent();
     void insertEvent();
     void deleteEvent();
