@@ -44,7 +44,7 @@ void TreeModel::setModel(NetModel &netmodel)
     reset();
 }
 
-void TreeModel::addEvent(const QModelIndex &selected)
+void TreeModel::addEvent(const QModelIndex &/*selected*/)
 {
     netmodel->addEvent();
 }
@@ -174,13 +174,31 @@ void TreeModel::removeOperation(const QModelIndex &selected)
     }
 }
 
-void TreeModel::eventIdChanged(Event *, int)
+void TreeModel::eventIdChanged(Event *e, int)
 {
+    for (int i=0;i<rootItem->childCount();++i)
+    {
+        if (rootItem->child(i)->getEvent()==e)
+        {
+            QModelIndex index = createIndex(i, 0, rootItem->child(i));
+            emit dataChanged(index, index);
+            break;
+        }
+    }
     //reset();
 }
 
-void TreeModel::eventNameChanged(Event *, const QString &)
+void TreeModel::eventNameChanged(Event *e, const QString &)
 {
+    for (int i=0;i<rootItem->childCount();++i)
+    {
+        if (rootItem->child(i)->getEvent()==e)
+        {
+            QModelIndex index = createIndex(i, 1, rootItem->child(i));
+            emit dataChanged(index, index);
+            break;
+        }
+    }
     //reset();
 }
 
@@ -189,13 +207,47 @@ void TreeModel::operationEndEventChanged(Operation **, Event *)
     //reset();
 }
 
-void TreeModel::operationNameChanged(Operation *, const QString &)
+void TreeModel::operationNameChanged(Operation *o, const QString &)
 {
+    Event *e = o->getBeginEvent();
+    for (int i=0;i<rootItem->childCount();++i)
+    {
+        if (rootItem->child(i)->getEvent()==e)
+        {
+            for (int j=0;j<rootItem->child(i)->childCount();++j)
+            {
+                if (rootItem->child(i)->child(j)->getOperation()==o)
+                {
+                    QModelIndex index = createIndex(j, 3, rootItem->child(i)->child(j));
+                    emit dataChanged(index, index);
+                    break;
+                }
+            }
+            break;
+        }
+    }
     //reset();
 }
 
-void TreeModel::operationWaitTimeChanged(Operation *, double)
+void TreeModel::operationWaitTimeChanged(Operation *o, double)
 {
+    Event *e = o->getBeginEvent();
+    for (int i=0;i<rootItem->childCount();++i)
+    {
+        if (rootItem->child(i)->getEvent()==e)
+        {
+            for (int j=0;j<rootItem->child(i)->childCount();++j)
+            {
+                if (rootItem->child(i)->child(j)->getOperation()==o)
+                {
+                    QModelIndex index = createIndex(j, 4, rootItem->child(i)->child(j));
+                    emit dataChanged(index, index);
+                    break;
+                }
+            }
+            break;
+        }
+    }
     //reset();
 }
 

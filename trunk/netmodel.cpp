@@ -939,17 +939,13 @@ QDataStream &NetModel::readFrom(QDataStream &stream)
         {
             Event *e;
             readEvent(&e, stream);
-            if (e && add(e))
-            {
-            }
+            add(e);
         }
         for (int i = 0; i < operationscount; ++i)
         {
             Operation *o;
             readOperation(&o, stream);
-            if (o && add(o))
-            {
-            }
+            add(o);
         }
     }
     return stream;
