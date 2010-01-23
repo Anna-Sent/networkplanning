@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
     connect(ui->actionPrint, SIGNAL(triggered()), this, SLOT(print()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(exit()));
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
 
     qRegisterMetaType<Event*>("Event*");
     qRegisterMetaType<Operation*>("Operation*");
@@ -76,6 +77,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     setFileName("");
     createToolbar();
+}
+
+void MainWindow::about()
+{
+    QMessageBox::about(this,
+                       QString::fromUtf8("О программе..."),
+                       QString::fromUtf8("(c) 2010 Сентякова А. В.\nanna.sent@gmail.com"));
 }
 
 void MainWindow::deleteItem()

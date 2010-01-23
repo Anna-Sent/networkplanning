@@ -947,6 +947,9 @@ QDataStream &NetModel::readFrom(QDataStream &stream)
         {
             Operation *o;
             readOperation(&o, stream);
+            if (o && add(o))
+            {
+            }
         }
     }
     return stream;
