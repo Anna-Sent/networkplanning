@@ -79,11 +79,12 @@ void Arrow::setEndItem(DiagramItem* di)
 //! [1]
 QRectF Arrow::boundingRect() const
 {
-    qreal extra = (pen().width() + 20) / 2.0;
-
-    return QRectF(line().p1(), QSizeF(line().p2().x() - line().p1().x(),
-                                      line().p2().y() - line().p1().y()))
-        .normalized()
+    qreal extra = (pen().width() + 40) ;
+    qreal mx = qMin(line().p1().x(),line().p2().x());
+    qreal my = qMin(line().p1().y(),line().p2().y());
+    return QRectF(QPointF(mx,my), (QSizeF(qAbs(line().p2().x() - line().p1().x()),
+                                      qAbs(line().p2().y() - line().p1().y()))))
+        .normalized().united(textLabelR)
         .adjusted(-extra, -extra, extra, extra);
 }
 //! [1]
@@ -98,6 +99,7 @@ QPainterPath Arrow::shape() const
     me->setPen(p);
     QPainterPath path = QGraphicsLineItem::shape();
     path.addPolygon(arrowHead);
+    path.addPolygon(textLabel);
     me->setPen(op);
     return path;
 }
@@ -144,9 +146,16 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         p1 = p2;
     }
 
-    QPointF mid = (intersectPoint + myStartItem->pos())/2;
-
-    painter->drawText(mid,QString::number(_op->getWaitTime()));
+    QPointF mid = (intersectPoint - myStartItem->pos())/2;
+    QLineF diff = centerLine.normalVector().unitVector();
+    //qreal asc = painter->fontMetrics().ascent();
+    diff.setLength(20.0);
+    diff.translate(mid);
+    textLabel.clear();
+    painter->drawText(QRectF(diff.p2(),QSizeF(200.0,200.0)),Qt::AlignLeft||Qt::AlignTop,QString::number(_op->getWaitTime()),&textLabelR);
+    QPainterPath path;
+    path.addPolygon(textLabelR);
+    textLabel=path.toFillPolygon();
 
     setLine(QLineF(intersectPoint, myStartItem->pos()));
 //! [5] //! [6]

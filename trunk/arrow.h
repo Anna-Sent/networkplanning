@@ -96,6 +96,8 @@ private:
     DiagramItem *myEndItem;
     QColor myColor;
     QPolygonF arrowHead;
+    QPolygonF textLabel;
+    QRectF textLabelR;
     Operation * _op;
 };
 //! [0]
