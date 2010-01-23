@@ -96,6 +96,7 @@ public slots:
     void OperationRedirect(Operation **op,Event* ev);
     void NChanged(Event *ev, int id);
     void deleteItem();
+    void bringToFront(DiagramItem *item);
 
 signals:
     void itemInserted(DiagramItem *item);
@@ -124,6 +125,7 @@ private:
     NetModel* _model;
     QList<DiagramItem*> devents;
     QList<Arrow*> darrows;
+    qreal zval;
 };
 //! [0]
 
