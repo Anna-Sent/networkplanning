@@ -125,7 +125,6 @@ void TreeModel::insertOperation(const QModelIndex &selected)
                 {
                     //QModelIndex parent1 = createIndex(parent.row(), 0, parent.internalPointer());
                     event->insertOutOperation(o, i);
-                    parentItem->appendChild(new TreeItem(o,*parentItem));
                 }
                 else
                     delete o;
