@@ -44,6 +44,7 @@
 #include "arrow.h"
 #include <math.h>
 #include <assert.h>
+#include "diagramtextitem.h"
 
 const qreal Pi = 3.14;
 
@@ -141,6 +142,10 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         p1 = p2;
     }
 
+    QPointF mid = (intersectPoint + myStartItem->pos())/2;
+
+    painter->drawText(mid,QString::number(_op->getWaitTime()));
+
     setLine(QLineF(intersectPoint, myStartItem->pos()));
 //! [5] //! [6]
 
@@ -168,3 +173,17 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     }*/
 }
 //! [7]
+
+void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if ( event->button() == Qt::LeftButton ) {
+        DiagramTextItem * f = new DiagramTextItem ( this, scene() );
+        f->setPlainText(QString::number(_op->getWaitTime()));
+        f->setZValue ( 1000.0 );
+        f->setTextInteractionFlags ( Qt::TextEditorInteraction );
+        f->setPos ( event->pos() );
+        f->setTextInteractionFlags ( Qt::TextEditorInteraction );
+        f->setFocus();
+        //QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
+    }
+}

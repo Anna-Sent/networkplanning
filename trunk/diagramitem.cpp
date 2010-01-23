@@ -83,8 +83,7 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
             myPolygon = path.toFillPolygon();
             if (ev) {
                 /*text = new DiagramTextItem(this,scene);
-                text->setPlainText(QString::number(ev->getN()));
-                qDebug() << pos();*/
+                text->setPlainText(QString::number(ev->getN()));*/
                 //text->setPos(pos());
                 //text->setPos(pos());
                 //text->setPos(
@@ -196,7 +195,6 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change,
                      const QVariant &value)
 {
     if (change == QGraphicsItem::ItemPositionChange) {
-        qDebug() << value;
         foreach (Arrow *arrow, arrows) {
             arrow->updatePosition();
         }
