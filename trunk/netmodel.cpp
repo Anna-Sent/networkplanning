@@ -522,6 +522,67 @@ QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
     return pathes;
 }
 
+void NetModel::sort(QList<Path> &pathes)
+{
+    for (int i=0; i<pathes.count()-1; ++i)
+    {
+        int max = i;
+        for (int j=i+1; j<pathes.count(); ++j)
+        {
+            if (pathes[j].code()<pathes[max].code())
+                max = j;
+        }
+        if (max != i)
+        {
+            Path tmp = pathes[i];
+            pathes.replace(i, pathes[max]);
+            pathes.replace(max, tmp);
+        }
+    }
+}
+
+QList<Event*> *NetModel::getSortedEvents()
+{
+    QList<Event*> *list = new QList<Event*>(events);
+    for (int i=0; i<list->count()-1; ++i)
+    {
+        int max = i;
+        for (int j=i+1; j<list->count(); ++j)
+        {
+            if (list->at(j)->getN()<list->at(max)->getN())
+                max = j;
+        }
+        if (max!=i)
+        {
+            Event *tmp = list->at(i);
+            list->replace(i, list->at(max));
+            list->replace(max, tmp);
+        }
+    }
+    return list;
+}
+
+QList<Operation*> *NetModel::getSortedOperatioins()
+{
+    QList<Operation*> *list = new QList<Operation*>(operations);
+    for (int i=0; i<list->count()-1; ++i)
+    {
+        int max = i;
+        for (int j=i+1; j<list->count(); ++j)
+        {
+            if (list->at(j)->getCode()<list->at(max)->getCode())
+                max = j;
+        }
+        if (max!=i)
+        {
+            Operation *tmp = list->at(i);
+            list->replace(i, list->at(max));
+            list->replace(max, tmp);
+        }
+    }
+    return list;
+}
+
 double NetModel::getMaxPathWeight(Event *begin, Event *end)
 {
     double w = 0;

@@ -118,6 +118,7 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
     header << "L" << "t(L)" << "R(L)";
     data.clear();
     QList<Path> *pathes = netmodel->getFullPathes();
+    netmodel->sort(*pathes);
     foreach (Path p, *pathes)
     {
         QList<QVariant> row;
@@ -133,12 +134,14 @@ void Dialog::fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &d
     header.clear();
     header << "i" << QString::fromUtf8("t р.(i)") << QString::fromUtf8("t п.(i)") << "R(i)";
     data.clear();
-    foreach (Event *e, *netmodel->getEvents())
+    QList<Event*> *list = netmodel->getSortedEvents();
+    foreach (Event *e, *list)
     {
         QList<QVariant> row;
         row << e->getN() << netmodel->getEarlyEndTime(e) << netmodel->getLaterEndTime(e) << netmodel->getReserveTime(e);
         data << row;
     }
+    delete list;
 }
 
 /*Before call this function check the netmodel is not null and is correct.*/
@@ -150,7 +153,8 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
             << QString::fromUtf8("t п.о.(i-j)") << QString::fromUtf8("t п.(i-j)")
             << QString::fromUtf8("t с.(i-j)");
     data.clear();
-    foreach (Operation *o, *netmodel->getOperations())
+    QList<Operation*> *list = netmodel->getSortedOperatioins();
+    foreach (Operation *o, *list)
     {
         QList<QVariant> row;
         row << o->getCode() << o->getWaitTime() << netmodel->getEarlyStartTime(o) << netmodel->getLaterStartTime(o)
@@ -158,6 +162,7 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
                 << netmodel->getFreeReserveTime(o);
         data << row;
     }
+    delete list;
 }
 
 void Dialog::displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data)
