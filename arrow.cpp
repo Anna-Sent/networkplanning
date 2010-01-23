@@ -216,13 +216,12 @@ void Arrow::setValue(QString &str)
 {
         bool ok=false;
         double num = str.toDouble(&ok);
-        if (!ok) return;
         //emit changeN(i->event(),num);
         DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
         editing=false;
         if (ds)
         {
-            ds->model()->setOperationWaitTime(_op,num);
+            if (ok) ds->model()->setOperationWaitTime(_op,num);
             ds->editing(false);
         }
 }
