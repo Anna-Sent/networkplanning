@@ -12,6 +12,8 @@ namespace Ui
     class MainWindow;
 }
 
+const QString modelSuffix = ".mdl";
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

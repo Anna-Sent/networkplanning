@@ -194,20 +194,42 @@ void MainWindow::open()
                                               QString::fromUtf8("Сетевые модели (*.mdl)"));
     if (fn!=NULL)
     {
+        if (fn.lastIndexOf(modelSuffix)!=fn.length()-modelSuffix.length())
+            fn += modelSuffix;
         setFileName(fn);
         netmodel.clear(); // clear netmodel and all its views connected to it
         QFile file(filename);
-        if (!file.open(QIODevice::ReadOnly))
-            return;
-        QDataStream in(&file);
-        netmodel.readFrom(in);
-        if (in.status()!=QDataStream::Ok)
-            QMessageBox::critical(this, "Ошибка чтения", "При чтении модели произошла ошибка");
+        if (file.exists())
+        {
+            if (!file.open(QIODevice::ReadOnly))
+            {
+                QMessageBox::critical(this,
+                                      QString::fromUtf8("Ошибка чтения"),
+                                      QString::fromUtf8("Не удалось открыть файл ")
+                                      +filename+
+                                      QString::fromUtf8(" для чтения"));
+                return ;
+            }
+            QDataStream in(&file);
+            netmodel.readFrom(in);
+            if (in.status()!=QDataStream::Ok)
+                QMessageBox::critical(this,
+                                      QString::fromUtf8("Ошибка чтения"),
+                                      QString::fromUtf8("При чтении модели произошла ошибка"));
+            else
+            {
+                treemodel->setModel(netmodel);
+                dialog->setModel(netmodel);
+                scene->setModel(&netmodel);
+            }
+        }
         else
         {
-            treemodel->setModel(netmodel);
-            dialog->setModel(netmodel);
-            scene->setModel(&netmodel);
+            QMessageBox::critical(this,
+                                  QString::fromUtf8("Ошибка чтения"),
+                                  QString::fromUtf8("Файл ")
+                                  +filename+
+                                  QString::fromUtf8(" не существует"));
         }
     }
 }
@@ -216,11 +238,20 @@ void MainWindow::doSave()
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly))
-        return;
+    {
+        QMessageBox::critical(this,
+                              QString::fromUtf8("Ошибка записи"),
+                              QString::fromUtf8("Не удалось открыть файл ")
+                              +filename+
+                              QString::fromUtf8(" для записи"));
+        return ;
+    }
     QDataStream out(&file);
     netmodel.writeTo(out);
     if (out.status()!=QDataStream::Ok)
-        QMessageBox::critical(this, "Ошибка записи", "При записи модели произошла ошибка");
+        QMessageBox::critical(this,
+                              QString::fromUtf8("Ошибка записи"),
+                              QString::fromUtf8("При записи модели произошла ошибка"));
 }
 
 void MainWindow::save()
@@ -232,7 +263,11 @@ void MainWindow::save()
                                                   "",
                                                   QString::fromUtf8("Сетевые модели (*.mdl)"));
         if (fn!=NULL)
+        {
+            if (fn.lastIndexOf(modelSuffix)!=fn.length()-modelSuffix.length())
+                fn += modelSuffix;
             setFileName(fn);
+        }
         else
             return ;
     }
@@ -247,6 +282,8 @@ void MainWindow::saveAs()
                                               QString::fromUtf8("Сетевые модели (*.mdl)"));
     if (fn!=NULL)
     {
+        if (fn.lastIndexOf(modelSuffix)!=fn.length()-modelSuffix.length())
+            fn += modelSuffix;
         setFileName(fn);
         doSave();
     }
