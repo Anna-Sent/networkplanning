@@ -55,6 +55,7 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
     myDiagramType = diagramType;
     myContextMenu = contextMenu;
     _event = ev;
+    if (ev) setPos(ev->getPoint());
 
     QPainterPath path;
     switch (myDiagramType) {
@@ -81,9 +82,20 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
             path.addEllipse(QPointF(0,0),25,25);
             myPolygon = path.toFillPolygon();
             if (ev) {
-                text = new DiagramTextItem(this,this->scene());
+                /*text = new DiagramTextItem(this,scene);
                 text->setPlainText(QString::number(ev->getN()));
-                text->setPos(-10,-10);
+                qDebug() << pos();*/
+                //text->setPos(pos());
+                //text->setPos(pos());
+                //text->setPos(
+            }
+            if (scene) {
+                //QList<QGraphicsItem*> toGroup;
+                //toGroup.append(this);
+                //toGroup.append(text);
+                //QGraphicsItemGroup *grp =  scene->createItemGroup(toGroup);
+                //grp->setFlags(QGraphicsItem::ItemIsMovable);
+                //grp->setFlags(QGraphicsItem::ItemIsSelectable);
             }
             break;
         default:
@@ -97,6 +109,18 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
     setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 //! [0]
+
+void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *style, QWidget *widget ) {
+    QGraphicsPolygonItem::paint(painter,style,widget);
+    QBrush brush;
+    switch (myDiagramType) {
+        case Circle:
+            painter->drawText(QRect(-30,-30,60,60),Qt::AlignCenter,QString::number(_event->getN()) );
+            break;
+    }
+}
+
+//QString::number(_event->getN())
 
 //! [1]
 void DiagramItem::removeArrow(Arrow *arrow)
@@ -172,6 +196,7 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change,
                      const QVariant &value)
 {
     if (change == QGraphicsItem::ItemPositionChange) {
+        qDebug() << value;
         foreach (Arrow *arrow, arrows) {
             arrow->updatePosition();
         }
@@ -184,5 +209,20 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change,
 //! [6]
 void DiagramItem::updateText()
 {
-     text->setPlainText(QString::number(_event->getN()));
+     //text->setPlainText(QString::number(_event->getN()));
+    update();
+}
+
+void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if ( event->button() == Qt::LeftButton ) {
+        DiagramTextItem * f = new DiagramTextItem ( this, scene() );
+        f->setPlainText(QString::number(_event->getN()));
+        f->setZValue ( 1000.0 );
+        f->setTextInteractionFlags ( Qt::TextEditorInteraction );
+        f->setPos ( event->pos() );
+        f->setTextInteractionFlags ( Qt::TextEditorInteraction );
+        f->setFocus();
+        QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
+    }
 }

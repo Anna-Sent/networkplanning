@@ -87,10 +87,12 @@ public:
     bool wrapsEvent(Event* ev) { return _event==ev; }
     Event * event() const {return _event;}
     void updateText();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem * style, QWidget *widget);
 
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 private:
     DiagramType myDiagramType;
