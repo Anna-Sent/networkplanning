@@ -37,6 +37,7 @@ void DiagramScene::clearModel()
 
 void DiagramScene::setModel(NetModel* model)
 {
+    zval=0;
 
     if (_model!=0)
     {
@@ -81,6 +82,7 @@ void DiagramScene::setModel(NetModel* model)
     connect(model, SIGNAL(beforeOperationDelete(Operation*)), this, SLOT(ArrowDel(Operation*)));
     connect(model, SIGNAL(beforeEventDelete(Event*)), this, SLOT(EventDel(Event*)));
     connect(model, SIGNAL(operationEndEventChanged(Operation**,Event*)), this, SLOT(OperationRedirect(Operation**,Event*)));
+    //connect(this, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(bringToFront(DiagramItem*)));
 }
 
 void DiagramScene::EventAdd(int index)
@@ -97,7 +99,8 @@ void DiagramScene::EventAdd(int index)
     item = new DiagramItem(DiagramItem::Circle,ev,0,0,this);
     item->setBrush(myItemColor);
     item->setPos(ev->getPoint());
-    item->setZValue(1000.0);
+    item->setZValue(zval);
+    zval+=0.1;
     devents.insert(index,item);
     assert(devents.indexOf(item)==index);
     assert(devents.indexOf(item)==_model->getEvents()->indexOf(ev));
@@ -428,6 +431,20 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 //! [13]
+
+void DiagramScene::bringToFront(DiagramItem *ditem)
+{
+    QList<QGraphicsItem *> overlapItems = ditem->collidingItems();
+
+    qreal zValue = 0;
+    foreach (QGraphicsItem *item, overlapItems) {
+        if (item->zValue() >= zValue &&
+            item->type() == DiagramItem::Type)
+            zValue = item->zValue() + 0.1;
+    }
+    ditem->setZValue(zValue);
+   
+}
 
 //! [14]
 bool DiagramScene::isItemChange(int type)
