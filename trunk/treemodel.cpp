@@ -124,7 +124,7 @@ void TreeModel::insertOperation(const QModelIndex &selected)
                 if (netmodel->insertOperation(o, i))
                 {
                     //QModelIndex parent1 = createIndex(parent.row(), 0, parent.internalPointer());
-                    event->insertOutOperation(o, i);
+                    //event->insertOutOperation(o, i);
                 }
                 else
                     delete o;
