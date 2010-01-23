@@ -42,6 +42,7 @@
 #include <QtGui>
 
 #include "diagramtextitem.h"
+#include "arrow.h"
 #include "diagramscene.h"
 
 //! [0]
@@ -95,17 +96,14 @@ void DiagramTextItem::editingFinished()
     switch ( parentItem()->type() ) {
     case DiagramItem::Type: {
         i=static_cast<DiagramItem*>(parentItem());
-        bool ok;
-        int num = text.toInt(&ok,10);
-        //i->event()->setN(num);
-        emit changeN(i->event(),num);
+        i->setValue(text);
+        break;
+    };
+    case Arrow::Type : {
+        a=static_cast<Arrow*>(parentItem());
+        a->setValue(text);
         break;
     }
-/*    case SceneItem_NodeType:
-      w = ( SceneItem_Node* )parentItem();
-      if ( text != "" )
-        (( GraphicsScene* )scene() )->setData( w->index, text, customRole::CustomLabelRole );
-      break;*/
     default:
       qDebug() << __FUNCTION__ << "ERROR, case not handled yet";
       break;

@@ -130,11 +130,12 @@ void MainWindow::itemInserted(DiagramItem *item)
 void MainWindow::createToolbar()
 {
     actions=addToolBar("Actions");
-    deleteAction = new QAction(QIcon(":/images/delete.png"), QString::fromUtf8("Удалить"), this);
+    deleteAction = new QAction(QIcon(":/images/delete.png"), QString::fromUtf8("Удалить"), scene);
     deleteAction->setShortcut(tr("Delete"));
     deleteAction->setStatusTip(QString::fromUtf8("Удалить выбранный элемент"));
     connect(deleteAction, SIGNAL(triggered()),
             this, SLOT(deleteItem()));
+    connect(scene,SIGNAL(actionsEnabled(bool)),deleteAction,SLOT(setEnabled(bool)));
     actions->addAction(deleteAction);
     buttonGroup = new QButtonGroup;
     connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
