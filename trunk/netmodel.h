@@ -121,6 +121,12 @@ private:
     QDataStream &writeOperation(Operation *o, QDataStream &stream);
     QDataStream &readOperation(Operation **o, QDataStream &stream);
     int generateId();
+private:
+    QList<Path> *fullPathes;
+    QList<Path> *criticPathes;
+    void clearCash();
+    QList<Path> *_getFullPathes();
+    QList<Path> *_getCriticalPathes();
 public:
     NetModel();
     ~NetModel();
@@ -185,6 +191,7 @@ public slots:
     bool removeOperation(Operation *);
     bool insertEvent(int);
     bool insertOperation(Operation *, int);
+    void update() {emit updated();}
 private slots:
     void updateCriticalPath();
 signals:

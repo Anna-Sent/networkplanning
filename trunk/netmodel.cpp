@@ -131,13 +131,16 @@ double Path::calcWeight() const
     return weight;
 }
 
-NetModel::NetModel()
+NetModel::NetModel() : fullPathes(NULL), criticPathes(NULL)
 {
     QObject::connect(this, SIGNAL(updated()), this, SLOT(updateCriticalPath()));
 }
 
 void NetModel::updateCriticalPath()
 {
+    clearCash();
+    //fullPathes = _getFullPathes();
+    //criticPathes = _getCriticalPathes();
     foreach (Operation *o, operations)
     {
         o->_inCriticalPath = inCriticalPath(o);
@@ -146,10 +149,19 @@ void NetModel::updateCriticalPath()
 
 NetModel::~NetModel()
 {
+    clearCash();
     qDeleteAll(events);
     events.clear();
     qDeleteAll(operations);
     operations.clear();
+}
+
+void NetModel::clearCash()
+{
+    if (fullPathes)
+        delete fullPathes;
+    if (criticPathes)
+        delete criticPathes;
 }
 
 Event* NetModel::getEventByNumber(int n)
@@ -635,20 +647,50 @@ Event *NetModel::getEndEvent()
     return end;
 }
 
-QList<Path> *NetModel::getCriticalPathes()
+QList<Path> *NetModel::_getCriticalPathes()
 {
     Event *begin, *end;
     getBeginEndEvents(&begin,&end);
     return getMaxPathes(begin,end);
 }
 
-QList<Path> *NetModel::getFullPathes()
+QList<Path> *NetModel::_getFullPathes()
 {
     Event *begin, *end;
     getBeginEndEvents(&begin,&end);
     QList<Path> *pathes = new QList<Path>();
     getPathes(begin,end,pathes);
     return pathes;
+}
+
+QList<Path> *NetModel::getCriticalPathes()
+{/*
+    if (!criticPathes)
+        if (isCorrect())
+        {
+            criticPathes = _getCriticalPathes();
+        }
+        else
+        {
+            criticPathes = new QList<Path>();
+        }
+    return new QList<Path>(*criticPathes);*/
+    return _getCriticalPathes();
+}
+
+QList<Path> *NetModel::getFullPathes()
+{
+/*    if (!fullPathes)
+        if (isCorrect())
+        {
+            fullPathes = _getFullPathes();
+        }
+        else
+        {
+            fullPathes = new QList<Path>();
+        }
+    return new QList<Path>(*fullPathes);*/
+    return _getFullPathes();
 }
 
 double NetModel::getCriticalPathWeight()
@@ -957,6 +999,7 @@ QDataStream &NetModel::readFrom(QDataStream &stream)
             readOperation(&o, stream);
             add(o);
         }
+        updateCriticalPath();
     }
     return stream;
 }

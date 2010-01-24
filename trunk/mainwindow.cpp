@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    // setup interface signals and slots
     connect(ui->btnAddEvent, SIGNAL(clicked()), this, SLOT(addEvent()));
     connect(ui->btnInsertEvent, SIGNAL(clicked()), this, SLOT(insertEvent()));
     connect(ui->btnDeleteEvent, SIGNAL(clicked()), this, SLOT(deleteEvent()));
@@ -25,58 +25,51 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionPrint, SIGNAL(triggered()), this, SLOT(print()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(exit()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-
+    // register types
     qRegisterMetaType<Event*>("Event*");
     qRegisterMetaType<Operation*>("Operation*");
-
+    // setup test netmodel
     netmodel.addEvent();
     Event *e1 = netmodel.last(); //new Event(0);
     netmodel.addEvent();
     Event *e2 = netmodel.last(); //new Event(1);
     netmodel.addEvent();
     Event *e3 = netmodel.last();// new Event(2);
-    //Event *e4 = new Event(3);
-    //Event *e5 = new Event(4);
-    //Event *e6 = new Event(5);
     Operation *o1 = new Operation(1);
-    netmodel.addOperation(o1);
     Operation *o2 = new Operation(2);
-    netmodel.addOperation(o2);
     Operation *o3 = new Operation(3);
-    netmodel.addOperation(o3);
-    //Operation *o4 = new Operation(4);
-    //Operation *o5 = new Operation(5);
-    //Operation *o6 = new Operation(6);
     netmodel.connect(e1,o2,e2);
     netmodel.connect(e1,o3,e3);
     netmodel.connect(e2,o1,e3);
-    //netmodel.disconnect(e2,o1);
-    //netmodel.disconnect(e5,o2);
+    netmodel.addOperation(o1);
+    netmodel.addOperation(o2);
+    netmodel.addOperation(o3);
+    // setup position of netmodel
+    Position *pos = new PlanarPosition;
+    pos->position(&netmodel);
+    delete pos;
+    // setup treemodel
     treemodel = new TreeModel(netmodel);
     ui->treeView->setModel(treemodel);
     ui->treeView->setItemDelegate(new OperationDelegate(2));
     ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
-    //ui->treeView->setDragEnabled(true);
-    //ui->treeView->setAcceptDrops(true);
-    //ui->treeView->setDropIndicatorShown(true);
-    //ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
     connect(ui->treeView->selectionModel(),
             SIGNAL(currentChanged(QModelIndex, QModelIndex)),
             this,
             SLOT(currentChanged(QModelIndex, QModelIndex)));
-    Position *pos = new PlanarPosition;
-    pos->position(&netmodel);
-    delete pos;
+    // setup grapic scene
     scene=new DiagramScene(0);
     ui->graphView->setScene(scene);
     scene->setModel(&netmodel);
     connect(scene, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(itemInserted(DiagramItem*)));
-    /*ui->graphView->setModel(&netmodel);
-*/
-    dialog = new Dialog(netmodel, scene, this);
-
-    setFileName("");
+    // create tool bar after scene
     createToolbar();
+    // setup dialog
+    dialog = new Dialog(netmodel, scene, this);
+    // call netmodel update to update all views (treemodel, scene, dialog)
+    //netmodel.update();
+    // setup file name and caption
+    setFileName("");
 }
 
 void MainWindow::about()
@@ -221,14 +214,20 @@ void MainWindow::open()
             QDataStream in(&file);
             netmodel.readFrom(in);
             if (in.status()!=QDataStream::Ok)
+            {
+                netmodel.clear();
                 QMessageBox::critical(this,
                                       QString::fromUtf8("Ошибка чтения"),
                                       QString::fromUtf8("При чтении модели произошла ошибка"));
+            }
             else
             {
                 treemodel->setModel(netmodel);
-                dialog->setModel(netmodel);
+                // scene first
                 scene->setModel(&netmodel);
+                // then dialog. order is important
+                dialog->setModel(netmodel);
+                //netmodel.update();
             }
         }
         else
