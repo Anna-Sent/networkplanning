@@ -290,6 +290,8 @@ void TreeModel::afterOperationAdd(Operation *o)
         beginInsertRows(createIndex(i, 0, parent), parent->childCount(), parent->childCount());
         parent->appendChild(item);
         endInsertRows();
+        if (parent->childCount()-1!=e->getOutOperations().indexOf(o))
+            qDebug() << parent->childCount()-1 << " " << e->getOutOperations().indexOf(o);
         assert(parent->childCount()-1==e->getOutOperations().indexOf(o));
     }
 }
@@ -336,7 +338,30 @@ void TreeModel::updated()
 void TreeModel::beforeClear()
 {
     rootItem->removeAllChilds();
-    disconnect(this, SLOT(beforeClear()));
+    disconnect(this->netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+    disconnect(this->netmodel, SIGNAL(eventIdChanged(Event *, int)),
+            this, SLOT(eventIdChanged(Event *, int)));
+    disconnect(this->netmodel, SIGNAL(eventNameChanged(Event *, const QString &)),
+            this, SLOT(eventNameChanged(Event *, const QString &)));
+    disconnect(this->netmodel, SIGNAL(operationEndEventChanged(Operation *, Event *)),
+            this, SLOT(operationEndEventChanged(Operation *, Event *)));
+    disconnect(this->netmodel, SIGNAL(operationNameChanged(Operation *, const QString &)),
+            this, SLOT(operationNameChanged(Operation *, const QString &)));
+    disconnect(this->netmodel, SIGNAL(operationWaitTimeChanged(Operation *, double)),
+            this, SLOT(operationWaitTimeChanged(Operation *, double)));
+    disconnect(this->netmodel, SIGNAL(afterEventAdd()),
+            this, SLOT(afterEventAdd()));
+    disconnect(this->netmodel, SIGNAL(beforeEventDelete(Event *)),
+            this, SLOT(beforeEventDelete(Event *)));
+    disconnect(this->netmodel, SIGNAL(afterOperationAdd(Operation *)),
+            this, SLOT(afterOperationAdd(Operation *)));
+    disconnect(this->netmodel, SIGNAL(beforeOperationDelete(Operation *)),
+            this, SLOT(beforeOperationDelete(Operation *)));
+    disconnect(this->netmodel, SIGNAL(afterEventInsert(int)),
+            this, SLOT(afterEventInsert(int)));
+    disconnect(this->netmodel, SIGNAL(afterOperationInsert(Operation *, int)),
+            this, SLOT(afterOperationInsert(Operation *, int)));
+    disconnect(this->netmodel, SIGNAL(updated()), this, SLOT(updated()));
     netmodel = NULL;
     reset();
 }

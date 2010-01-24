@@ -6,7 +6,8 @@ void PlanarPosition::position(NetModel* model)
 {
 	typedef QSet<Event*> evlist;
 	Event* begin = model->getBeginEvent();
-
+        if (!begin)
+            return ;
 	evlist wave;
 	evlist nextWave;
 	evlist processed;

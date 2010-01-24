@@ -29,8 +29,8 @@ void Dialog::beforeClear()
 
 void Dialog::_clearModel()
 {
-    disconnect(this, SLOT(display()));
-    disconnect(this, SLOT(beforeClear()));
+    connect(netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+    connect(netmodel, SIGNAL(updated()), this, SLOT(display()));
     netmodel = NULL;
 }
 
@@ -80,14 +80,18 @@ void Dialog::display()
     highlightedFormat.setForeground(Qt::red);
     QString error;
     cursor.beginEditBlock();
-    //scene->update();
-    QSize size(scene->itemsBoundingRect().size().toSize());
-    QImage img(size,QImage::Format_ARGB32);
-    img.fill(0);
-    QPainter p(&img);
-    scene->render(&p);
 
-    cursor.insertImage(img,"asdf");
+    QSize size(scene->itemsBoundingRect().size().toSize());
+    QImage img(size, QImage::Format_ARGB32);
+    img.fill(0);
+    if (!img.isNull())
+    {
+        QPainter p(&img);
+        scene->render(&p);
+        cursor.insertImage(img, QString::fromUtf8("Сетевая модель"));
+    }
+    cursor.insertBlock();
+
     if (!netmodel)
     {
         cursor.insertText(QString::fromUtf8("Сетевая модель не задана\n"), highlightedFormat);
@@ -101,9 +105,9 @@ void Dialog::display()
         QList<QVariant> header;
         QList< QList<QVariant> > data;
 
-        //fillFullPathesData(header, data);
-        //cursor.insertText(QString::fromUtf8("Расчет полных путей"), format);
-        //displayTable(cursor, header, data);
+        fillFullPathesData(header, data);
+        cursor.insertText(QString::fromUtf8("Расчет полных путей"), format);
+        displayTable(cursor, header, data);
 
         cursor.setPosition(topFrame->lastPosition());
 
