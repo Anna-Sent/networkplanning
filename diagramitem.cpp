@@ -59,43 +59,9 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
 
     QPainterPath path;
     switch (myDiagramType) {
-        /*case StartEnd:
-            path.moveTo(200, 50);
-            path.arcTo(150, 0, 50, 50, 0, 90);
-            path.arcTo(50, 0, 50, 50, 90, 90);
-            path.arcTo(50, 50, 50, 50, 180, 90);
-            path.arcTo(150, 50, 50, 50, 270, 90);
-            path.lineTo(200, 25);
-            myPolygon = path.toFillPolygon();
-            break;
-        case Conditional:
-            myPolygon << QPointF(-100, 0) << QPointF(0, 100)
-                      << QPointF(100, 0) << QPointF(0, -100)
-                      << QPointF(-100, 0);
-            break;
-        case Step:
-            myPolygon << QPointF(-100, -100) << QPointF(100, -100)
-                      << QPointF(100, 100) << QPointF(-100, 100)
-                      << QPointF(-100, -100);
-            break;*/
         case Circle:
             path.addEllipse(QPointF(0,0),25,25);
             myPolygon = path.toFillPolygon();
-            if (ev) {
-                /*text = new DiagramTextItem(this,scene);
-                text->setPlainText(QString::number(ev->getN()));*/
-                //text->setPos(pos());
-                //text->setPos(pos());
-                //text->setPos(
-            }
-            if (scene) {
-                //QList<QGraphicsItem*> toGroup;
-                //toGroup.append(this);
-                //toGroup.append(text);
-                //QGraphicsItemGroup *grp =  scene->createItemGroup(toGroup);
-                //grp->setFlags(QGraphicsItem::ItemIsMovable);
-                //grp->setFlags(QGraphicsItem::ItemIsSelectable);
-            }
             break;
         default:
             myPolygon << QPointF(-120, -80) << QPointF(-70, 80)
@@ -110,8 +76,18 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
 //! [0]
 
 void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *style, QWidget *widget ) {
-    QGraphicsPolygonItem::paint(painter,style,widget);
-    QBrush brush;
+    //QGraphicsPolygonItem::paint(painter,style,widget);
+    QBrush brush = this->brush();
+    QPen pen = this->pen();
+    if (isSelected())
+        pen.setWidth(4);
+    painter->setPen(pen);
+    painter->setBrush(brush);
+    painter->drawEllipse(boundingRect().adjusted(1,1,-1,-1));
+    /*QPen pen;
+    pen.setColor(Qt::black);
+    pen.setStyle(Qt::DashLine);
+    painter->drawRect(boundingRect());*/
     switch (myDiagramType) {
         case Circle:
             if (!editing)
@@ -135,11 +111,6 @@ void DiagramItem::removeArrow(Arrow *arrow)
             if (arrow->endItem()) {
                 arrow->endItem()->removeArrow(arrow);
             }
-            /*QGraphicsScene *qgs=scene();
-            DiagramScene *ds = dynamic_cast<DiagramScene*> (qgs);
-            assert(ds);
-            if (ds) ds->removeArrow(arrow);
-            delete arrow;*/
         } else
         {
             arrow->setEndItem(0);
@@ -153,8 +124,6 @@ void DiagramItem::removeArrow(Arrow *arrow)
 void DiagramItem::removeArrows()
 {
     foreach (Arrow *arrow, arrows) {
-        //arrow->endItem()->removeArrow(arrow);
-        //arrow->startItem()->removeArrow(arrow);
         removeArrow(arrow);
     }
     assert(arrows.count()==0);

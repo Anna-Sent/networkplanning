@@ -73,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(scene, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(itemInserted(DiagramItem*)));
     /*ui->graphView->setModel(&netmodel);
 */
-    dialog = new Dialog(netmodel, this);
+    dialog = new Dialog(netmodel, scene, this);
 
     setFileName("");
     createToolbar();

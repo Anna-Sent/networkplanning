@@ -95,7 +95,7 @@ public slots:
     void ArrowAdd(Operation* op,int);
     void ArrowAdd(Operation* op);
     void ArrowDel(Operation* op);
-    void OperationRedirect(Operation *op,Event* ev);
+    void OperationRedirect(Operation *op, Event* ev);
     void NChanged(Event *ev, int id);
     void deleteItem();
     void bringToFront(DiagramItem *item);
@@ -105,12 +105,14 @@ signals:
     void textInserted(QGraphicsTextItem *item);
     void itemSelected(QGraphicsItem *item);
     void actionsEnabled(bool);
+    void changed();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
-
+private slots:
+    void onChange(const QList<QRectF> & region);
 private:
     bool isItemChange(int type);
 

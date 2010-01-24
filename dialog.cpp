@@ -1,12 +1,15 @@
 #include "dialog.h"
 #include <QTextFrame>
 #include <QTextTableCell>
+#include <QPainter>
+#include <QImage>
 
-Dialog::Dialog(NetModel &netmodel, QWidget *parent)
-    : QDialog(parent), ui(new Ui::Dialog)
+Dialog::Dialog(NetModel &netmodel,DiagramScene *sc, QWidget *parent)
+    : QDialog(parent), ui(new Ui::Dialog), scene(sc)
 {
     ui->setupUi(this);
     _setModel(netmodel);
+    //connect(sc,SIGNAL(changed()),this,SLOT(display()));
     display();
 }
 
@@ -77,6 +80,14 @@ void Dialog::display()
     highlightedFormat.setForeground(Qt::red);
     QString error;
     cursor.beginEditBlock();
+    //scene->update();
+    QSize size(scene->itemsBoundingRect().size().toSize());
+    QImage img(size,QImage::Format_ARGB32);
+    img.fill(0);
+    QPainter p(&img);
+    scene->render(&p);
+
+    cursor.insertImage(img,"asdf");
     if (!netmodel)
     {
         cursor.insertText(QString::fromUtf8("Сетевая модель не задана\n"), highlightedFormat);
@@ -90,9 +101,9 @@ void Dialog::display()
         QList<QVariant> header;
         QList< QList<QVariant> > data;
 
-        fillFullPathesData(header, data);
-        cursor.insertText(QString::fromUtf8("Расчет полных путей"), format);
-        displayTable(cursor, header, data);
+        //fillFullPathesData(header, data);
+        //cursor.insertText(QString::fromUtf8("Расчет полных путей"), format);
+        //displayTable(cursor, header, data);
 
         cursor.setPosition(topFrame->lastPosition());
 

@@ -8,6 +8,7 @@
 //#include "calcoperationmodel.h"
 #include <QTextCursor>
 #include "ui_dialog.h"
+#include "diagramscene.h"
 
 namespace Ui
 {
@@ -18,21 +19,23 @@ class Dialog : public QDialog
 {
     Q_OBJECT
 public:
-    Dialog(NetModel &, QWidget *parent = 0);
+    Dialog(NetModel &, DiagramScene *, QWidget *parent = 0);
     ~Dialog();
     void setModel(NetModel &);
     QTextBrowser *getTextBrowser() {return ui->textBrowser;}
 private:
     Ui::Dialog *ui;
     NetModel *netmodel;
+    DiagramScene *scene;
+
     void fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data);
     void _clearModel();
     void _setModel(NetModel &);
-private slots:
     QString getLabelText();
+private slots:
     void beforeClear();
     void display();
 };

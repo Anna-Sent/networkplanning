@@ -48,6 +48,7 @@ private:
     QString name;
     void setWaitTime(double twait) {this->twait=twait;}
     void setName(const QString &name) {this->name=name;}
+    bool _inCriticalPath;
     friend class NetModel;
 public:
     Operation();
@@ -59,6 +60,7 @@ public:
     double getWaitTime();
     QString getCode();
     QString getName() {return name;}
+    bool inCriticalPath() const {return _inCriticalPath;}
 };
 
 class Path
@@ -73,6 +75,15 @@ public:
     Path(QList<Event*> events);
     QString code() const {return _code;}
     double weight() const {return _weight;}
+    bool contains(Operation *o)
+    {
+        for (int i=0;i<events.count()-1;++i)
+        {
+            if (events[i]==o->getBeginEvent() && events[i+1]==o->getEndEvent())
+                return true;
+        }
+        return false;
+    }
     bool operator==(const Path &p)
     {
         if (events.count()==p.events.count())
@@ -122,6 +133,7 @@ public:
     QDataStream &writeTo(QDataStream &stream);
     QDataStream &readFrom(QDataStream &stream);
     // checkers
+    bool inCriticalPath(Operation *);
     bool hasLoops();
     bool hasMultiEdges();
     bool hasOneBeginEvent();
@@ -173,6 +185,8 @@ public slots:
     bool removeOperation(Operation *);
     bool insertEvent(int);
     bool insertOperation(Operation *, int);
+private slots:
+    void updateCriticalPath();
 signals:
     void beforeClear();
     void eventIdChanged(Event *, int);

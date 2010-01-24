@@ -50,12 +50,12 @@ QList<Operation*>& Event::getOutOperations()
 }
 
 Operation::Operation() :
-        beginEvent(NULL), endEvent(NULL), tmin(0), tmax(0), twait(0)
+        beginEvent(NULL), endEvent(NULL), tmin(0), tmax(0), twait(0), _inCriticalPath(false)
 {
 }
 
 Operation::Operation(double twait) :
-        beginEvent(NULL), endEvent(NULL), tmin(0), tmax(0), twait(twait)
+        beginEvent(NULL), endEvent(NULL), tmin(0), tmax(0), twait(twait), _inCriticalPath(false)
 {
 }
 
@@ -133,6 +133,15 @@ double Path::calcWeight() const
 
 NetModel::NetModel()
 {
+    QObject::connect(this, SIGNAL(updated()), this, SLOT(updateCriticalPath()));
+}
+
+void NetModel::updateCriticalPath()
+{
+    foreach (Operation *o, operations)
+    {
+        o->_inCriticalPath = inCriticalPath(o);
+    }
 }
 
 NetModel::~NetModel()
@@ -961,6 +970,26 @@ void NetModel::clear()
     operations.clear();
 }
 
+bool NetModel::inCriticalPath(Operation *o)
+{
+    if (isCorrect())
+    {
+        QList<Path> *pathes = getCriticalPathes();
+        bool contains = false;
+        foreach (Path path, *pathes)
+        {
+            if (path.contains(o))
+            {
+                contains = true;
+                break;
+            }
+        }
+        delete pathes;
+        return contains;
+    }
+    else
+        return false;
+}
 
 
 

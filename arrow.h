@@ -43,6 +43,7 @@
 #define ARROW_H
 
 #include <QGraphicsLineItem>
+#include <QObject>
 
 #include "diagramitem.h"
 #include "netmodel.h"
@@ -57,8 +58,9 @@ class QPainterPath;
 QT_END_NAMESPACE
 
 //! [0]
-class Arrow : public QGraphicsLineItem
+class Arrow : public QObject, public QGraphicsLineItem
 {
+    Q_OBJECT
 public:
     enum { Type = UserType + 4 };
 
@@ -95,6 +97,7 @@ private:
     DiagramItem *myStartItem;
     DiagramItem *myEndItem;
     QColor myColor;
+    QColor myCritColor;
     QPolygonF arrowHead;
     QPolygonF textLabel;
     QRectF textLabelR;

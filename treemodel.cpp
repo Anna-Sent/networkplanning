@@ -130,6 +130,11 @@ void TreeModel::removeEvent(const QModelIndex &selected)
         Event *e = item->getEvent();
         if (e)
         {
+            QList<Operation*> in = e->getInOperations();
+            foreach (Operation* o, in)
+            {
+                netmodel->removeOperation(o);
+            }
             QList<Operation*> out = e->getOutOperations();
             foreach (Operation* o, out)
             {
