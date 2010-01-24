@@ -12,27 +12,31 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     //myItemType = DiagramItem::Step;
     line = 0;
     textItem = 0;
+    _model=0;
     myItemColor = Qt::white;
     myTextColor = Qt::black;
     myLineColor = Qt::black;
+    connect(this,SIGNAL(changed(QList<QRectF>)),this,SLOT(onChange(QList<QRectF>)));
 }
 //! [0]
 
 void DiagramScene::clearModel()
 {
-    foreach(Arrow *ar,darrows)
+/*    foreach(Arrow *ar,darrows)
     {
         removeArrow(ar);
     }
+    assert(darrows.count()==0);
     foreach(DiagramItem *ar,devents)
     {
         removeEvent(ar);
-    }
+    }*/
     qDeleteAll(darrows);
     qDeleteAll(devents);
     darrows.clear();
     devents.clear();
     disconnect(_model, 0, this, 0);
+    qDebug() << " children " << items().count();
 }
 
 void DiagramScene::setModel(NetModel* model)
@@ -41,10 +45,11 @@ void DiagramScene::setModel(NetModel* model)
 
     if (_model!=0)
     {
-        foreach(QObject* o,children())
+        /*foreach(QObject* o,children())
         {
             delete o;
-        }
+        }*/
+        clearModel();
         disconnect(0,this,0);
     }
     _model=model;
@@ -104,6 +109,7 @@ void DiagramScene::EventAdd(int index)
     devents.insert(index,item);
     assert(devents.indexOf(item)==index);
     assert(devents.indexOf(item)==_model->getEvents()->indexOf(ev));
+    update();
     emit itemInserted(item);
 }
 
@@ -139,6 +145,7 @@ void DiagramScene::ArrowAdd(Operation *ev, int /*index*/)
     item = new DiagramItem(DiagramItem::Circle,ev,0,0,this);
     item->setPos(ev->getPoint());
     devents.insert(index,item);*/
+    update();
 }
 
 void DiagramScene::ArrowAdd(Operation * ev)
@@ -155,6 +162,8 @@ void DiagramScene::ArrowDel(Operation *op)
     if (arr->endItem()) assert(arr->endItem()->wrapsEvent(op->getEndEvent()));
     arr->startItem()->removeArrow(arr);
     removeArrow(arr);
+    qDebug() << " children " << items().count();
+    //assert(children().count()==devents.count()+darrows.count()+1);
     delete arr;
 }
 
@@ -167,6 +176,7 @@ void DiagramScene::EventDel(Event *ev)
     //devents.at(eid)->removeArrows();
     di->removeArrows();
     removeEvent(di);
+    //assert(children().count()==devents.count()+darrows.count()+1);
     delete di;
     //devents.removeAt(eid);
 }
@@ -179,6 +189,7 @@ void DiagramScene::removeArrow(Arrow *arr)
         darrows.removeAll(arr);
         removeItem(arr);
         assert(count-darrows.count()==1);
+        //arr->deleteLater();
     }
 }
 
@@ -468,4 +479,9 @@ void DiagramScene::NChanged(Event *ev, int id)
     DiagramItem *di = devents.at(idx);
     assert(di->wrapsEvent(ev));
     di->updateText();
+}
+
+void DiagramScene::onChange(const QList<QRectF> & region)
+{
+    emit changed();
 }
