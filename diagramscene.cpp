@@ -81,7 +81,7 @@ void DiagramScene::setModel(NetModel* model)
     connect(model, SIGNAL(afterOperationAdd(Operation*)), this, SLOT(ArrowAdd(Operation*)));
     connect(model, SIGNAL(beforeOperationDelete(Operation*)), this, SLOT(ArrowDel(Operation*)));
     connect(model, SIGNAL(beforeEventDelete(Event*)), this, SLOT(EventDel(Event*)));
-    connect(model, SIGNAL(operationEndEventChanged(Operation**,Event*)), this, SLOT(OperationRedirect(Operation**,Event*)));
+    connect(model, SIGNAL(operationEndEventChanged(Operation*,Event*)), this, SLOT(OperationRedirect(Operation*,Event*)));
     //connect(this, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(bringToFront(DiagramItem*)));
 }
 
@@ -192,26 +192,25 @@ void DiagramScene::removeEvent(DiagramItem *di)
 }
 
 
-void DiagramScene::OperationRedirect(Operation **op, Event *ev)
+void DiagramScene::OperationRedirect(Operation *op, Event *ev)
 {
     /*ArrowDel(o,*op);
     ArrowAdd(*/
-    int aid = _model->getOperations()->indexOf(*op);
+    int aid = _model->getOperations()->indexOf(op);
     if (aid<0) return;
-    Arrow* arr = darrows.at(aid);
+    Arrow *arr = darrows.at(aid);
     DiagramItem *di = arr->endItem();
     if (di)
     {
         di->removeArrow(arr);
     }
-    int nid = _model->getEvents()->indexOf(ev);
+    int nid = _model->getEvents()->indexOf(op->getEndEvent()); //ev);
     if (nid>=0) {
         DiagramItem * ndi = devents.at(nid);
         arr->setEndItem(ndi);
         ndi->addArrow(arr);
         arr->updatePosition();
     } else arr->setEndItem(0);
-
 }
 
 void DiagramScene::editing(bool r)

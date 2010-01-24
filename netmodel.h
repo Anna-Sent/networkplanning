@@ -164,7 +164,7 @@ public slots:
     void clear();
     bool setN(Event *, int);
     bool setName(Event *, const QString &);
-    bool setOperationEndEvent(Operation **, Event *);
+    bool setOperationEndEvent(Operation *, Event *);
     bool setOperationName(Operation *, const QString &);
     bool setOperationWaitTime(Operation *, double);
     bool addEvent();
@@ -177,7 +177,7 @@ signals:
     void beforeClear();
     void eventIdChanged(Event *, int);
     void eventNameChanged(Event *, const QString &);
-    void operationEndEventChanged(Operation **, Event *);
+    void operationEndEventChanged(Operation *, Event *);
     void operationNameChanged(Operation *, const QString &);
     void operationWaitTimeChanged(Operation *, double);
     void afterEventAdd();

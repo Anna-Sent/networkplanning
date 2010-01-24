@@ -30,12 +30,8 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
     //bool insertRows (int row, int count, const QModelIndex &parent = QModelIndex());
     //bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
-    Qt::DropActions supportedDropActions() const
-    {
-        return /*Qt::CopyAction |*/ Qt::MoveAction;
-    }
     void fill(QComboBox *, const QModelIndex &) const;
-    TreeItem *getRootItem() {return rootItem;}
+    //TreeItem *getRootItem() {return rootItem;}
     void setModel(NetModel &);
 
     void addEvent(const QModelIndex &selected);
@@ -52,10 +48,12 @@ private:
     TreeItem *rootItem;
     NetModel *netmodel;
     QList<QVariant> header;
+    int getIndex(Event *);
+    int getIndex(Operation *);
 private slots:
     void eventIdChanged(Event *, int);
     void eventNameChanged(Event *, const QString &);
-    void operationEndEventChanged(Operation **, Event *);
+    void operationEndEventChanged(Operation *, Event *);
     void operationNameChanged(Operation *, const QString &);
     void operationWaitTimeChanged(Operation *, double);
     void afterEventAdd();
