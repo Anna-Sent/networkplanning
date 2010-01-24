@@ -10,6 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    aboutDialog = new AboutDialog(this);
     // setup interface signals and slots
     connect(ui->btnAddEvent, SIGNAL(clicked()), this, SLOT(addEvent()));
     connect(ui->btnInsertEvent, SIGNAL(clicked()), this, SLOT(insertEvent()));
@@ -74,9 +75,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::about()
 {
-    QMessageBox::about(this,
-                       QString::fromUtf8("О программе..."),
-                       QString::fromUtf8("(c) 2010 Сентякова А. В.\nanna.sent@gmail.com"));
+    aboutDialog->show();
+    //QMessageBox::about(this,
+      //                 QString::fromUtf8("О программе..."),
+        //               QString::fromUtf8("(c) 2010 Сентякова А. В.\nanna.sent@gmail.com"));
 }
 
 void MainWindow::deleteItem()
@@ -400,6 +402,7 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete aboutDialog;
     delete treemodel;
     delete dialog;
 }

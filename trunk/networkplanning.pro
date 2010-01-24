@@ -18,7 +18,9 @@ HEADERS = treeitem.h \
     diagramtextitem.h \
     diagramitem.h \
     arrow.h \
-    diagramscene.h
+    diagramscene.h \
+    aboutdialog.h \
+    ui_aboutdialog.h
 RESOURCES = networkplanning.qrc
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -39,7 +41,8 @@ SOURCES = treeitem.cpp \
     diagramtextitem.cpp \
     diagramitem.cpp \
     arrow.cpp \
-    diagramscene.cpp
+    diagramscene.cpp \
+    aboutdialog.cpp
 CONFIG += qt
 
 # install
@@ -53,4 +56,5 @@ sources.path = $$[QT_INSTALL_EXAMPLES]/itemviews/simpletreemodel
 INSTALLS += target \
     sources
 FORMS += mainwindow.ui \
-    dialog.ui
+    dialog.ui \
+    aboutdialog.ui
