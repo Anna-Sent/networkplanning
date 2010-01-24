@@ -6,6 +6,7 @@
 #include "netmodel.h"
 #include "dialog.h"
 #include "diagramscene.h"
+#include "aboutdialog.h"
 
 namespace Ui
 {
@@ -30,6 +31,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    AboutDialog *aboutDialog;
     TreeModel *treemodel;
     NetModel netmodel;
     Dialog *dialog;
