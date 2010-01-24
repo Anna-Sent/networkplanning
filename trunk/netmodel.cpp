@@ -726,16 +726,17 @@ bool NetModel::setName(Event *e, const QString &name)
     return true;
 }
 
-bool NetModel::setOperationEndEvent(Operation **o, Event *e)
+bool NetModel::setOperationEndEvent(Operation *o, Event *e)
 {
     //if (!e) return false;
-    if (getOperationByEvents((*o)->getBeginEvent(), e))
+    if (getOperationByEvents(o->getBeginEvent(), e))
         return false;
     else
     {
-        disconnect(*o, (*o)->getEndEvent());
-        connect(*o, e);
-        emit operationEndEventChanged(o, e);
+        Event *old = o->getEndEvent();
+        disconnect(o, old);
+        connect(o, e);
+        emit operationEndEventChanged(o, old);
         emit updated();
         return true;
     }

@@ -1,5 +1,3 @@
-//#include <QtGui>
-
 #include "treeitem.h"
 #include "treemodel.h"
 #include <assert.h>
@@ -21,8 +19,8 @@ void TreeModel::setModel(NetModel &netmodel)
             this, SLOT(eventIdChanged(Event *, int)));
     connect(this->netmodel, SIGNAL(eventNameChanged(Event *, const QString &)),
             this, SLOT(eventNameChanged(Event *, const QString &)));
-    connect(this->netmodel, SIGNAL(operationEndEventChanged(Operation **, Event *)),
-            this, SLOT(operationEndEventChanged(Operation **, Event *)));
+    connect(this->netmodel, SIGNAL(operationEndEventChanged(Operation *, Event *)),
+            this, SLOT(operationEndEventChanged(Operation *, Event *)));
     connect(this->netmodel, SIGNAL(operationNameChanged(Operation *, const QString &)),
             this, SLOT(operationNameChanged(Operation *, const QString &)));
     connect(this->netmodel, SIGNAL(operationWaitTimeChanged(Operation *, double)),
@@ -84,12 +82,7 @@ void TreeModel::addOperation(const QModelIndex &selected)
             {
                 Operation *o = new Operation();
                 o->setBeginEvent(event);
-                if (netmodel->insertOperation(o, i))
-                {
-//                    QModelIndex parent1 = createIndex(parent.row(), 0, parent.internalPointer());
-//                    event->insertOutOperation(o, i);
-                }
-                else
+                if (!netmodel->insertOperation(o, i))
                     delete o;
             }
         }
@@ -121,14 +114,8 @@ void TreeModel::insertOperation(const QModelIndex &selected)
             {
                 Operation *o = new Operation();
                 o->setBeginEvent(event);
-                if (netmodel->insertOperation(o, i))
-                {
-                    //QModelIndex parent1 = createIndex(parent.row(), 0, parent.internalPointer());
-                    //event->insertOutOperation(o, i);
-                }
-                else
+                if (!netmodel->insertOperation(o, i))
                     delete o;
-                //assert(event->getOutOperations().count()==
                 assert(parentItem->childCount()==event->getOutOperations().count());
             }
         }
@@ -174,81 +161,98 @@ void TreeModel::removeOperation(const QModelIndex &selected)
     }
 }
 
-void TreeModel::eventIdChanged(Event *e, int)
+int TreeModel::getIndex(Event *e)
 {
     for (int i=0;i<rootItem->childCount();++i)
     {
         if (rootItem->child(i)->getEvent()==e)
+            return i;
+    }
+    return -1;
+}
+
+int TreeModel::getIndex(Operation *o)
+{
+    Event *e = o->getBeginEvent();
+    int index = getIndex(e);
+    if (index!=-1)
+    {
+        for (int i=0;i<rootItem->child(index)->childCount();++i)
         {
-            QModelIndex index = createIndex(i, 0, rootItem->child(i));
-            emit dataChanged(index, index);
-            break;
+            if (rootItem->child(index)->child(i)->getOperation()==o)
+                return i;
         }
     }
-    //reset();
+    return -1;
+}
+
+void TreeModel::eventIdChanged(Event *e, int)
+{
+    int i = getIndex(e);
+    if (i!=-1)
+    {
+        TreeItem *child = rootItem->child(i);
+        QModelIndex index = createIndex(i, 0, child);
+        emit dataChanged(index, index);
+        for (int j=0;j<child->childCount();++j)
+        {
+            QModelIndex childIndex = createIndex(j, 2, child->child(j));
+            emit dataChanged(childIndex, childIndex);
+        }
+        foreach (Operation *in, e->getInOperations())
+        {
+            int ii = getIndex(in->getBeginEvent());
+            int jj = getIndex(in);
+            if (ii != -1 && jj != -1)
+            {
+                QModelIndex inIndex = createIndex(jj, 2, rootItem->child(ii)->child(jj));
+                emit dataChanged(inIndex, inIndex);
+            }
+        }
+    }
 }
 
 void TreeModel::eventNameChanged(Event *e, const QString &)
 {
-    for (int i=0;i<rootItem->childCount();++i)
+    int i = getIndex(e);
+    if (i!=-1)
     {
-        if (rootItem->child(i)->getEvent()==e)
-        {
-            QModelIndex index = createIndex(i, 1, rootItem->child(i));
-            emit dataChanged(index, index);
-            break;
-        }
+        QModelIndex index = createIndex(i, 1, rootItem->child(i));
+        emit dataChanged(index, index);
     }
-    //reset();
 }
 
-void TreeModel::operationEndEventChanged(Operation **, Event *)
+void TreeModel::operationEndEventChanged(Operation *o, Event *)
 {
-    //reset();
+    int i = getIndex(o->getBeginEvent());
+    int j = getIndex(o);
+    if (i!=-1 && j!=-1)
+    {
+        QModelIndex index = createIndex(j, 2, rootItem->child(i)->child(j));
+        emit dataChanged(index, index);
+    }
 }
 
 void TreeModel::operationNameChanged(Operation *o, const QString &)
 {
-    Event *e = o->getBeginEvent();
-    for (int i=0;i<rootItem->childCount();++i)
+    int i = getIndex(o->getBeginEvent());
+    int j = getIndex(o);
+    if (i!=-1 && j!=-1)
     {
-        if (rootItem->child(i)->getEvent()==e)
-        {
-            for (int j=0;j<rootItem->child(i)->childCount();++j)
-            {
-                if (rootItem->child(i)->child(j)->getOperation()==o)
-                {
-                    QModelIndex index = createIndex(j, 3, rootItem->child(i)->child(j));
-                    emit dataChanged(index, index);
-                    break;
-                }
-            }
-            break;
-        }
+        QModelIndex index = createIndex(j, 3, rootItem->child(i)->child(j));
+        emit dataChanged(index, index);
     }
-    //reset();
 }
 
 void TreeModel::operationWaitTimeChanged(Operation *o, double)
 {
-    Event *e = o->getBeginEvent();
-    for (int i=0;i<rootItem->childCount();++i)
+    int i = getIndex(o->getBeginEvent());
+    int j = getIndex(o);
+    if (i!=-1 && j!=-1)
     {
-        if (rootItem->child(i)->getEvent()==e)
-        {
-            for (int j=0;j<rootItem->child(i)->childCount();++j)
-            {
-                if (rootItem->child(i)->child(j)->getOperation()==o)
-                {
-                    QModelIndex index = createIndex(j, 4, rootItem->child(i)->child(j));
-                    emit dataChanged(index, index);
-                    break;
-                }
-            }
-            break;
-        }
+        QModelIndex index = createIndex(j, 4, rootItem->child(i)->child(j));
+        emit dataChanged(index, index);
     }
-    //reset();
 }
 
 void TreeModel::afterEventAdd()
@@ -261,55 +265,41 @@ void TreeModel::afterEventAdd()
 
 void TreeModel::beforeEventDelete(Event *e)
 {
-    for (int i=0;i<rootItem->childCount();++i)
-        if (e==rootItem->child(i)->getEvent())
-        {
-            beginRemoveRows(QModelIndex(), i, i);
-            rootItem->removeChild(i);
-            endRemoveRows();
-            break;
-        }
+    int i = getIndex(e);
+    if (i!=-1)
+    {
+        beginRemoveRows(QModelIndex(), i, i);
+        rootItem->removeChild(i);
+        endRemoveRows();
+    }
 }
 
 void TreeModel::afterOperationAdd(Operation *o)
 {
     Event *e = o->getBeginEvent();
-    for (int i=0;i<rootItem->childCount();++i)
+    int i = getIndex(e);
+    if (i!=-1)
     {
         TreeItem *parent = rootItem->child(i);
-        if (e==parent->getEvent())
-        {
-            TreeItem *item = new TreeItem(o, *parent);
-            beginInsertRows(createIndex(i, 0, parent), parent->childCount(), parent->childCount());
-            parent->appendChild(item);
-            endInsertRows();
-            assert(parent->childCount()-1==e->getOutOperations().indexOf(o));
-            break;
-        }
+        TreeItem *item = new TreeItem(o, *parent);
+        beginInsertRows(createIndex(i, 0, parent), parent->childCount(), parent->childCount());
+        parent->appendChild(item);
+        endInsertRows();
+        assert(parent->childCount()-1==e->getOutOperations().indexOf(o));
     }
 }
 
 void TreeModel::beforeOperationDelete(Operation *o)
 {
     Event *e = o->getBeginEvent();
-    for (int i=0;i<rootItem->childCount();++i)
+    int i = getIndex(e);
+    int j = getIndex(o);
+    if (i!=-1 && j!=-1)
     {
         TreeItem *parent = rootItem->child(i);
-        if (e==parent->getEvent())
-        {
-            for (int j=0;j<parent->childCount();++j)
-            {
-                Operation *o1 = parent->child(j)->getOperation();
-                if (o==o1)
-                {
-                    beginRemoveRows(createIndex(i, 0, parent), j, j);
-                    parent->removeChild(j);
-                    endRemoveRows();
-                    break;
-                }
-            }
-            break;
-        }
+        beginRemoveRows(createIndex(i, 0, parent), j, j);
+        parent->removeChild(j);
+        endRemoveRows();
     }
 }
 
@@ -323,17 +313,13 @@ void TreeModel::afterEventInsert(int i)
 
 void TreeModel::afterOperationInsert(Operation *o, int index)
 {
-    Event *e = o->getBeginEvent();
-    for (int i=0;i<rootItem->childCount();++i)
+    int i = getIndex(o->getBeginEvent());
+    if (i!=-1)
     {
         TreeItem *parent = rootItem->child(i);
-        if (e==parent->getEvent())
-        {
-            beginInsertRows(createIndex(i, 0, parent), index, index);
-            parent->insertChild(new TreeItem(o, *parent), index);
-            endInsertRows();
-            break;
-        }
+        beginInsertRows(createIndex(i, 0, parent), index, index);
+        parent->insertChild(new TreeItem(o, *parent), index);
+        endInsertRows();
     }
 }
 
@@ -418,24 +404,11 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
         switch (index.column())
         {
             case 0:
-                    if (v.convert(QVariant::Int)
-                        && netmodel->setN(item->getEvent(), v.toInt()))
-                    {
-                        emit dataChanged(index,index);
-                        return true;
-                    }
-                    else
-                        return false;
+                return (v.convert(QVariant::Int) && netmodel->setN(item->getEvent(), v.toInt()));
             case 1:
-                    if (v.convert(QVariant::String)
-                        && netmodel->setName(item->getEvent(), v.toString()))
-                    {
-                        emit dataChanged(index,index);
-                        return true;
-                    }
-                    else
-                        return false;
-            default: return false;
+                return (v.convert(QVariant::String) && netmodel->setName(item->getEvent(), v.toString()));
+            default:
+                return false;
         }
     }
     else if (item->getOperation())
@@ -446,32 +419,16 @@ bool TreeModel::setData(const QModelIndex &index, const QVariant &value, int rol
                 {
                     Event *e = v.value<Event*>();
                     Operation *o = item->getOperation();
-                    bool res = netmodel->setOperationEndEvent(&o, e);
-                    if (res)
-                    {
-                        emit dataChanged(index,index);
-                        return true;
-                    } else return false;
+                    return netmodel->setOperationEndEvent(o, e);
                 }
             case 3:
-                if (v.convert(QVariant::String)
-                    && netmodel->setOperationName(item->getOperation(), v.toString()))
-                {
-                    emit dataChanged(index,index);
-                    return true;
-                }
-                else
-                    return false;
+                return (v.convert(QVariant::String)
+                    && netmodel->setOperationName(item->getOperation(), v.toString()));
             case 4:
-                if (v.convert(QVariant::Double)
-                    && netmodel->setOperationWaitTime(item->getOperation(), v.toDouble()))
-                {
-                    emit dataChanged(index,index);
-                    return true;
-                }
-                else
-                    return false;
-            default: return false;
+                return (v.convert(QVariant::Double)
+                    && netmodel->setOperationWaitTime(item->getOperation(), v.toDouble()));
+            default:
+                return false;
         }
     }
     return false;

@@ -48,7 +48,7 @@
 #include "netmodel.h"
 
 QT_BEGIN_NAMESPACE
-class QGraphicsSceneMouseEvent;
+        class QGraphicsSceneMouseEvent;
 class QMenu;
 class QPointF;
 class QGraphicsLineItem;
@@ -57,8 +57,8 @@ class QGraphicsTextItem;
 class QColor;
 QT_END_NAMESPACE
 
-//! [0]
-class DiagramScene : public QGraphicsScene
+        //! [0]
+        class DiagramScene : public QGraphicsScene
 {
     Q_OBJECT
 
@@ -67,13 +67,13 @@ public:
 
     DiagramScene(QMenu *itemMenu, QObject *parent = 0);
     QFont font() const
-        { return myFont; }
+    { return myFont; }
     QColor textColor() const
-        { return myTextColor; }
+    { return myTextColor; }
     QColor itemColor() const
-        { return myItemColor; }
+    { return myItemColor; }
     QColor lineColor() const
-        { return myLineColor; }
+    { return myLineColor; }
     void setLineColor(const QColor &color);
     void setTextColor(const QColor &color);
     void setItemColor(const QColor &color);
@@ -95,7 +95,7 @@ public slots:
     void ArrowAdd(Operation* op,int);
     void ArrowAdd(Operation* op);
     void ArrowDel(Operation* op);
-    void OperationRedirect(Operation **op,Event* ev);
+    void OperationRedirect(Operation *op,Event* ev);
     void NChanged(Event *ev, int id);
     void deleteItem();
     void bringToFront(DiagramItem *item);
