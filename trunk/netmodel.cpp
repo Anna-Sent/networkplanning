@@ -664,32 +664,18 @@ QList<Path> *NetModel::_getFullPathes()
 }
 
 QList<Path> *NetModel::getCriticalPathes()
-{/*
-    if (!criticPathes)
-        if (isCorrect())
-        {
-            criticPathes = _getCriticalPathes();
-        }
-        else
-        {
-            criticPathes = new QList<Path>();
-        }
-    return new QList<Path>(*criticPathes);*/
+{
+//    if (!criticPathes)
+//        criticPathes = _getCriticalPathes();
+//    return new QList<Path>(*criticPathes);
     return _getCriticalPathes();
 }
 
 QList<Path> *NetModel::getFullPathes()
 {
-/*    if (!fullPathes)
-        if (isCorrect())
-        {
-            fullPathes = _getFullPathes();
-        }
-        else
-        {
-            fullPathes = new QList<Path>();
-        }
-    return new QList<Path>(*fullPathes);*/
+//    if (!fullPathes)
+//        fullPathes = _getFullPathes();
+//    return new QList<Path>(*fullPathes);
     return _getFullPathes();
 }
 

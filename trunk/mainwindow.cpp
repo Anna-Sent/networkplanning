@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     netmodel.addOperation(o1);
     netmodel.addOperation(o2);
     netmodel.addOperation(o3);
+    //netmodel.update();//
     // setup position of netmodel
     Position *pos = new PlanarPosition;
     pos->position(&netmodel);
