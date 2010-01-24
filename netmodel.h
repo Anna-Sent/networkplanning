@@ -31,7 +31,7 @@ private:
 public:
     void insertOutOperation(Operation *o, int i) {outputOperations.insert(i, o);}
     QPoint& getPoint() {return point;}
-    int getN();
+    int getN() const;
     QList<Operation*>& getInOperations();
     QList<Operation*>& getOutOperations();
     QString getName() {return name;}
@@ -53,12 +53,12 @@ private:
 public:
     Operation();
     Operation(double);
-    Event *getBeginEvent();
-    Event *getEndEvent();
+    Event *getBeginEvent() const;
+    Event *getEndEvent() const;
     void setBeginEvent(Event* e);
     void setEndEvent(Event* e);
     double getWaitTime();
-    QString getCode();
+    QString getCode() const;
     QString getName() {return name;}
     bool inCriticalPath() const {return _inCriticalPath;}
 };
@@ -157,6 +157,7 @@ public:
     Event *last() {return events.isEmpty()?NULL:events.last();}
     // for net
     void sort(QList<Path> &);
+    void qsort(QList<Path> &);
     QList<Event*> *getSortedEvents();
     QList<Operation*> *getSortedOperatioins();
     QList<Path> *getFullPathes();

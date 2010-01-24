@@ -133,7 +133,7 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
     header << "L" << "t(L)" << "R(L)";
     data.clear();
     QList<Path> *pathes = netmodel->getFullPathes();
-    netmodel->sort(*pathes);
+    //netmodel->sort(*pathes);
     foreach (Path p, *pathes)
     {
         QList<QVariant> row;

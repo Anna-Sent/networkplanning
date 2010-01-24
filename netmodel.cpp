@@ -34,7 +34,7 @@ bool Event::hasEdge(Event *e)
     return false;
 }
 
-int Event::getN()
+int Event::getN() const
 {
     return n;
 }
@@ -59,12 +59,12 @@ Operation::Operation(double twait) :
 {
 }
 
-Event *Operation::getBeginEvent()
+Event *Operation::getBeginEvent() const
 {
     return beginEvent;
 }
 
-Event *Operation::getEndEvent()
+Event *Operation::getEndEvent() const
 {
     return endEvent;
 }
@@ -84,7 +84,7 @@ double Operation::getWaitTime()
     return twait;
 }
 
-QString Operation::getCode()
+QString Operation::getCode() const
 {
     QString first=beginEvent?QString::number(beginEvent->getN()):"NULL";
     QString second=endEvent?QString::number(endEvent->getN()):"NULL";
@@ -159,9 +159,15 @@ NetModel::~NetModel()
 void NetModel::clearCash()
 {
     if (fullPathes)
+    {
         delete fullPathes;
+        fullPathes = NULL;
+    }
     if (criticPathes)
+    {
         delete criticPathes;
+        criticPathes = NULL;
+    }
 }
 
 Event* NetModel::getEventByNumber(int n)
@@ -543,6 +549,16 @@ QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
     return pathes;
 }
 
+bool pathLessThan(const Path &p1, const Path &p2)
+{
+    return p1.code() < p2.code();
+}
+
+void NetModel::qsort(QList<Path> &pathes)
+{
+    qSort(pathes.begin(), pathes.end(), pathLessThan);
+}
+
 void NetModel::sort(QList<Path> &pathes)
 {
     for (int i=0; i<pathes.count()-1; ++i)
@@ -562,10 +578,28 @@ void NetModel::sort(QList<Path> &pathes)
     }
 }
 
+bool eventLessThan(const Event *e1, const Event *e2)
+{
+    return e1->getN()<e2->getN();
+}
+
+bool operationLessThan(const Operation *o1, const Operation *o2)
+{
+    if (o1->getBeginEvent()->getN()<o2->getBeginEvent()->getN())
+        return true;
+    else if (o1->getBeginEvent()->getN()>o2->getBeginEvent()->getN())
+        return false;
+    else if (o1->getEndEvent()->getN()<o2->getEndEvent()->getN())
+        return true;
+    else
+        return false;
+//    return o1->getCode()<o2->getCode();
+}
+
 QList<Event*> *NetModel::getSortedEvents()
 {
     QList<Event*> *list = new QList<Event*>(events);
-    for (int i=0; i<list->count()-1; ++i)
+    /*for (int i=0; i<list->count()-1; ++i)
     {
         int max = i;
         for (int j=i+1; j<list->count(); ++j)
@@ -579,14 +613,15 @@ QList<Event*> *NetModel::getSortedEvents()
             list->replace(i, list->at(max));
             list->replace(max, tmp);
         }
-    }
+    }*/
+    qSort(list->begin(), list->end(), eventLessThan);
     return list;
 }
 
 QList<Operation*> *NetModel::getSortedOperatioins()
 {
     QList<Operation*> *list = new QList<Operation*>(operations);
-    for (int i=0; i<list->count()-1; ++i)
+    /*for (int i=0; i<list->count()-1; ++i)
     {
         int max = i;
         for (int j=i+1; j<list->count(); ++j)
@@ -600,7 +635,8 @@ QList<Operation*> *NetModel::getSortedOperatioins()
             list->replace(i, list->at(max));
             list->replace(max, tmp);
         }
-    }
+    }*/
+    qSort(list->begin(), list->end(), operationLessThan);
     return list;
 }
 
@@ -665,18 +701,21 @@ QList<Path> *NetModel::_getFullPathes()
 
 QList<Path> *NetModel::getCriticalPathes()
 {
-//    if (!criticPathes)
-//        criticPathes = _getCriticalPathes();
-//    return new QList<Path>(*criticPathes);
-    return _getCriticalPathes();
+    if (!criticPathes)
+        criticPathes = _getCriticalPathes();
+    return new QList<Path>(*criticPathes);
+//    return _getCriticalPathes();
 }
 
 QList<Path> *NetModel::getFullPathes()
 {
-//    if (!fullPathes)
-//        fullPathes = _getFullPathes();
-//    return new QList<Path>(*fullPathes);
-    return _getFullPathes();
+    if (!fullPathes)
+    {
+        fullPathes = _getFullPathes();
+        qsort(*fullPathes);
+    }
+    return new QList<Path>(*fullPathes);
+//    return _getFullPathes();
 }
 
 double NetModel::getCriticalPathWeight()
