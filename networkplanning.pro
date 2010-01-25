@@ -20,7 +20,8 @@ HEADERS = treeitem.h \
     arrow.h \
     diagramscene.h \
     aboutdialog.h \
-    ui_aboutdialog.h
+    ui_aboutdialog.h \
+    cachemanager.h
 RESOURCES = networkplanning.qrc
 SOURCES = treeitem.cpp \
     treemodel.cpp \
@@ -42,7 +43,8 @@ SOURCES = treeitem.cpp \
     diagramitem.cpp \
     arrow.cpp \
     diagramscene.cpp \
-    aboutdialog.cpp
+    aboutdialog.cpp \
+    cachemanager.cpp
 CONFIG += qt
 
 # install
