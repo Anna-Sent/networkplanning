@@ -82,9 +82,10 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
           QWidget *)
 {
     if (myStartItem==0||myEndItem==0) return;
-    if (myStartItem->collidesWithItem(myEndItem))
-        return;
-
+    /*if (myStartItem->collidesWithItem(myEndItem))
+        return;*/
+    QLineF centerLine(myStartItem->pos(), myEndItem->pos());
+    if (centerLine.length()<myStartItem->radius()+myEndItem->radius()) return;
 
     QPen myPen = pen();
     QPen bpen = pen();
@@ -112,7 +113,6 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 
 //! [4] //! [5]
 
-    QLineF centerLine(myStartItem->pos(), myEndItem->pos());
     /*qDebug() << centerLine;
     QPolygonF endPolygon = myEndItem->polygon();
     QPointF p1 = endPolygon.first() + myEndItem->pos();
