@@ -93,6 +93,7 @@ void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *sty
     pen.setColor(Qt::black);
     pen.setStyle(Qt::DashLine);
     painter->drawRect(boundingRect());*/
+    if (!_event) return;
     switch (myDiagramType) {
         case Circle:
             if (!editing)
@@ -143,14 +144,17 @@ void DiagramItem::addArrow(Arrow *arrow)
 //! [3]
 
 //! [4]
-QPixmap DiagramItem::image() const
+QPixmap DiagramItem::image()
 {
     QPixmap pixmap(60, 60);
     pixmap.fill(Qt::transparent);
     QPainter painter(&pixmap);
-    painter.setPen(QPen(Qt::black, 2));
+    //painter.setPen(QPen(Qt::black, 2));
     painter.translate(30, 30);
-    painter.drawPolyline(myPolygon);
+    //painter.drawPolyline(myPolygon);*/
+    _pen.setColor(Qt::black);
+    _pen.setWidth(2);
+    paint(&painter,NULL,NULL);
 
     return pixmap;
 }
