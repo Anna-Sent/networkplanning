@@ -153,7 +153,7 @@ void MainWindow::createToolbar()
     pointerButton->setCheckable(true);
     pointerButton->setChecked(true);
     pointerButton->setIcon(QIcon(":/images/pointer.png"));
-    pointerButton->setStatusTip(QString::fromUtf8("? ежим указателя мыши"));
+    pointerButton->setStatusTip(QString::fromUtf8("Режим указателя мыши"));
 
     QToolButton *linePointerButton = new QToolButton;
     linePointerButton->setCheckable(true);
