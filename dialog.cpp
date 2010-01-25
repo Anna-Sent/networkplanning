@@ -5,12 +5,13 @@
 #include <QImage>
 
 Dialog::Dialog(NetModel &netmodel,DiagramScene *sc, QWidget *parent)
-    : QDialog(parent), ui(new Ui::Dialog), scene(sc)
+    : QDialog(parent), ui(new Ui::Dialog), scene(sc),
+    eventsList(NULL), operationsList(NULL), pathes(NULL)
 {
     ui->setupUi(this);
     _setModel(netmodel);
-    connect(sc,SIGNAL(changed()),this,SLOT(display()));
-    display();
+    connect(sc, SIGNAL(changed()), this, SLOT(display()));
+    //display();
 }
 
 void Dialog::setModel(NetModel &netmodel)
@@ -29,8 +30,10 @@ void Dialog::beforeClear()
 
 void Dialog::_clearModel()
 {
-    connect(netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
-    connect(netmodel, SIGNAL(updated()), this, SLOT(display()));
+    clearCashe();
+    disconnect(netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+    disconnect(netmodel, SIGNAL(updated()), this, SLOT(clearCashe()));
+    disconnect(netmodel, SIGNAL(updated()), this, SLOT(display()));
     netmodel = NULL;
 }
 
@@ -38,6 +41,7 @@ void Dialog::_setModel(NetModel &netmodel)
 {
     this->netmodel = &netmodel;
     connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
+    connect(&netmodel, SIGNAL(updated()), this, SLOT(clearCashe()));
     connect(&netmodel, SIGNAL(updated()), this, SLOT(display()));
 }
 
@@ -133,7 +137,8 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
     header.clear();
     header << "L" << "t(L)" << "R(L)";
     data.clear();
-    QList<Path> *pathes = netmodel->getFullPathes();
+    if (!pathes)
+        pathes = netmodel->getFullPathes();
     //netmodel->sort(*pathes);
     foreach (Path p, *pathes)
     {
@@ -150,14 +155,15 @@ void Dialog::fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &d
     header.clear();
     header << "i" << QString::fromUtf8("t р.(i)") << QString::fromUtf8("t п.(i)") << "R(i)";
     data.clear();
-    QList<Event*> *list = netmodel->getSortedEvents();
-    foreach (Event *e, *list)
+    if (!eventsList)
+        eventsList = netmodel->getSortedEvents();
+    foreach (Event *e, *eventsList)
     {
         QList<QVariant> row;
         row << e->getN() << netmodel->getEarlyEndTime(e) << netmodel->getLaterEndTime(e) << netmodel->getReserveTime(e);
         data << row;
     }
-    delete list;
+    //delete eventsList;
 }
 
 /*Before call this function check the netmodel is not null and is correct.*/
@@ -169,8 +175,9 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
             << QString::fromUtf8("t п.о.(i-j)") << QString::fromUtf8("t п.(i-j)")
             << QString::fromUtf8("t с.(i-j)");
     data.clear();
-    QList<Operation*> *list = netmodel->getSortedOperatioins();
-    foreach (Operation *o, *list)
+    if (!operationsList)
+        operationsList = netmodel->getSortedOperatioins();
+    foreach (Operation *o, *operationsList)
     {
         QList<QVariant> row;
         row << o->getCode() << o->getWaitTime() << netmodel->getEarlyStartTime(o) << netmodel->getLaterStartTime(o)
@@ -178,7 +185,7 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
                 << netmodel->getFreeReserveTime(o);
         data << row;
     }
-    delete list;
+    //delete operationsList;
 }
 
 void Dialog::displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data)

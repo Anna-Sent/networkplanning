@@ -27,6 +27,9 @@ private:
     Ui::Dialog *ui;
     NetModel *netmodel;
     DiagramScene *scene;
+    QList<Event*> *eventsList;
+    QList<Operation*> *operationsList;
+    QList<Path> *pathes;
 
     void fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
@@ -38,6 +41,24 @@ private:
 private slots:
     void beforeClear();
     void display();
+    void clearCashe()
+    {
+        if (eventsList)
+        {
+            delete eventsList;
+            eventsList = NULL;
+        }
+        if (operationsList)
+        {
+            delete operationsList;
+            operationsList = NULL;
+        }
+        if (pathes)
+        {
+            //delete pathes;
+            pathes = NULL;
+        }
+    }
 };
 
 #endif // DIALOG_H
