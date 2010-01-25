@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'aboutdialog.ui'
 **
-** Created: Tue Jan 26 00:26:44 2010
+** Created: Tue Jan 26 03:48:34 2010
 **      by: Qt User Interface Compiler version 4.5.3
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -105,7 +105,7 @@ public:
 
     void retranslateUi(QDialog *AboutDialog)
     {
-        AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "Dialog", 0, QApplication::UnicodeUTF8));
+        AboutDialog->setWindowTitle(QApplication::translate("AboutDialog", "\320\236 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265 Network planning", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("AboutDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -119,28 +119,30 @@ public:
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">\320\232\321\200\320\276\321\201\321\201\320\277\320\273\320\260\321\202\321\204\320\276\321\200\320\274\320\265\320\275\320\275\320\260\321\217 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\260 \321\201 \320\277\321\200\320\276\321\201\321\202\321\213\320\274 \320\270\320\275\321\202\320\265\321\200\321\204\320\265\320\271\321\201\320\276\320\274, \320\277\321\200\320\265\320\264\320\275\320\260\320\267\320\275\320\260\321\207\320\265\320\275\320\275\320\260\321\217 \320\264\320\273\321"
-                        "\217 \321\201\320\265\321\202\320\265\320\262\320\276\320\263\320\276 \320\277\320\273\320\260\320\275\320\270\321\200\320\276\320\262\320\260\320\275\320\270\321\217 \320\270 \320\260\320\275\320\260\320\273\320\270\320\267\320\260 \320\277\320\276\321\202\320\276\320\272\320\276\320\262 \321\200\320\260\320\261\320\276\321\202.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">\320\232\321\200\320\276\321\201\321\201\320\277\320\273\320\260\321\202\321\204\320\276\321\200\320\274\320\265\320\275\320\275\320\260\321\217 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\260 \321\201 \320\277\321\200\320\276\321\201\321\202\321\213\320\274 \320\270\320\275\321\202\320\265\321\200\321\204\320\265\320\271\321\201\320\276\320\274 </span><span style=\" font-family:'Sans'; font-size:10pt; font-weight:600;\">Network planning</span><span style=\" font-family:'Sans'; font-"
+                        "size:10pt;\"> \320\277\321\200\320\265\320\264\320\275\320\260\320\267\320\275\320\260\321\207\320\265\320\275\320\260 \320\264\320\273\321\217 \321\201\320\265\321\202\320\265\320\262\320\276\320\263\320\276 \320\277\320\273\320\260\320\275\320\270\321\200\320\276\320\262\320\260\320\275\320\270\321\217 \320\270 \320\260\320\275\320\260\320\273\320\270\320\267\320\260 \320\277\320\276\321\202\320\276\320\272\320\276\320\262 \321\200\320\260\320\261\320\276\321\202.</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">\320\244\321\203\320\275\320\272\321\206\320\270\320\270 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\321\213:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">- \321\200\320\265\320\264\320\260\320\272\321\202\320\270\321\200\320\276\320\262\320\260\320\275\320\270\320\265 \321\201\320\265\321\202\320\265\320\262\320\276\320\271 \320\274\320"
-                        "\276\320\264\320\265\320\273\320\270 \321\201 \320\277\320\276\320\274\320\276\321\211\321\214\321\216 \321\202\320\260\320\261\320\273\320\270\321\206\321\213 \320\270 (\320\270\320\273\320\270) \320\263\321\200\320\260\321\204\320\260;</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">- \321\200\320\265\320\264\320\260\320\272\321"
+                        "\202\320\270\321\200\320\276\320\262\320\260\320\275\320\270\320\265 \321\201\320\265\321\202\320\265\320\262\320\276\320\271 \320\274\320\276\320\264\320\265\320\273\320\270 \321\201 \320\277\320\276\320\274\320\276\321\211\321\214\321\216 \321\202\320\260\320\261\320\273\320\270\321\206\321\213 \320\270\320\273\320\270 \320\263\321\200\320\260\321\204\320\260;</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">- \321\200\320\260\321\201\321\207\320\265\321\202 \320\277\320\260\321\200\320\260\320\274\320\265\321\202\321\200\320\276\320\262 \321\201\320\265\321\202\320\270 (\321\201\320\276\320\261\321\213\321\202\320\270\320\271, \321\200\320\260\320\261\320\276\321\202, \320\277\321\203\321\202\320\265\320\271);</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">- \320\277\320\265\321\207\320\260\321\202\321\214 \320\263\321\200\320\260\321\204\320\260 \320\270"
-                        " \321\202\320\260\320\261\320\273\320\270\321\206 \321\201 \321\200\320\260\321\201\321\207\320\265\321\202\320\260\320\274\320\270.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family"
+                        ":'Sans'; font-size:10pt;\">- \320\277\320\265\321\207\320\260\321\202\321\214 \320\263\321\200\320\260\321\204\320\260 \320\270 \321\202\320\260\320\261\320\273\320\270\321\206 \321\201 \321\200\320\260\321\201\321\207\320\265\321\202\320\260\320\274\320\270.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">(c) 2010 \320\241\320\265\320\275\321\202\321\217\320\272\320\276\320\262\320\260 \320\220\320\275\320\275\320\260</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans'; font-size:10pt;\"></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt; text-decoration: un"
-                        "derline; color:#5500ff;\">http://code.google.com/p/networkplanning/</span></p></body></html>", 0, QApplication::UnicodeUTF8));
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; "
+                        "margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt; text-decoration: underline; color:#5500ff;\">http://code.google.com/p/networkplanning/</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tabAbout), QApplication::translate("AboutDialog", "\320\236 \320\277\321\200\320\276\320\263\321\200\320\260\320\274\320\274\320\265", 0, QApplication::UnicodeUTF8));
         textBrowser_2->setHtml(QApplication::translate("AboutDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'DejaVu Sans'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">\320\241\320\265\320\275\321\202\321\217\320\272\320\276\320\262\320\260 \320\220\320\275\320\275\320\260</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt; text-decoration: underline; color:#5500ff;\">anna.sent@gmail.com</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font"
-                        "-family:'Sans'; font-size:10pt;\">\320\244\320\260\321\200\320\260\321\204\320\276\320\275\320\276\320\262 \320\220\321\200\321\202\320\265\320\274</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">Current maintainer and original author.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-si"
+                        "ze:10pt; text-decoration: underline; color:#5500ff;\">anna.sent@gmail.com</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">\320\244\320\260\321\200\320\260\321\204\320\276\320\275\320\276\320\262 \320\220\321\200\321\202\320\265\320\274</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt;\">Current maintainer and lead widget developer.</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:'Sans'; font-size:10pt; text-decoration: underline; color:#5500ff;\">farafonoff@gmail.com</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tabAuthors), QApplication::translate("AboutDialog", "\320\220\320\262\321\202\320\276\321\200\321\213", 0, QApplication::UnicodeUTF8));
         textBrowser_3->setHtml(QApplication::translate("AboutDialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

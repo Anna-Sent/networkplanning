@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Расчет сетевого графика</string>
+   <string>Расчет параметров сети</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">

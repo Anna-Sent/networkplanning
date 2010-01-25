@@ -9,9 +9,9 @@ Dialog::Dialog(NetModel &netmodel,DiagramScene *sc, QWidget *parent)
     eventsList(NULL), operationsList(NULL), pathes(NULL)
 {
     ui->setupUi(this);
-    _setModel(netmodel);
     connect(sc, SIGNAL(changed()), this, SLOT(display()));
-    //display();
+    _setModel(netmodel);
+    display();
 }
 
 void Dialog::setModel(NetModel &netmodel)
@@ -43,32 +43,6 @@ void Dialog::_setModel(NetModel &netmodel)
     connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
     connect(&netmodel, SIGNAL(updated()), this, SLOT(clearCashe()));
     connect(&netmodel, SIGNAL(updated()), this, SLOT(display()));
-}
-
-QString Dialog::getLabelText()
-{
-    QString s;
-    if (netmodel)
-    {
-        s = netmodel->print();
-        if (netmodel->hasLoops())
-            s += "Имеются циклы\n";
-        if (netmodel->hasMultiEdges())
-            s += "Имеются работы с одинаковыми кодами\n";
-        if (!netmodel->hasOneBeginEvent())
-            s += "Исходное событие не определено\n";
-        if (!netmodel->hasOneEndEvent())
-            s += "Завершающее событие не определено\n";
-        if (netmodel->hasUnconnectedEvents())
-            s += "Некоторые события не соединены с работами\n";
-        if (netmodel->hasUnconnectedOperations())
-            s += "Некоторые работы не соединены с событиями\n";
-        if (!netmodel->isCorrect())
-            s += "Сетевая модель некорректна\n";
-    }
-    else
-        s = "Сетевая модель не задана\n";
-    return QString::fromUtf8(s.toAscii());
 }
 
 void Dialog::display()
@@ -188,7 +162,7 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
     //delete operationsList;
 }
 
-void Dialog::displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data)
+void Dialog::displayTable(QTextCursor &cursor, const QList<QVariant> &header, const QList< QList<QVariant> > &data)
 {
     int colcount = header.count();
     if (colcount<1)
