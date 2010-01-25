@@ -113,7 +113,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 //! [4] //! [5]
 
     QLineF centerLine(myStartItem->pos(), myEndItem->pos());
-    qDebug() << centerLine;
+    /*qDebug() << centerLine;
     QPolygonF endPolygon = myEndItem->polygon();
     QPointF p1 = endPolygon.first() + myEndItem->pos();
     QPointF p2;
@@ -132,7 +132,9 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         if (intersectType == QLineF::BoundedIntersection)
             break;
         p1 = p2;
-    }
+    }*/
+
+    centerLine.setLength(centerLine.length()-endItem()->radius());
 
     QPointF mid = centerLine.pointAt(0.5);
     QLineF diff = centerLine.normalVector().unitVector();
@@ -153,7 +155,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     path.addPolygon(textLabelR);
     textLabel=path.toFillPolygon();
 
-    QLineF resLine = QLineF(intersectPoint, myStartItem->pos());
+    QLineF resLine = QLineF(centerLine.p2(), myStartItem->pos());
     qDebug() <<resLine;
     setLine(resLine);
 //! [5] //! [6]

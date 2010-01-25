@@ -49,7 +49,7 @@
 //! [0]
 DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu,
              QGraphicsItem *parent, QGraphicsScene *scene)
-    : QGraphicsPolygonItem(parent, scene)
+    : QGraphicsItem(parent, scene)
 {
     //assert(scene);
     myDiagramType = diagramType;
@@ -57,24 +57,28 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
     _event = ev;
     if (ev) setPos(ev->getPoint());
 
-    QPainterPath path;
-    switch (myDiagramType) {
-        case Circle:
-            path.addEllipse(QPointF(0,0),25,25);
-            myPolygon = path.toFillPolygon();
-            break;
-        default:
+    //QPainterPath path;
+    //switch (myDiagramType) {
+    //    case Circle:
+            //path.addEllipse(QPointF(0,0),25,25);
+            //myPolygon = path.toFillPolygon();
+            //break;
+/*        default:
             myPolygon << QPointF(-120, -80) << QPointF(-70, 80)
                       << QPointF(120, 80) << QPointF(70, -80)
                       << QPointF(-120, -80);
-            break;
-    }
-    setPolygon(myPolygon);
+            break;*/
+    //}
+    //setPolygon(myPolygon);
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     editing=false;
 }
 //! [0]
+QRectF DiagramItem::boundingRect() const
+{
+    return QRectF(-radius(),-radius(),2*radius(),2*radius());
+}
 
 void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *style, QWidget *widget ) {
     //QGraphicsPolygonItem::paint(painter,style,widget);
@@ -92,7 +96,7 @@ void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *sty
     switch (myDiagramType) {
         case Circle:
             if (!editing)
-                painter->drawText(QRect(-30,-30,60,60),Qt::AlignCenter,QString::number(_event->getN()) ,&textBox);
+                painter->drawText(boundingRect(),Qt::AlignCenter,QString::number(_event->getN()) ,&textBox);
             break;
     }
 }
