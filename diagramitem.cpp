@@ -72,6 +72,7 @@ DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu
     setPolygon(myPolygon);
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
+    editing=false;
 }
 //! [0]
 
@@ -168,7 +169,6 @@ QVariant DiagramItem::itemChange(GraphicsItemChange change,
         foreach (Arrow *arrow, arrows) {
             arrow->updatePosition();
         }
-
         _event->getPoint()=value.toPointF().toPoint();
     }
 

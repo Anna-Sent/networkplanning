@@ -21,6 +21,7 @@ Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem,
     myColor = Qt::black;
     myCritColor = Qt::red;
     setPen(QPen(myColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    editing=false;
 }
 //! [0]
 
@@ -84,6 +85,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     if (myStartItem->collidesWithItem(myEndItem))
         return;
 
+
     QPen myPen = pen();
     QPen bpen = pen();
     //bpen.setColor(Qt::green);
@@ -111,18 +113,24 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 //! [4] //! [5]
 
     QLineF centerLine(myStartItem->pos(), myEndItem->pos());
+    qDebug() << centerLine;
     QPolygonF endPolygon = myEndItem->polygon();
     QPointF p1 = endPolygon.first() + myEndItem->pos();
     QPointF p2;
     QPointF intersectPoint;
     QLineF polyLine;
     for (int i = 1; i < endPolygon.count(); ++i) {
-    p2 = endPolygon.at(i) + myEndItem->pos();
-    polyLine = QLineF(p1, p2);
-    QLineF::IntersectType intersectType =
-        polyLine.intersect(centerLine, &intersectPoint);
-    if (intersectType == QLineF::BoundedIntersection)
-        break;
+        p2 = endPolygon.at(i) + myEndItem->pos();
+        polyLine = QLineF(p1, p2);
+        QLineF ul = polyLine.unitVector();
+        QPointF uv = QPointF(ul.dx(),ul.dy());
+        polyLine = QLineF(p1-uv,p2+uv);
+        qDebug() << polyLine;
+        QLineF::IntersectType intersectType =
+                polyLine.intersect(centerLine, &intersectPoint);
+        qDebug() << intersectPoint << intersectType;
+        if (intersectType == QLineF::BoundedIntersection)
+            break;
         p1 = p2;
     }
 
@@ -145,8 +153,9 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     path.addPolygon(textLabelR);
     textLabel=path.toFillPolygon();
 
-
-    setLine(QLineF(intersectPoint, myStartItem->pos()));
+    QLineF resLine = QLineF(intersectPoint, myStartItem->pos());
+    qDebug() <<resLine;
+    setLine(resLine);
 //! [5] //! [6]
 
     double angle = ::acos(line().dx() / line().length());

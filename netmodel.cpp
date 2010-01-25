@@ -7,11 +7,15 @@ using namespace std;
 Event::Event()
 {
     n = 0;
+    point.setX(0);
+    point.setY(0);
 }
 
 Event::Event(int n)
 {
     this->n = n;
+    point.setX(0);
+    point.setY(0);
 }
 
 void Event::addInOperation(Operation *operation)
