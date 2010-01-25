@@ -514,15 +514,18 @@ void NetModel::getPathes(Event *begin, Event *end, QList<Path> *pathes)
             pathes->append(path);
         } else {
             Event *next = operation->getEndEvent();
-            QList<Path> pathes1;
-            getPathes(next, end, &pathes1);
-            foreach(Path path1, pathes1)
+            //QList<Path> pathes1;
+            int c1 = pathes->count();
+            getPathes(next, end, pathes);
+            int c2 = pathes->count();
+            for(int i=c1;i<c2;++i)
             {
-                QList<Event*> events;
+                /*QList<Event*> events;
                 events << begin;
                 events << path1.events;
                 Path path(events);
-                pathes->append(path);
+                pathes->append(path);*/
+                (*pathes)[i].prepend(begin);
             }
         }
     }
