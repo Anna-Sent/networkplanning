@@ -82,7 +82,7 @@ public:
     QPolygonF polygon() const
         { return myPolygon; }
     void addArrow(Arrow *arrow);
-    QPixmap image() const;
+    QPixmap image();
     int type() const
         { return Type;}
     bool wrapsEvent(Event* ev) { return _event==ev; }
