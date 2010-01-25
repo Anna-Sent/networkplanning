@@ -153,12 +153,12 @@ void MainWindow::createToolbar()
     pointerButton->setCheckable(true);
     pointerButton->setChecked(true);
     pointerButton->setIcon(QIcon(":/images/pointer.png"));
-    pointerButton->setStatusTip(QString::fromUtf8("� ежим указателя мыши"));
+    pointerButton->setStatusTip(QString::fromUtf8("? ежим указателя мыши"));
 
     QToolButton *linePointerButton = new QToolButton;
     linePointerButton->setCheckable(true);
     linePointerButton->setIcon(QIcon(":/images/linepointer.png"));
-    linePointerButton->setStatusTip(QString::fromUtf8("� ежим создания коннектора (стрелки)"));
+    linePointerButton->setStatusTip(QString::fromUtf8("Режим создания коннектора (стрелки)"));
 
     pointerTypeGroup = new QButtonGroup;
     pointerTypeGroup->addButton(pointerButton, int(DiagramScene::MoveItem));
