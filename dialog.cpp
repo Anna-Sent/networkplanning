@@ -9,7 +9,7 @@ Dialog::Dialog(NetModel &netmodel,DiagramScene *sc, QWidget *parent)
 {
     ui->setupUi(this);
     _setModel(netmodel);
-    //connect(sc,SIGNAL(changed()),this,SLOT(display()));
+    connect(sc,SIGNAL(changed()),this,SLOT(display()));
     display();
 }
 
