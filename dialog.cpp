@@ -140,7 +140,7 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
         row << p.code() << p.weight() << netmodel->getReserveTime(p);
         data << row;
     }
-    delete pathes;
+    //delete pathes;
 }
 
 /*Before call this function check the netmodel is not null and is correct.*/

@@ -31,7 +31,7 @@ void FullPathesModel::setupModelData()
             row << netmodel->getReserveTime(path);
             modelData << row;
         }
-        delete pathes;
+        //delete pathes;
     }
 }
 

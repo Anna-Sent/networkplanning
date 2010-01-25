@@ -707,7 +707,7 @@ QList<Path> *NetModel::getCriticalPathes()
 {
     if (!criticPathes)
         criticPathes = _getCriticalPathes();
-    return new QList<Path>(*criticPathes);
+    return criticPathes;//new QList<Path>(*criticPathes);
 //    return _getCriticalPathes();
 }
 
@@ -718,7 +718,7 @@ QList<Path> *NetModel::getFullPathes()
         fullPathes = _getFullPathes();
         qsort(*fullPathes);
     }
-    return new QList<Path>(*fullPathes);
+    return fullPathes;//new QList<Path>(*fullPathes);
 //    return _getFullPathes();
 }
 
@@ -728,7 +728,7 @@ double NetModel::getCriticalPathWeight()
     QList<Path> *pathes = getCriticalPathes();
     if (pathes->count()>0)
         w = pathes->first().weight();
-    delete pathes;
+    //delete pathes;
     return w;
 }
 
@@ -1056,7 +1056,7 @@ bool NetModel::inCriticalPath(Operation *o)
                 break;
             }
         }
-        delete pathes;
+        //delete pathes;
         return contains;
     }
     else
