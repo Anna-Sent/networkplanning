@@ -101,7 +101,8 @@ void GraphWidget::EventAdd(QObject *, Event * ev)
     ic->show();
     ic->setAttribute(Qt::WA_DeleteOnClose);
     recreatePoints();
-    update();
+    //update();
+    ic->update();
 }
 
 void GraphWidget::EventAdd(QObject *, Event * ev,int)

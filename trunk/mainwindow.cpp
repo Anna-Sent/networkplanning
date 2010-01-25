@@ -134,42 +134,46 @@ void MainWindow::itemInserted(DiagramItem *item)
 void MainWindow::createToolbar()
 {
     actions=addToolBar("Actions");
-    deleteAction = new QAction(QIcon(":/images/delete.png"), QString::fromUtf8("Удалить"), scene);
+    deleteAction = new QAction(QIcon(":/images/delete.png"), QString::fromUtf8("Удалить выбранный элемент"), scene);
     deleteAction->setShortcut(tr("Delete"));
     deleteAction->setStatusTip(QString::fromUtf8("Удалить выбранный элемент"));
-    connect(deleteAction, SIGNAL(triggered()),
-            this, SLOT(deleteItem()));
+    connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
     connect(scene,SIGNAL(actionsEnabled(bool)),deleteAction,SLOT(setEnabled(bool)));
     actions->addAction(deleteAction);
+
     buttonGroup = new QButtonGroup;
     connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
-    actions->addWidget(createBtnWidget(tr(""), DiagramItem::Circle));
     buttonGroup->setExclusive(false);
+
+    QWidget *circleButton = createBtnWidget(QString::fromUtf8("Создать событие"), DiagramItem::Circle);
+    circleButton->setStatusTip(QString::fromUtf8("Создать событие"));
+    actions->addWidget(circleButton);
 
     QToolButton *pointerButton = new QToolButton;
     pointerButton->setCheckable(true);
     pointerButton->setChecked(true);
     pointerButton->setIcon(QIcon(":/images/pointer.png"));
+    pointerButton->setStatusTip(QString::fromUtf8("� ежим указателя мыши"));
+
     QToolButton *linePointerButton = new QToolButton;
     linePointerButton->setCheckable(true);
     linePointerButton->setIcon(QIcon(":/images/linepointer.png"));
+    linePointerButton->setStatusTip(QString::fromUtf8("� ежим создания коннектора (стрелки)"));
 
     pointerTypeGroup = new QButtonGroup;
     pointerTypeGroup->addButton(pointerButton, int(DiagramScene::MoveItem));
-    pointerTypeGroup->addButton(linePointerButton,
-                                int(DiagramScene::InsertLine));
-    connect(pointerTypeGroup, SIGNAL(buttonClicked(int)),
-            this, SLOT(pointerGroupClicked(int)));
+    pointerTypeGroup->addButton(linePointerButton, int(DiagramScene::InsertLine));
+    connect(pointerTypeGroup, SIGNAL(buttonClicked(int)), this, SLOT(pointerGroupClicked(int)));
 
     sceneScaleCombo = new QComboBox;
     QStringList scales;
     scales << "50%" << "75%" << "100%" << "125%" << "150%";
     sceneScaleCombo->addItems(scales);
     sceneScaleCombo->setCurrentIndex(2);
-    connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)),
-            this, SLOT(sceneScaleChanged(const QString &)));
+    sceneScaleCombo->setStatusTip(QString::fromUtf8("Масштаб рисунка"));
+    connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(sceneScaleChanged(const QString &)));
 
-    pointerToolbar = addToolBar(tr("Pointer type"));
+    pointerToolbar = addToolBar(QString::fromUtf8("Тип указателя"));
     pointerToolbar->addWidget(pointerButton);
     pointerToolbar->addWidget(linePointerButton);
     pointerToolbar->addWidget(sceneScaleCombo);

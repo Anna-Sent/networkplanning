@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'aboutdialog.ui'
 **
-** Created: Mon Jan 25 01:29:40 2010
+** Created: Mon 25. Jan 17:51:50 2010
 **      by: Qt User Interface Compiler version 4.5.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
