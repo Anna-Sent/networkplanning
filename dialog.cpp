@@ -81,8 +81,8 @@ void Dialog::display()
     QString error;
     cursor.beginEditBlock();
 
-    QSize size(scene->itemsBoundingRect().size().toSize());
-    QImage img(size, QImage::Format_ARGB32);
+    QSizeF size(scene->sceneRect().size());
+    QImage img(size.toSize(), QImage::Format_ARGB32);
     img.fill(0);
     if (!img.isNull())
     {
