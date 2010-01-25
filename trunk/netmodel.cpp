@@ -560,12 +560,15 @@ bool pathLessThan(const Path &p1, const Path &p2)
         return false;
     else
     {
-        for (int i=0;i<p1.events.count();++i)
+        int i=0;
+        while (i<p1.events.count() && p1.events[i]->getN()==p2.events[i]->getN())
         {
-            if (p1.events[i]->getN()>p2.events[i]->getN())
-                return false;
+            ++i;
         }
-        return true;
+        if (i==p1.events.count())
+            return false;
+        else
+            return p1.events[i]->getN()<p2.events[i]->getN();
     }
     //return p1.code() < p2.code();
 }
