@@ -90,9 +90,9 @@ double Operation::getWaitTime()
 
 QString Operation::getCode() const
 {
-    QString first=beginEvent?QString::number(beginEvent->getN()):"NULL";
-    QString second=endEvent?QString::number(endEvent->getN()):"NULL";
-    return first+"-"+second;
+    QString first=beginEvent?beginEvent->formatted():Event::emptyFormatted();
+    QString second=endEvent?endEvent->formatted():Event::emptyFormatted();
+    return first+Event::divider()+second;
 }
 
 Path::Path(QList<Event*> events)
@@ -112,9 +112,9 @@ QString Path::calcCode() const
         for (int i=0;i<count-1;++i)
         {
             Event *event = events[i];
-            s += QString::number(event->getN()) + "-";
+            s += event->formatted() + Event::divider();
         }
-        s += QString::number(events.last()->getN());
+        s += events.last()->formatted();
     }
     return s;
 }
@@ -554,7 +554,20 @@ QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
 
 bool pathLessThan(const Path &p1, const Path &p2)
 {
-    return p1.code() < p2.code();
+    if (p1.events.count()<p2.events.count())
+        return true;
+    else if (p1.events.count()>p2.events.count())
+        return false;
+    else
+    {
+        for (int i=0;i<p1.events.count();++i)
+        {
+            if (p1.events[i]->getN()>p2.events[i]->getN())
+                return false;
+        }
+        return true;
+    }
+    //return p1.code() < p2.code();
 }
 
 void NetModel::qsort(QList<Path> &pathes)
