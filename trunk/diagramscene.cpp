@@ -445,6 +445,7 @@ void DiagramScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 //! [12] //! [13]
     line = 0;
+    emit changed();
     QGraphicsScene::mouseReleaseEvent(mouseEvent);
 }
 //! [13]
@@ -483,5 +484,5 @@ void DiagramScene::NChanged(Event *ev, int id)
 
 void DiagramScene::onChange(const QList<QRectF> & region)
 {
-    emit changed();
+    //emit changed();
 }
