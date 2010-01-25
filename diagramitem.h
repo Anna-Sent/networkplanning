@@ -44,7 +44,8 @@
 
 #include <QGraphicsPixmapItem>
 #include <QList>
-
+#include <QBrush>
+#include <QPen>
 //#include "netmodel.h"
 class Event;
 class DiagramTextItem;
@@ -65,7 +66,7 @@ QT_END_NAMESPACE
 class Arrow;
 
 //! [0]
-class DiagramItem : public QGraphicsPolygonItem
+class DiagramItem : public QGraphicsItem
 {
 public:
     enum { Type = UserType + 15 };
@@ -89,6 +90,11 @@ public:
     void updateText();
     void paint(QPainter *painter, const QStyleOptionGraphicsItem * style, QWidget *widget);
     void setValue(QString &val);
+    QRectF boundingRect() const;
+    QBrush brush() const { return _brush; }
+    QPen pen() const { return _pen; }
+    void setBrush(const QBrush& br) {_brush=br;}
+    double radius() const {return 25.0;}
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
@@ -103,6 +109,8 @@ private:
     Event *_event;
     QRectF textBox;
     bool editing;
+    QBrush _brush;
+    QPen _pen;
 };
 //! [0]
 
