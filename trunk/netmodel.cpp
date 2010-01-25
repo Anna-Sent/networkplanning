@@ -1,7 +1,7 @@
 #include "netmodel.h"
 #include <QDebug>
 #include <limits>
-
+#include "cachemanager.h"
 using namespace std;
 
 Event::Event()
@@ -139,6 +139,7 @@ double Path::calcWeight() const
 NetModel::NetModel() : fullPathes(NULL), criticPathes(NULL)
 {
     QObject::connect(this, SIGNAL(updated()), this, SLOT(updateCriticalPath()));
+    cmanager = new CacheManager();
 }
 
 void NetModel::updateCriticalPath()
@@ -173,6 +174,7 @@ void NetModel::clearCash()
         delete criticPathes;
         criticPathes = NULL;
     }
+    cmanager->reset(0);
 }
 
 Event* NetModel::getEventByNumber(int n)
@@ -506,6 +508,8 @@ QString NetModel::print()
 
 void NetModel::getPathes(Event *begin, Event *end, QList<Path> *pathes)
 {
+    if (cmanager->get(begin,end,pathes)) return;
+    int ac1=pathes->count();
     foreach(Operation *operation, end->getInOperations())
     {
         if (operation->getBeginEvent()==begin) {
@@ -525,6 +529,8 @@ void NetModel::getPathes(Event *begin, Event *end, QList<Path> *pathes)
             }
         }
     }
+    int ac2=pathes->count();
+    cmanager->put(begin,end,pathes->mid(ac1,ac2-ac1));
 }
 
 QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)

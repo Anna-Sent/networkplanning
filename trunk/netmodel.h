@@ -12,6 +12,7 @@
 
 class Operation;
 class NetModel;
+class CacheManager;
 
 class Event
 {
@@ -157,6 +158,7 @@ private:
     void clearCash();
     QList<Path> *_getFullPathes();
     QList<Path> *_getCriticalPathes();
+    CacheManager *cmanager;
 public:
     NetModel();
     ~NetModel();
