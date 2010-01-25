@@ -8,7 +8,7 @@
 #include <QMetaType>
 #include <QPoint>
 #include <QDataStream>
-#include <assert.h>
+
 
 class Operation;
 class NetModel;
@@ -103,7 +103,6 @@ public:
     }
     void prepend(Event* ev)
     {
-        assert(events.count()>0);
         _code=QString::number(ev->getN())+"-"+_code;
         foreach (Operation *o, ev->getOutOperations())
         {
@@ -114,6 +113,19 @@ public:
             }
         }
         events.prepend(ev);
+    }
+    void append(Event* ev)
+    {
+        _code+="-"+QString::number(ev->getN());
+        foreach (Operation *o, ev->getInOperations())
+        {
+            if (o->getBeginEvent()==events.last())
+            {
+                _weight += o->getWaitTime();
+                break;
+            }
+        }
+        events.append(ev);
     }
 };
 

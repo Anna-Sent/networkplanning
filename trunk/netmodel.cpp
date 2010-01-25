@@ -105,6 +105,7 @@ Path::Path(QList<Event*> events)
 QString Path::calcCode() const
 {
     QString s;
+    s.reserve(512);
     int count = events.count();
     if (count>0)
     {
@@ -505,27 +506,22 @@ QString NetModel::print()
 
 void NetModel::getPathes(Event *begin, Event *end, QList<Path> *pathes)
 {
-    foreach(Operation *operation, begin->getOutOperations())
+    foreach(Operation *operation, end->getInOperations())
     {
-        if (operation->getEndEvent()==end) {
+        if (operation->getBeginEvent()==begin) {
             QList<Event*> events;
             events << begin << end;
             Path path(events);
             pathes->append(path);
         } else {
-            Event *next = operation->getEndEvent();
+            Event *prev = operation->getBeginEvent();
             //QList<Path> pathes1;
             int c1 = pathes->count();
-            getPathes(next, end, pathes);
+            getPathes(begin, prev, pathes);
             int c2 = pathes->count();
             for(int i=c1;i<c2;++i)
             {
-                /*QList<Event*> events;
-                events << begin;
-                events << path1.events;
-                Path path(events);
-                pathes->append(path);*/
-                (*pathes)[i].prepend(begin);
+                (*pathes)[i].append(end);
             }
         }
     }
