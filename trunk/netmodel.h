@@ -30,6 +30,9 @@ private:
     void setName(const QString &name) {this->name=name;}
     friend class NetModel;
 public:
+    QString formatted() {return QString("%1").arg(n,3,10);}
+    static QString emptyFormatted() {return "   ";}
+    static QString divider() {return " -";}
     void insertOutOperation(Operation *o, int i) {outputOperations.insert(i, o);}
     QPoint& getPoint() {return point;}
     int getN() const;
@@ -103,7 +106,7 @@ public:
     }
     void prepend(Event* ev)
     {
-        _code=QString::number(ev->getN())+"-"+_code;
+        _code = ev->formatted()+Event::divider()+_code;
         foreach (Operation *o, ev->getOutOperations())
         {
             if (o->getEndEvent()==events.first())
@@ -116,7 +119,7 @@ public:
     }
     void append(Event* ev)
     {
-        _code+="-"+QString::number(ev->getN());
+        _code+=Event::divider()+ev->formatted();
         foreach (Operation *o, ev->getInOperations())
         {
             if (o->getBeginEvent()==events.last())
