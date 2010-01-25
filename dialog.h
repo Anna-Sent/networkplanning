@@ -34,10 +34,10 @@ private:
     void fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
     void fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> > &data);
-    void displayTable(QTextCursor &cursor, QList<QVariant> &header, QList< QList<QVariant> > &data);
+    void displayTable(QTextCursor &cursor,
+                      const QList<QVariant> &header, const QList< QList<QVariant> > &data);
     void _clearModel();
     void _setModel(NetModel &);
-    QString getLabelText();
 private slots:
     void beforeClear();
     void display();
