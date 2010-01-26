@@ -62,13 +62,14 @@ void Dialog::display()
     QString error;
     cursor.beginEditBlock();
 
-    QSizeF size(scene->sceneRect().size());
+    QRectF sceneRect = scene->itemsBoundingRect();
+    QSizeF size(sceneRect.size());
     QImage img(size.toSize(), QImage::Format_ARGB32);
     img.fill(0);
     if (!img.isNull())
     {
         QPainter p(&img);
-        scene->render(&p);
+        scene->render(&p,img.rect(),sceneRect);
         qDebug() << img.width() << " " << printer.pageRect().width();
         int maxWidth = qRound(printer.pageRect().width()*0.75);
         //if (img.width()>maxWidth)
