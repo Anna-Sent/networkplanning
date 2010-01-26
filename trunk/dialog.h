@@ -41,7 +41,7 @@ private:
 private slots:
     void beforeClear();
     void display();
-    void clearCashe()
+    void clearCache()
     {
         if (eventsList)
         {

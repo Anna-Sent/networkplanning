@@ -144,7 +144,7 @@ NetModel::NetModel() : fullPathes(NULL), criticPathes(NULL)
 
 void NetModel::updateCriticalPath()
 {
-    clearCash();
+    clearCache();
     //fullPathes = _getFullPathes();
     //criticPathes = _getCriticalPathes();
     foreach (Operation *o, operations)
@@ -155,14 +155,15 @@ void NetModel::updateCriticalPath()
 
 NetModel::~NetModel()
 {
-    clearCash();
+    clearCache();
     qDeleteAll(events);
     events.clear();
     qDeleteAll(operations);
     operations.clear();
+    delete cmanager;
 }
 
-void NetModel::clearCash()
+void NetModel::clearCache()
 {
     if (fullPathes)
     {
@@ -174,7 +175,7 @@ void NetModel::clearCash()
         delete criticPathes;
         criticPathes = NULL;
     }
-    //cmanager->reset(0);
+    cmanager->reset(0);
 }
 
 Event* NetModel::getEventByNumber(int n)
@@ -299,7 +300,7 @@ void NetModel::connect(Event* event, Operation* operation)
         //add(operation);
         if (event) event->addOutOperation(operation);
         operation->setBeginEvent(event);
-        cmanager->reset(operation->getBeginEvent());
+        //cmanager->reset(operation->getBeginEvent());
         //emit updated();
     }
 }
@@ -312,7 +313,7 @@ void NetModel::connect(Operation* operation, Event* event)
         //add(operation);
         if (event) event->addInOperation(operation);
         operation->setEndEvent(event);
-        cmanager->reset(operation->getBeginEvent());
+        //cmanager->reset(operation->getBeginEvent());
         //emit updated();
     }
 }
@@ -327,7 +328,7 @@ void NetModel::disconnect(Event* event,Operation* operation)
     }
     if (operation && operation->getBeginEvent()==event)
         operation->setBeginEvent(NULL);
-    cmanager->reset(operation->getBeginEvent());
+    //cmanager->reset(operation->getBeginEvent());
     //emit updated();
 }
 
@@ -341,7 +342,7 @@ void NetModel::disconnect(Operation* operation,Event* event)
     }
     if (operation && operation->getEndEvent()==event)
         operation->setEndEvent(NULL);
-    cmanager->reset(operation->getBeginEvent());
+    //cmanager->reset(operation->getBeginEvent());
     //emit updated();
 }
 

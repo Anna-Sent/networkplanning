@@ -155,7 +155,7 @@ private:
 private:
     QList<Path> *fullPathes;
     QList<Path> *criticPathes;
-    void clearCash();
+    void clearCache();
     QList<Path> *_getFullPathes();
     QList<Path> *_getCriticalPathes();
     CacheManager *cmanager;

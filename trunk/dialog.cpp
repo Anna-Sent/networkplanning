@@ -30,9 +30,9 @@ void Dialog::beforeClear()
 
 void Dialog::_clearModel()
 {
-    clearCashe();
+    clearCache();
     disconnect(netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
-    disconnect(netmodel, SIGNAL(updated()), this, SLOT(clearCashe()));
+    disconnect(netmodel, SIGNAL(updated()), this, SLOT(clearCache()));
     disconnect(netmodel, SIGNAL(updated()), this, SLOT(display()));
     netmodel = NULL;
 }
@@ -41,7 +41,7 @@ void Dialog::_setModel(NetModel &netmodel)
 {
     this->netmodel = &netmodel;
     connect(&netmodel, SIGNAL(beforeClear()), this, SLOT(beforeClear()));
-    connect(&netmodel, SIGNAL(updated()), this, SLOT(clearCashe()));
+    connect(&netmodel, SIGNAL(updated()), this, SLOT(clearCache()));
     connect(&netmodel, SIGNAL(updated()), this, SLOT(display()));
 }
 
