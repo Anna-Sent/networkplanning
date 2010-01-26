@@ -64,14 +64,16 @@ void Dialog::display()
 
     QRectF sceneRect = scene->itemsBoundingRect();
     QSizeF size(sceneRect.size());
-    QImage img(size.toSize(), QImage::Format_ARGB32);
+    int maxWidth = qRound(printer.pageRect().width()*0.75);
+    QSize imgSize = size.toSize();
+    imgSize.scale(maxWidth, size.height(), Qt::KeepAspectRatio);
+    QImage img(imgSize, QImage::Format_ARGB32);
     img.fill(0);
     if (!img.isNull())
     {
         QPainter p(&img);
         scene->render(&p,img.rect(),sceneRect);
         qDebug() << img.width() << " " << printer.pageRect().width();
-        int maxWidth = qRound(printer.pageRect().width()*0.75);
         //if (img.width()>maxWidth)
           //  img = img.scaledToWidth(maxWidth);
         qDebug() << img.width() << " " << img.widthMM();
