@@ -84,10 +84,12 @@ void Dialog::display()
 
     if (!netmodel)
     {
+        ui->textBrowser->setAlignment(Qt::AlignLeft);
         cursor.insertText(QString::fromUtf8("Сетевая модель не задана\n"), highlightedFormat);
     }
     else if (!netmodel->isCorrect(error))
     {
+        ui->textBrowser->setAlignment(Qt::AlignLeft);
         cursor.insertText(QString::fromUtf8(error.toAscii()), highlightedFormat);
     }
     else
