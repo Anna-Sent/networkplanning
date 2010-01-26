@@ -88,7 +88,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     if (centerLine.length()<myStartItem->radius()+myEndItem->radius()) return;
 
     QPen myPen = pen();
-    QPen bpen = pen();
+    //QPen bpen = pen();
     //bpen.setColor(Qt::green);
     //painter->setPen(bpen);
     //painter->drawRect(boundingRect().adjusted(-1,-1,1,1));
@@ -108,6 +108,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
         myPen.setColor(myColor);
         //setColor(myColor);
     }
+    if (_op->getWaitTime()==0) myPen.setStyle(Qt::DashLine);
     painter->setPen(myPen);
     //painter->setBrush(myColor);
 
