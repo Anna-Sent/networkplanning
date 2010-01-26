@@ -174,7 +174,7 @@ void NetModel::clearCash()
         delete criticPathes;
         criticPathes = NULL;
     }
-    cmanager->reset(0);
+    //cmanager->reset(0);
 }
 
 Event* NetModel::getEventByNumber(int n)
@@ -299,6 +299,7 @@ void NetModel::connect(Event* event, Operation* operation)
         //add(operation);
         if (event) event->addOutOperation(operation);
         operation->setBeginEvent(event);
+        cmanager->reset(operation->getBeginEvent());
         //emit updated();
     }
 }
@@ -311,6 +312,7 @@ void NetModel::connect(Operation* operation, Event* event)
         //add(operation);
         if (event) event->addInOperation(operation);
         operation->setEndEvent(event);
+        cmanager->reset(operation->getBeginEvent());
         //emit updated();
     }
 }
@@ -325,6 +327,7 @@ void NetModel::disconnect(Event* event,Operation* operation)
     }
     if (operation && operation->getBeginEvent()==event)
         operation->setBeginEvent(NULL);
+    cmanager->reset(operation->getBeginEvent());
     //emit updated();
 }
 
@@ -338,6 +341,7 @@ void NetModel::disconnect(Operation* operation,Event* event)
     }
     if (operation && operation->getEndEvent()==event)
         operation->setEndEvent(NULL);
+    cmanager->reset(operation->getBeginEvent());
     //emit updated();
 }
 
@@ -854,6 +858,7 @@ bool NetModel::setOperationName(Operation *o, const QString &name)
 bool NetModel::setOperationWaitTime(Operation *o, double twait)
 {
     o->setWaitTime(twait);
+    cmanager->reset(o->getBeginEvent());
     emit operationWaitTimeChanged(o, twait);
     emit updated();
     return true;
