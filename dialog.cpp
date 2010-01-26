@@ -71,9 +71,10 @@ void Dialog::display()
         scene->render(&p);
         qDebug() << img.width() << " " << printer.pageRect().width();
         int maxWidth = qRound(printer.pageRect().width()*0.75);
-        if (img.width()>maxWidth)
-            img = img.scaledToWidth(maxWidth);
+        //if (img.width()>maxWidth)
+          //  img = img.scaledToWidth(maxWidth);
         qDebug() << img.width() << " " << img.widthMM();
+        ui->textBrowser->setAlignment(Qt::AlignCenter);
         cursor.insertImage(img, QString::fromUtf8("Сетевая модель"));
     }
     cursor.insertBlock();
@@ -92,18 +93,21 @@ void Dialog::display()
         QList< QList<QVariant> > data;
 
         fillFullPathesData(header, data);
+        ui->textBrowser->setAlignment(Qt::AlignCenter);
         cursor.insertText(QString::fromUtf8("Расчет полных путей"), format);
         displayTable(cursor, header, data);
 
         cursor.setPosition(topFrame->lastPosition());
 
         fillEventsData(header, data);
+        ui->textBrowser->setAlignment(Qt::AlignCenter);
         cursor.insertText(QString::fromUtf8("Расчет событий"), format);
         displayTable(cursor, header, data);
 
         cursor.setPosition(topFrame->lastPosition());
 
         fillOperationsData(header, data);
+        ui->textBrowser->setAlignment(Qt::AlignCenter);
         cursor.insertText(QString::fromUtf8("Расчет работ"), format);
         displayTable(cursor, header, data);
 
@@ -196,6 +200,9 @@ void Dialog::displayTable(QTextCursor &cursor, const QList<QVariant> &header, co
     {
         QTextTableCell cell = table->cellAt(0, i);
         QTextCursor cellCursor = cell.firstCursorPosition();
+        QTextBlockFormat blockFormat;
+        blockFormat.setAlignment(Qt::AlignCenter);
+        cellCursor.setBlockFormat(blockFormat);
         cellCursor.insertText(header[i].toString(), boldFormat);
     }
     table->insertRows(table->rows(), data.count());
