@@ -9,6 +9,8 @@
 #include <QTextCursor>
 #include "ui_dialog.h"
 #include "diagramscene.h"
+#include <QPrinter>
+#include <QPrintDialog>
 
 namespace Ui
 {
@@ -22,9 +24,24 @@ public:
     Dialog(NetModel &, DiagramScene *, QWidget *parent = 0);
     ~Dialog();
     void setModel(NetModel &);
-    QTextBrowser *getTextBrowser() {return ui->textBrowser;}
+    //QTextBrowser *getTextBrowser() {return ui->textBrowser;}
+    void print()
+    {
+    #ifndef QT_NO_PRINTER
+        //QPrinter printer;
+        QPrintDialog *printDialog = new QPrintDialog(&printer, this);
+        printDialog->setWindowTitle(QString::fromUtf8("Печать сетевой модели"));
+        if (ui->textBrowser->textCursor().hasSelection())
+            printDialog->addEnabledOption(QAbstractPrintDialog::PrintSelection);
+        if (printDialog->exec() != QDialog::Accepted)
+            return ;
+        //printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
+        ui->textBrowser->print(&printer);
+    #endif
+    }
 private:
     Ui::Dialog *ui;
+    QPrinter printer;
     NetModel *netmodel;
     DiagramScene *scene;
     QList<Event*> *eventsList;

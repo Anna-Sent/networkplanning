@@ -69,6 +69,11 @@ void Dialog::display()
     {
         QPainter p(&img);
         scene->render(&p);
+        qDebug() << img.width() << " " << printer.pageRect().width();
+        int maxWidth = qRound(printer.pageRect().width()*0.75);
+        if (img.width()>maxWidth)
+            img = img.scaledToWidth(maxWidth);
+        qDebug() << img.width() << " " << img.widthMM();
         cursor.insertImage(img, QString::fromUtf8("Сетевая модель"));
     }
     cursor.insertBlock();
@@ -173,7 +178,7 @@ void Dialog::displayTable(QTextCursor &cursor, const QList<QVariant> &header, co
         if (row.count()>colcount)
             return ;
     QTextTableFormat tableFormat;
-    tableFormat.setAlignment(Qt::AlignHCenter);
+    tableFormat.setAlignment(Qt::AlignVCenter|Qt::AlignHCenter);
     tableFormat.setBackground(QColor("#e0e0e0"));
     tableFormat.setCellPadding(4);
     tableFormat.setCellSpacing(2);
