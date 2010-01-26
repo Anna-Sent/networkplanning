@@ -52,7 +52,9 @@ void Dialog::display()
     QTextFrame *topFrame = cursor.currentFrame();
     QTextCharFormat format = cursor.charFormat();
     format.setFontPointSize(12);
-    format.setFontFamily("monospace");
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    format.setFont(font);
     format.setFontWeight(QFont::Bold);
     format.setForeground(Qt::black);
     QTextCharFormat highlightedFormat = format;
@@ -178,7 +180,9 @@ void Dialog::displayTable(QTextCursor &cursor, const QList<QVariant> &header, co
     QTextTable *table = cursor.insertTable(1, colcount, tableFormat);
     QTextCharFormat format = cursor.charFormat();
     format.setFontPointSize(12);
-    format.setFontFamily("monospace");
+    QFont font("Monospace");
+    font.setStyleHint(QFont::TypeWriter);
+    format.setFont(font);
     format.setForeground(Qt::black);
     format.setFontWeight(QFont::Normal);
     QTextCharFormat boldFormat = format;
