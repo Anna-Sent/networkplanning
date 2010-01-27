@@ -23,7 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(open()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
     connect(ui->actionSaveAs, SIGNAL(triggered()), this, SLOT(saveAs()));
-    connect(ui->actionPrint, SIGNAL(triggered()), this, SLOT(print()));
+    connect(ui->actionPrintModel, SIGNAL(triggered()), this, SLOT(printModel()));
+    connect(ui->actionPrintTables, SIGNAL(triggered()), this, SLOT(printTables()));
     connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(exit()));
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
     // register types
@@ -67,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     // create tool bar after scene
     createToolbar();
     // setup dialog
-    dialog = new Dialog(netmodel, scene, this);
+    dialog = new Dialog(netmodel, this);
     // call netmodel update to update all views (treemodel, scene, dialog)
     //netmodel.update();
     // setup file name and caption
@@ -303,9 +304,22 @@ void MainWindow::saveAs()
     }
 }
 
-void MainWindow::print()
+void MainWindow::printModel()
 {
-    dialog->print();
+#ifndef QT_NO_PRINTER
+    QPrinter printer;
+    QPrintDialog *printDialog = new QPrintDialog(&printer, this);
+    printDialog->setWindowTitle(QString::fromUtf8("Печать сетевой модели"));
+    if (printDialog->exec() != QDialog::Accepted)
+        return ;
+    QPainter pn(&printer);
+    scene->render(&pn);
+#endif
+}
+
+void MainWindow::printTables()
+{
+    dialog->printTables();
 }
 
 void MainWindow::exit()
