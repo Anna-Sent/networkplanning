@@ -313,7 +313,7 @@ void MainWindow::printModel()
     if (printDialog->exec() != QDialog::Accepted)
         return ;
     QPainter pn(&printer);
-    scene->render(&pn);
+    scene->render(&pn,printer.pageRect(),scene->itemsBoundingRect());
 #endif
 }
 
