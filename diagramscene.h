@@ -99,6 +99,8 @@ public slots:
     void NChanged(Event *ev, int id);
     void deleteItem();
     void bringToFront(DiagramItem *item);
+    void setRenderSelection(bool v) {_renderSelection=v;}
+    bool getRenderSelection() {return _renderSelection;}
 
 signals:
     void itemInserted(DiagramItem *item);
@@ -131,6 +133,7 @@ private:
     QList<DiagramItem*> devents;
     QList<Arrow*> darrows;
     qreal zval;
+    bool _renderSelection;
 };
 //! [0]
 

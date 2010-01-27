@@ -13,6 +13,7 @@ DiagramScene::DiagramScene(QMenu *itemMenu, QObject *parent)
     line = 0;
     textItem = 0;
     _model=0;
+    _renderSelection=true;
     myItemColor = Qt::white;
     myTextColor = Qt::black;
     myLineColor = Qt::black;

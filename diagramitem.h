@@ -62,6 +62,7 @@ class QStyleOptionGraphicsItem;
 class QWidget;
 class QPolygonF;
 QT_END_NAMESPACE
+class DiagramScene;
 
 class Arrow;
 
@@ -73,7 +74,7 @@ public:
     enum DiagramType { /*Step, Conditional, StartEnd, Io,*/ Circle };
 
     DiagramItem(DiagramType diagramType, Event* ev, QMenu *contextMenu,
-        QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+        QGraphicsItem *parent = 0, DiagramScene *scene = 0);
 
     void removeArrow(Arrow *arrow);
     void removeArrows();

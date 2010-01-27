@@ -56,6 +56,7 @@ class QRectF;
 class QGraphicsSceneMouseEvent;
 class QPainterPath;
 QT_END_NAMESPACE
+class DiagramScene;
 
 //! [0]
 class Arrow : public QObject, public QGraphicsLineItem
@@ -65,8 +66,8 @@ public:
     enum { Type = UserType + 4 };
 
     Arrow(DiagramItem *startItem, DiagramItem *endItem,
-      QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
-    Arrow(Operation * op,QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+      QGraphicsItem *parent = 0, DiagramScene *scene = 0);
+    Arrow(Operation * op,QGraphicsItem *parent = 0, DiagramScene *scene = 0);
 
 
     int type() const

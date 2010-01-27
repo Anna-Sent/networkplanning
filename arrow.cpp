@@ -11,7 +11,7 @@ const qreal Pi = 3.14;
 
 //! [0]
 Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem,
-         QGraphicsItem *parent, QGraphicsScene *scene)
+         QGraphicsItem *parent, DiagramScene *scene)
     : QGraphicsLineItem(parent, scene)
 {
     assert(scene);
@@ -94,7 +94,7 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
     //painter->drawRect(boundingRect().adjusted(-1,-1,1,1));
     //myPen.setColor(myColor);
     qreal arrowSize = 20;
-    if (isSelected()) myPen.setWidth(myPen.width()*2);
+    if (isSelected()&&static_cast<DiagramScene*>(scene())->getRenderSelection()) myPen.setWidth(myPen.width()*2);
     if (_op->inCriticalPath())
     {
         painter->setBrush(myCritColor);
@@ -175,12 +175,9 @@ void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setPos ( /*event->pos()*/textLabelR.topLeft() );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
-        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        DiagramScene *ds = static_cast<DiagramScene*>(scene());
         editing=true;
-        if (ds)
-        {
-            ds->editing(true);
-        }
+        ds->editing(true);
         //QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
     }
 }
@@ -190,11 +187,8 @@ void Arrow::setValue(QString &str)
         bool ok=false;
         double num = str.toDouble(&ok);
         //emit changeN(i->event(),num);
-        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
+        DiagramScene *ds = static_cast<DiagramScene*>(scene());
         editing=false;
-        if (ds)
-        {
-            if (ok) ds->model()->setOperationWaitTime(_op,num);
-            ds->editing(false);
-        }
+        if (ok) ds->model()->setOperationWaitTime(_op,num);
+        ds->editing(false);
 }
