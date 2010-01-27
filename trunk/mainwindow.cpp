@@ -318,7 +318,9 @@ void MainWindow::printModel()
     QRectF toRect(0, 0,
                   qMin(printRect.width(), sceneRect.width()),
                   qMin(printRect.height(), sceneRect.height()));
+    scene->setRenderSelection(false);
     scene->render(&pn, toRect, sceneRect);
+    scene->setRenderSelection(true);
 #endif
 }
 

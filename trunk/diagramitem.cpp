@@ -48,7 +48,7 @@
 #include <assert.h>
 //! [0]
 DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu,
-             QGraphicsItem *parent, QGraphicsScene *scene)
+             QGraphicsItem *parent, DiagramScene *scene)
     : QGraphicsItem(parent, scene)
 {
     //assert(scene);
@@ -84,7 +84,7 @@ void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *sty
     //QGraphicsPolygonItem::paint(painter,style,widget);
     QBrush brush = this->brush();
     QPen pen = this->pen();
-    if (isSelected())
+    if (isSelected()&&static_cast<DiagramScene*>(scene())->getRenderSelection())
         pen.setWidth(4);
     painter->setPen(pen);
     painter->setBrush(brush);
@@ -200,12 +200,8 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
         editing=true;
-
-        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
-        if (ds)
-        {
-            ds->editing(true);
-        }
+        DiagramScene *ds = static_cast<DiagramScene*>(scene());
+        ds->editing(true);
         //QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
     }
 }
@@ -215,11 +211,8 @@ void DiagramItem::setValue(QString& val)
         bool ok=false;
         int num = val.toInt(&ok,10);
         //emit changeN(i->event(),num);
-        DiagramScene *ds = dynamic_cast<DiagramScene*>(scene());
-        if (ds)
-        {
-            if (ok) ds->model()->setN(_event,num);
-            ds->editing(false);
-        }
+        DiagramScene *ds = static_cast<DiagramScene*>(scene());
+        if (ok) ds->model()->setN(_event,num);
+        ds->editing(false);
         editing=false;
 }
