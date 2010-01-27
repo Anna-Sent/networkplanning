@@ -313,7 +313,12 @@ void MainWindow::printModel()
     if (printDialog->exec() != QDialog::Accepted)
         return ;
     QPainter pn(&printer);
-    scene->render(&pn,printer.pageRect(),scene->itemsBoundingRect());
+    QRectF sceneRect = scene->itemsBoundingRect();
+    QRectF printRect = printer.pageRect();
+    QRectF toRect(0, 0,
+                  qMin(printRect.width(), sceneRect.width()),
+                  qMin(printRect.height(), sceneRect.height()));
+    scene->render(&pn, toRect, sceneRect);
 #endif
 }
 
