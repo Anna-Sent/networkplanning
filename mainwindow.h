@@ -66,7 +66,8 @@ private slots:
     void open();
     void save();
     void saveAs();
-    void print();
+    void printModel();
+    void printTables();
     void exit();
 };
 

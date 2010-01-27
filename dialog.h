@@ -8,9 +8,9 @@
 //#include "calcoperationmodel.h"
 #include <QTextCursor>
 #include "ui_dialog.h"
-#include "diagramscene.h"
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QPainter>
 
 namespace Ui
 {
@@ -21,29 +21,26 @@ class Dialog : public QDialog
 {
     Q_OBJECT
 public:
-    Dialog(NetModel &, DiagramScene *, QWidget *parent = 0);
+    Dialog(NetModel &, QWidget *parent = 0);
     ~Dialog();
     void setModel(NetModel &);
-    //QTextBrowser *getTextBrowser() {return ui->textBrowser;}
-    void print()
+    void printModel()
+    {
+    }
+    void printTables()
     {
     #ifndef QT_NO_PRINTER
-        //QPrinter printer;
+        QPrinter printer;
         QPrintDialog *printDialog = new QPrintDialog(&printer, this);
-        printDialog->setWindowTitle(QString::fromUtf8("Печать сетевой модели"));
-        if (ui->textBrowser->textCursor().hasSelection())
-            printDialog->addEnabledOption(QAbstractPrintDialog::PrintSelection);
+        printDialog->setWindowTitle(QString::fromUtf8("Печать таблиц с расчетами"));
         if (printDialog->exec() != QDialog::Accepted)
             return ;
-        //printer.setPageMargins(0, 0, 0, 0, QPrinter::Millimeter);
         ui->textBrowser->print(&printer);
     #endif
     }
 private:
     Ui::Dialog *ui;
-    QPrinter printer;
     NetModel *netmodel;
-    DiagramScene *scene;
     QList<Event*> *eventsList;
     QList<Operation*> *operationsList;
     QList<Path> *pathes;
@@ -72,7 +69,6 @@ private slots:
         }
         if (pathes)
         {
-            //delete pathes;
             pathes = NULL;
         }
     }

@@ -4,12 +4,11 @@
 #include <QPainter>
 #include <QImage>
 
-Dialog::Dialog(NetModel &netmodel,DiagramScene *sc, QWidget *parent)
-    : QDialog(parent), ui(new Ui::Dialog), scene(sc),
+Dialog::Dialog(NetModel &netmodel, QWidget *parent)
+    : QDialog(parent), ui(new Ui::Dialog),
     eventsList(NULL), operationsList(NULL), pathes(NULL)
 {
     ui->setupUi(this);
-    connect(sc, SIGNAL(changed()), this, SLOT(display()));
     _setModel(netmodel);
     display();
 }
@@ -62,25 +61,19 @@ void Dialog::display()
     QString error;
     cursor.beginEditBlock();
 
-    QRectF sceneRect = scene->itemsBoundingRect();
+/*    QRectF sceneRect = scene->itemsBoundingRect();
     QSizeF size(sceneRect.size());
-    int maxWidth = qRound(printer.pageRect().width()*0.75);
     QSize imgSize = size.toSize();
-    imgSize.scale(maxWidth, size.height(), Qt::KeepAspectRatio);
     QImage img(imgSize, QImage::Format_ARGB32);
     img.fill(0);
     if (!img.isNull())
     {
         QPainter p(&img);
         scene->render(&p,img.rect(),sceneRect);
-        qDebug() << img.width() << " " << printer.pageRect().width();
-        //if (img.width()>maxWidth)
-          //  img = img.scaledToWidth(maxWidth);
-        qDebug() << img.width() << " " << img.widthMM();
         ui->textBrowser->setAlignment(Qt::AlignCenter);
         cursor.insertImage(img, QString::fromUtf8("Сетевая модель"));
     }
-    cursor.insertBlock();
+    cursor.insertBlock();*/
 
     if (!netmodel)
     {
