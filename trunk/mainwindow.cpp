@@ -32,11 +32,11 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<Operation*>("Operation*");
     // setup test netmodel
     netmodel.addEvent();
-    Event *e1 = netmodel.last(); //new Event(0);
+    Event *e1 = netmodel.last();
     netmodel.addEvent();
-    Event *e2 = netmodel.last(); //new Event(1);
+    Event *e2 = netmodel.last();
     netmodel.addEvent();
-    Event *e3 = netmodel.last();// new Event(2);
+    Event *e3 = netmodel.last();
     Operation *o1 = new Operation(1);
     Operation *o2 = new Operation(2);
     Operation *o3 = new Operation(3);
@@ -46,7 +46,6 @@ MainWindow::MainWindow(QWidget *parent)
     netmodel.addOperation(o1);
     netmodel.addOperation(o2);
     netmodel.addOperation(o3);
-    //netmodel.update();//
     // setup position of netmodel
     Position *pos = new PlanarPosition;
     pos->position(&netmodel);
@@ -69,8 +68,6 @@ MainWindow::MainWindow(QWidget *parent)
     createToolbar();
     // setup dialog
     dialog = new Dialog(netmodel, this);
-    // call netmodel update to update all views (treemodel, scene, dialog)
-    //netmodel.update();
     // setup file name and caption
     setFileName("");
 }
@@ -78,16 +75,12 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::about()
 {
     aboutDialog->show();
-    //QMessageBox::about(this,
-      //                 QString::fromUtf8("О программе..."),
-        //               QString::fromUtf8("(c) 2010 Сентякова А. В.\nanna.sent@gmail.com"));
 }
 
 void MainWindow::deleteItem()
 {
     scene->deleteItem();
 }
-
 
 void MainWindow::sceneScaleChanged(const QString &scale)
 {
@@ -98,91 +91,72 @@ void MainWindow::sceneScaleChanged(const QString &scale)
     ui->graphView->scale(newScale, newScale);
 }
 
-QWidget* MainWindow::createBtnWidget(const QString& text, DiagramItem::DiagramType type)
+void MainWindow::itemInserted(DiagramItem */*item*/)
 {
-    QToolButton *itemButton = new QToolButton;
-    DiagramItem item(type ,0,0,0,0);
-    QIcon icon(item.image());
-
-    buttonGroup->addButton(itemButton, type);
-    itemButton->setIcon(icon);
-    itemButton->setIconSize(QSize(50,50));
-    itemButton->setCheckable(true);
-    return itemButton;
+    buttonGroup->button(int(DiagramScene::MoveItem))->setChecked(true);
+    scene->setMode(DiagramScene::Mode(buttonGroup->checkedId()));
 }
 
 void MainWindow::buttonGroupClicked(int id)
 {
-    QList<QAbstractButton *> buttons = buttonGroup->buttons();
-    foreach (QAbstractButton *button, buttons) {
-        if (buttonGroup->button(id) != button)
-            button->setChecked(false);
-    }
-    scene->setItemType(DiagramItem::DiagramType(id));
-    scene->setMode(DiagramScene::InsertItem);
-
-}
-
-void MainWindow::itemInserted(DiagramItem *item)
-{
-    pointerTypeGroup->button(int(DiagramScene::MoveItem))->setChecked(true);
-    scene->setMode(DiagramScene::Mode(pointerTypeGroup->checkedId()));
-    QToolButton *tb = static_cast<QToolButton*>(buttonGroup->button(int(item->diagramType())));
-    tb->setChecked(false);
-    tb->update();
+    scene->setMode(DiagramScene::Mode(id));//buttonGroup->checkedId()));
 }
 
 void MainWindow::createToolbar()
 {
-    actions=addToolBar("Actions");
-    deleteAction = new QAction(QIcon(":/images/delete.png"), QString::fromUtf8("Удалить выбранный элемент"), scene);
-    deleteAction->setShortcut(tr("Delete"));
-    deleteAction->setStatusTip(QString::fromUtf8("Удалить выбранный элемент"));
-    connect(deleteAction, SIGNAL(triggered()), this, SLOT(deleteItem()));
-    connect(scene,SIGNAL(actionsEnabled(bool)),deleteAction,SLOT(setEnabled(bool)));
-    actions->addAction(deleteAction);
+    QToolBar *toolBar = addToolBar(QString::fromUtf8("Редактирование сетевой модели"));
 
-    buttonGroup = new QButtonGroup;
-    connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(buttonGroupClicked(int)));
-    buttonGroup->setExclusive(false);
-
-    QWidget *circleButton = createBtnWidget(QString::fromUtf8("Создать событие"), DiagramItem::Circle);
-    circleButton->setStatusTip(QString::fromUtf8("Создать событие"));
-    actions->addWidget(circleButton);
-
-    QToolButton *pointerButton = new QToolButton;
+    QToolButton *pointerButton = new QToolButton(toolBar);
     pointerButton->setCheckable(true);
     pointerButton->setChecked(true);
     pointerButton->setIcon(QIcon(":/images/pointer.png"));
     pointerButton->setStatusTip(QString::fromUtf8("Режим указателя мыши"));
+    pointerButton->setToolTip(QString::fromUtf8("Режим указателя мыши"));
 
-    QToolButton *linePointerButton = new QToolButton;
+    QToolButton *linePointerButton = new QToolButton(toolBar);
     linePointerButton->setCheckable(true);
     linePointerButton->setIcon(QIcon(":/images/linepointer.png"));
     linePointerButton->setStatusTip(QString::fromUtf8("Режим создания коннектора (стрелки)"));
+    linePointerButton->setToolTip(QString::fromUtf8("Режим создания коннектора (стрелки)"));
 
-    pointerTypeGroup = new QButtonGroup;
-    pointerTypeGroup->addButton(pointerButton, int(DiagramScene::MoveItem));
-    pointerTypeGroup->addButton(linePointerButton, int(DiagramScene::InsertLine));
-    connect(pointerTypeGroup, SIGNAL(buttonClicked(int)), this, SLOT(pointerGroupClicked(int)));
+    QToolButton *itemButton = new QToolButton(toolBar);
+    DiagramItem item(DiagramItem::Circle,0,0,0,0);
+    QIcon icon(item.image());
+    itemButton->setIcon(icon);
+    itemButton->setIconSize(QSize(50,50));
+    itemButton->setCheckable(true);
+    itemButton->setStatusTip(QString::fromUtf8("Создать событие"));
+    itemButton->setToolTip(QString::fromUtf8("Создать событие"));
 
-    sceneScaleCombo = new QComboBox;
+    QComboBox *sceneScaleCombo = new QComboBox(toolBar);
     QStringList scales;
     scales << "50%" << "75%" << "100%" << "125%" << "150%";
     sceneScaleCombo->addItems(scales);
     sceneScaleCombo->setCurrentIndex(2);
     sceneScaleCombo->setStatusTip(QString::fromUtf8("Масштаб рисунка"));
-    connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(sceneScaleChanged(const QString &)));
+    sceneScaleCombo->setToolTip(QString::fromUtf8("Масштаб рисунка"));
+    connect(sceneScaleCombo, SIGNAL(currentIndexChanged(const QString &)),
+            this, SLOT(sceneScaleChanged(const QString &)));
 
-    pointerToolbar = addToolBar(QString::fromUtf8("Тип указателя"));
-    pointerToolbar->addWidget(pointerButton);
-    pointerToolbar->addWidget(linePointerButton);
-    pointerToolbar->addWidget(sceneScaleCombo);
-}
+    QAction *deleteAction = new QAction (QIcon(":/images/delete.png"),
+            QString::fromUtf8("Удалить выбранный элемент"), toolBar);
+    deleteAction->setShortcut(tr("Delete"));
+    deleteAction->setStatusTip(QString::fromUtf8("Удалить выбранный элемент"));
+    connect(deleteAction,SIGNAL(triggered()),this,SLOT(deleteItem()));
+    connect(scene,SIGNAL(actionsEnabled(bool)),deleteAction,SLOT(setEnabled(bool)));
 
-void MainWindow::pointerGroupClicked(int)
-{
-    scene->setMode(DiagramScene::Mode(pointerTypeGroup->checkedId()));
+    buttonGroup = new QButtonGroup(this);
+    buttonGroup->addButton(linePointerButton, int(DiagramScene::InsertLine));
+    buttonGroup->addButton(pointerButton, int(DiagramScene::MoveItem));
+    buttonGroup->addButton(itemButton, int(DiagramScene::InsertItem));
+    connect(buttonGroup, SIGNAL(buttonClicked(int)),
+            this, SLOT(buttonGroupClicked(int)));
+
+    toolBar->addWidget(pointerButton);
+    toolBar->addWidget(linePointerButton);
+    toolBar->addWidget(itemButton);
+    toolBar->addWidget(sceneScaleCombo);
+    toolBar->addAction(deleteAction);
 }
 
 void MainWindow::newModel()
@@ -192,7 +166,6 @@ void MainWindow::newModel()
     treemodel->setModel(netmodel);
     dialog->setModel(netmodel);
     scene->setModel(&netmodel);
-    //ui->graphView->setModel(&netmodel);
 }
 
 void MainWindow::open()
@@ -422,4 +395,5 @@ MainWindow::~MainWindow()
     delete aboutDialog;
     delete treemodel;
     delete dialog;
+    delete scene;
 }
