@@ -554,7 +554,7 @@ QList<Path> *NetModel::getMaxPathes(Event *begin, Event *end)
         QList<Path> copy = *pathes;
         foreach (Path p, copy)
         {
-            if (!qFuzzyCompare(p.weight(),maxweight))
+            if (!qFuzzyCompare(p.weight()+1.0,maxweight+1.0))
             {
                 pathes->removeAll(p);
             }
@@ -858,11 +858,16 @@ bool NetModel::setOperationName(Operation *o, const QString &name)
 
 bool NetModel::setOperationWaitTime(Operation *o, double twait)
 {
-    o->setWaitTime(twait);
-    cmanager->reset(o->getBeginEvent());
-    emit operationWaitTimeChanged(o, twait);
-    emit updated();
-    return true;
+    if (twait>=0)
+    {
+        o->setWaitTime(twait);
+        cmanager->reset(o->getBeginEvent());
+        emit operationWaitTimeChanged(o, twait);
+        emit updated();
+        return true;
+    }
+    else
+        return false;
 }
 
 bool NetModel::addEvent()

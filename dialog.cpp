@@ -155,8 +155,8 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
     header.clear();
     header << "i-j" << "t(i-j)" << QString::fromUtf8("t р.н.(i-j)")
             << QString::fromUtf8("t п.н.(i-j)") << QString::fromUtf8("t р.о.(i-j)")
-            << QString::fromUtf8("t п.о.(i-j)") << QString::fromUtf8("t п.(i-j)")
-            << QString::fromUtf8("t с.(i-j)");
+            << QString::fromUtf8("t п.о.(i-j)") << QString::fromUtf8("R п.(i-j)")
+            << QString::fromUtf8("R с.(i-j)");
     data.clear();
     if (!operationsList)
         operationsList = netmodel->getSortedOperatioins();
