@@ -342,7 +342,7 @@ void DiagramScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     if (mouseEvent->button() != Qt::LeftButton)
         return;
 
-    DiagramItem *item;
+    //DiagramItem *item;
     //Event *ev;
     switch (myMode) {
         case InsertItem:

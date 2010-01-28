@@ -80,7 +80,7 @@ public:
     Path(QList<Event*> events);
     QString code() const {return _code;}
     double weight() const {return _weight;}
-    bool contains(Operation *o)
+    bool contains(Operation *o) const
     {
         for (int i=0;i<events.count()-1;++i)
         {
