@@ -22,13 +22,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-public slots:
+private slots:
     void sceneScaleChanged(const QString &scale);
-    void pointerGroupClicked(int);
-    void buttonGroupClicked(int id);
+    void buttonGroupClicked(int);
     void itemInserted(DiagramItem *item);
     void deleteItem();
-
 private:
     Ui::MainWindow *ui;
     AboutDialog *aboutDialog;
@@ -37,12 +35,9 @@ private:
     Dialog *dialog;
     QString filename;
     DiagramScene *scene;
-    QToolBar * actions;
-    QToolBar * pointerToolbar;
-    QAction * deleteAction;
-    QButtonGroup * pointerTypeGroup;
-    QButtonGroup * buttonGroup;
-    QComboBox * sceneScaleCombo;
+
+    QButtonGroup *buttonGroup;
+
     void setFileName(const QString &fn)
     {
         filename = fn;
@@ -50,7 +45,6 @@ private:
     }
     void doSave();
     void createToolbar();
-    QWidget * createBtnWidget(const QString &text, DiagramItem::DiagramType type);
 private slots:
     void about();
     void addEvent();
