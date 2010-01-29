@@ -191,7 +191,7 @@ int TreeModel::getIndex(Operation *o)
     return -1;
 }
 
-QModelIndex TreeModel::getModelIndex(Event *e)
+QModelIndex TreeModel::getTopLeftModelIndex(Event *e)
 {
     int i = getIndex(e);
     if (i>-1)
@@ -199,12 +199,29 @@ QModelIndex TreeModel::getModelIndex(Event *e)
     return QModelIndex();
 }
 
-QModelIndex TreeModel::getModelIndex(Operation *o)
+QModelIndex TreeModel::getBottomRightModelIndex(Event *e)
+{
+    int i = getIndex(e);
+    if (i>-1)
+        return createIndex(i, 1, rootItem->child(i));
+    return QModelIndex();
+}
+
+QModelIndex TreeModel::getTopLeftModelIndex(Operation *o)
 {
     int i = getIndex(o->getBeginEvent());
     int j = getIndex(o);
     if (i>-1 && j>-1)
         return createIndex(j, 2, rootItem->child(i)->child(j));
+    return QModelIndex();
+}
+
+QModelIndex TreeModel::getBottomRightModelIndex(Operation *o)
+{
+    int i = getIndex(o->getBeginEvent());
+    int j = getIndex(o);
+    if (i>-1 && j>-1)
+        return createIndex(j, 4, rootItem->child(i)->child(j));
     return QModelIndex();
 }
 

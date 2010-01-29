@@ -14,7 +14,7 @@ class TreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    TreeModel(NetModel&, QObject *parent = 0);//const QString &data, QObject *parent = 0);
+    TreeModel(NetModel&, QObject *parent = 0);
     ~TreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -37,8 +37,10 @@ public:
     void removeEvent(const QModelIndex &selected);
     void removeOperation(const QModelIndex &selected);
 
-    QModelIndex getModelIndex(Event *e);
-    QModelIndex getModelIndex(Operation *o);
+    QModelIndex getTopLeftModelIndex(Event *e);
+    QModelIndex getTopLeftModelIndex(Operation *o);
+    QModelIndex getBottomRightModelIndex(Event *e);
+    QModelIndex getBottomRightModelIndex(Operation *o);
 private:
     void setupModelData(TreeItem *parent);
 
