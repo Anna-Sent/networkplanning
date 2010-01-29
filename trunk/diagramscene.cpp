@@ -525,13 +525,16 @@ void DiagramScene::setSelected(Operation * o)
 	if (!_model) return;
 	clearSelection();
 	int idx = _model->getOperations()->indexOf(o);
+	qDebug() << "set select " << idx;
 	Arrow *a = darrows.at(idx);
 	a->setSelected(true);
 }
 
 void DiagramScene::onSelectionChange()
 {
-	QGraphicsItem *si = selectedItems().first();
+	QList<QGraphicsItem *> li = selectedItems();
+	if (li.empty()) return;
+	QGraphicsItem* si=li.first();
 	if (si->type()==DiagramItem::Type)
 	{
 		emit selected(static_cast<DiagramItem *>(si)->event());
