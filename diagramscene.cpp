@@ -88,6 +88,7 @@ void DiagramScene::setModel(NetModel* model)
     connect(model, SIGNAL(beforeOperationDelete(Operation*)), this, SLOT(ArrowDel(Operation*)));
     connect(model, SIGNAL(beforeEventDelete(Event*)), this, SLOT(EventDel(Event*)));
     connect(model, SIGNAL(operationEndEventChanged(Operation*,Event*)), this, SLOT(OperationRedirect(Operation*,Event*)));
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(onSelectionChange()));
     //connect(this, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(bringToFront(DiagramItem*)));
 }
 
@@ -508,4 +509,36 @@ void DiagramScene::NChanged(Event *ev, int id)
 void DiagramScene::onChange(const QList<QRectF> & region)
 {
     //emit changed();
+}
+
+void DiagramScene::setSelected(Event * e)
+{
+	if (!_model) return;
+	clearSelection();
+	int idx = _model->getEvents()->indexOf(e);
+	DiagramItem *di = devents.at(idx);
+	di->setSelected(true);
+}
+
+void DiagramScene::setSelected(Operation * o)
+{
+	if (!_model) return;
+	clearSelection();
+	int idx = _model->getOperations()->indexOf(o);
+	Arrow *a = darrows.at(idx);
+	a->setSelected(true);
+}
+
+void DiagramScene::onSelectionChange()
+{
+	QGraphicsItem *si = selectedItems().first();
+	if (si->type()==DiagramItem::Type)
+	{
+		emit selected(static_cast<DiagramItem *>(si)->event());
+	} else
+	if (si->type()==Arrow::Type)
+	{
+		emit selected(static_cast<Arrow *>(si)->getOperation());
+	}
+	
 }

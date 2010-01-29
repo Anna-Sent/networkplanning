@@ -101,6 +101,8 @@ public slots:
     void bringToFront(DiagramItem *item);
     void setRenderSelection(bool v) {_renderSelection=v;}
     bool getRenderSelection() {return _renderSelection;}
+    void setSelected(Event *);
+    void setSelected(Operation *);
 
 signals:
     void itemInserted(DiagramItem *item);
@@ -108,6 +110,8 @@ signals:
     void itemSelected(QGraphicsItem *item);
     void actionsEnabled(bool);
     void changed();
+    void selected(Event *);
+    void selected(Operation *);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -116,6 +120,7 @@ protected:
 private slots:
     void debugDump();
     void onChange(const QList<QRectF> & region);
+    void onSelectionChange();
 private:
     bool isItemChange(int type);
 
