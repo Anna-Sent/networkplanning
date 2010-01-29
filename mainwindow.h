@@ -63,6 +63,12 @@ private slots:
     void printModel();
     void printTables();
     void exit();
+
+    void setSelected(Event *);
+    void setSelected(Operation *);
+signals:
+    void selected(Event *);
+    void selected(Operation *);
 };
 
 #endif // MAINWINDOW_H

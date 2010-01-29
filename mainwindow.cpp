@@ -64,6 +64,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graphView->setScene(scene);
     scene->setModel(&netmodel);
     connect(scene, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(itemInserted(DiagramItem*)));
+    connect(scene, SIGNAL(selected(Event*)), this, SLOT(setSelected(Event*)));
+    connect(scene, SIGNAL(selected(Operation*)), this, SLOT(setSelected(Operation*)));
     // create tool bar after scene
     createToolbar();
     // setup dialog
@@ -314,44 +316,38 @@ void MainWindow::calc()
 
 void MainWindow::insertEvent()
 {
-    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    model->insertEvent(selected);
+    treemodel->insertEvent(selected);
 }
 
 void MainWindow::addEvent()
 {
-    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    model->addEvent(selected);
+    treemodel->addEvent(selected);
 }
 
 void MainWindow::deleteEvent()
 {
-    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    model->removeEvent(selected);
+    treemodel->removeEvent(selected);
 }
 
 void MainWindow::insertOperation()
 {
-    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    model->insertOperation(selected);
+    treemodel->insertOperation(selected);
 }
 
 void MainWindow::addOperation()
 {
-    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    model->addOperation(selected);
+    treemodel->addOperation(selected);
 }
 
 void MainWindow::deleteOperation()
 {
-    TreeModel *model = static_cast<TreeModel*>(ui->treeView->model());
     QModelIndex selected = ui->treeView->selectionModel()->currentIndex();
-    model->removeOperation(selected);
+    treemodel->removeOperation(selected);
 }
 
 void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
@@ -367,6 +363,7 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
             ui->btnAddOperation->setEnabled(true);
             ui->btnInsertOperation->setEnabled(true);
             ui->btnDeleteOperation->setEnabled(false);
+            emit selected(item->getEvent());
         }
         else if (item->getOperation())
         {
@@ -376,6 +373,7 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
             ui->btnAddOperation->setEnabled(true);
             ui->btnInsertOperation->setEnabled(true);
             ui->btnDeleteOperation->setEnabled(true);
+            emit selected(item->getOperation());
         }
         else
         {
@@ -387,6 +385,16 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
             ui->btnDeleteOperation->setEnabled(false);
         }
     }
+}
+
+void MainWindow::setSelected(Event *e)
+{
+    ui->treeView->selectionModel()->setCurrentIndex(treemodel->getModelIndex(e), QItemSelectionModel::Select);
+}
+
+void MainWindow::setSelected(Operation *o)
+{
+    ui->treeView->selectionModel()->setCurrentIndex(treemodel->getModelIndex(o), QItemSelectionModel::Select);
 }
 
 MainWindow::~MainWindow()

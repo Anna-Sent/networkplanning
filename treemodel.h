@@ -9,7 +9,6 @@
 
 class TreeItem;
 
-//! [0]
 class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -28,10 +27,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
-    //bool insertRows (int row, int count, const QModelIndex &parent = QModelIndex());
-    //bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
     void fill(QComboBox *, const QModelIndex &) const;
-    //TreeItem *getRootItem() {return rootItem;}
     void setModel(NetModel &);
 
     void addEvent(const QModelIndex &selected);
@@ -40,10 +36,11 @@ public:
     void insertOperation(const QModelIndex &selected);
     void removeEvent(const QModelIndex &selected);
     void removeOperation(const QModelIndex &selected);
+
+    QModelIndex getModelIndex(Event *e);
+    QModelIndex getModelIndex(Operation *o);
 private:
     void setupModelData(TreeItem *parent);
-    //void process(Event *, TreeItem *);
-    //void process(Operation*,TreeItem*);
 
     TreeItem *rootItem;
     NetModel *netmodel;
@@ -65,7 +62,6 @@ private slots:
     void updated();
     void beforeClear();
 };
-//! [0]
 
 #endif
 
