@@ -114,6 +114,7 @@ protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
 private slots:
+    void debugDump();
     void onChange(const QList<QRectF> & region);
 private:
     bool isItemChange(int type);

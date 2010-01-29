@@ -160,12 +160,8 @@ void DiagramScene::ArrowDel(Operation *op)
     if (aid<0) return;
     Arrow *arr = darrows.at(aid);
     assert(arr->startItem()->wrapsEvent(op->getBeginEvent()));
-    if (arr->endItem()) assert(arr->endItem()->wrapsEvent(op->getEndEvent()));
-    arr->startItem()->removeArrow(arr);
     removeArrow(arr);
-    qDebug() << " children " << items().count();
-    //assert(children().count()==devents.count()+darrows.count()+1);
-    delete arr;
+    //qDebug() << " children " << items().count();
 }
 
 void DiagramScene::EventDel(Event *ev)
@@ -175,21 +171,43 @@ void DiagramScene::EventDel(Event *ev)
     DiagramItem *di = devents.at(eid);
     assert(di->wrapsEvent(ev));
     //devents.at(eid)->removeArrows();
+    //foreach(
     di->removeArrows();
     removeEvent(di);
     //assert(children().count()==devents.count()+darrows.count()+1);
-    delete di;
     //devents.removeAt(eid);
+}
+
+void DiagramScene::debugDump()
+{
+    qDebug() << "children" << items().count();
+    int arrows=0;
+    foreach(QGraphicsItem *gr,items())
+    {
+        Arrow *ar;
+        DiagramItem *di;
+        if ((ar=dynamic_cast<Arrow*>(gr))) {
+            qDebug() <<"arrow " << ar->startItem()->event()->getN() <<
+                    ar->endItem()->event()->getN();
+            ++arrows;
+        }
+    }
+    qDebug() << "arrows" << arrows;
 }
 
 void DiagramScene::removeArrow(Arrow *arr)
 {
     if (arr)
     {
+        //if (arr->endItem()) assert(arr->endItem()->wrapsEvent(op->getEndEvent()));
+        arr->startItem()->removeArrow(arr);
+        if (arr->endItem()) arr->endItem()->removeArrow(arr);
         int count = darrows.count();
         darrows.removeAll(arr);
-        removeItem(arr);
+        //removeItem(arr);
         assert(count-darrows.count()==1);
+	delete arr;
+        debugDump();
         //arr->deleteLater();
     }
 }
@@ -199,7 +217,9 @@ void DiagramScene::removeEvent(DiagramItem *di)
     if (di)
     {
         devents.removeAll(di);
-        removeItem(di);
+        //removeItem(di);
+        delete di;
+        debugDump();
     }
 }
 

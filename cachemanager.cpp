@@ -55,7 +55,7 @@ void CacheManager::postponing(Event *ev,QSet<Event*>& r)
 
 void CacheManager::reset(Event *ev)
 {
-    qDebug() << hit << miss;
+    //qDebug() << hit << miss;
     hit=0;
     miss=0;
     if (ev==0) {
