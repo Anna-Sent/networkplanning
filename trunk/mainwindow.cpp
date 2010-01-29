@@ -66,6 +66,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(scene, SIGNAL(itemInserted(DiagramItem*)), this, SLOT(itemInserted(DiagramItem*)));
     connect(scene, SIGNAL(selected(Event*)), this, SLOT(setSelected(Event*)));
     connect(scene, SIGNAL(selected(Operation*)), this, SLOT(setSelected(Operation*)));
+    connect(this, SIGNAL(selected(Event*)), scene, SLOT(setSelected(Event*)));
+    connect(this, SIGNAL(selected(Operation*)), scene, SLOT(setSelected(Operation*)));
     // create tool bar after scene
     createToolbar();
     // setup dialog
