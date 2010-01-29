@@ -112,7 +112,7 @@ void DiagramItem::removeArrow(Arrow *arrow)
 
     if (index != -1)
     {
-        if (arrow->startItem()==this)
+/*        if (arrow->endItem()!=this)
         {
             if (arrow->endItem()) {
                 arrow->endItem()->removeArrow(arrow);
@@ -120,7 +120,7 @@ void DiagramItem::removeArrow(Arrow *arrow)
         } else
         {
             arrow->setEndItem(0);
-        }
+        }*/
         arrows.removeAt(index);
     }
 }
@@ -129,9 +129,10 @@ void DiagramItem::removeArrow(Arrow *arrow)
 //! [2]
 void DiagramItem::removeArrows()
 {
-    foreach (Arrow *arrow, arrows) {
-        removeArrow(arrow);
-    }
+    /*foreach (Arrow *arrow, arrows) {
+        //removeArrow(arrow);
+       //static_cast<DiagramScene*>(scene())->removeArrow(arrow);
+    }*/
     assert(arrows.count()==0);
 }
 //! [2]

@@ -47,6 +47,8 @@
 #include <QBrush>
 #include <QPen>
 //#include "netmodel.h"
+#include <assert.h>
+
 class Event;
 class DiagramTextItem;
 QT_BEGIN_NAMESPACE
