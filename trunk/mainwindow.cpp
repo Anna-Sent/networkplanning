@@ -391,12 +391,16 @@ void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/
 
 void MainWindow::setSelected(Event *e)
 {
-    ui->treeView->selectionModel()->setCurrentIndex(treemodel->getModelIndex(e), QItemSelectionModel::Select);
+    ui->treeView->selectionModel()->clearSelection();
+    QItemSelection selection(treemodel->getTopLeftModelIndex(e), treemodel->getBottomRightModelIndex(e));
+    ui->treeView->selectionModel()->select(selection, QItemSelectionModel::Select);
 }
 
 void MainWindow::setSelected(Operation *o)
 {
-    ui->treeView->selectionModel()->setCurrentIndex(treemodel->getModelIndex(o), QItemSelectionModel::Select);
+    ui->treeView->selectionModel()->clearSelection();
+    QItemSelection selection(treemodel->getTopLeftModelIndex(o), treemodel->getBottomRightModelIndex(o));
+    ui->treeView->selectionModel()->select(selection, QItemSelectionModel::Select);
 }
 
 MainWindow::~MainWindow()
@@ -407,3 +411,22 @@ MainWindow::~MainWindow()
     delete dialog;
     delete scene;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
