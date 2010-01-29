@@ -206,8 +206,9 @@ void DiagramScene::removeArrow(Arrow *arr)
         darrows.removeAll(arr);
         //removeItem(arr);
         assert(count-darrows.count()==1);
-	delete arr;
-        debugDump();
+	//debugDump();
+	arr->invalidate();
+	arr->deleteLater();
         //arr->deleteLater();
     }
 }
@@ -218,8 +219,9 @@ void DiagramScene::removeEvent(DiagramItem *di)
     {
         devents.removeAll(di);
         //removeItem(di);
-        delete di;
-        debugDump();
+        //debugDump();
+	di->invalidate();
+        di->deleteLater();
     }
 }
 

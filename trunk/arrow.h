@@ -44,7 +44,6 @@
 
 #include <QGraphicsLineItem>
 #include <QObject>
-
 #include "diagramitem.h"
 #include "netmodel.h"
 
@@ -59,9 +58,8 @@ QT_END_NAMESPACE
 class DiagramScene;
 
 //! [0]
-class Arrow : public QObject, public QGraphicsLineItem
+class Arrow : public QObject,public QGraphicsLineItem
 {
-    Q_OBJECT
 public:
     enum { Type = UserType + 4 };
 
@@ -84,9 +82,10 @@ public:
     Operation * getOperation() {return _op;}
     void setOperation(Operation *op) {_op=op;}
     void setValue(QString &str);
+    void invalidate() {myStartItem=0;myEndItem=0;_op=0;}
 
 
-public slots:
+public:
     void updatePosition();
 
 protected:

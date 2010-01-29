@@ -46,6 +46,7 @@
 #include <QList>
 #include <QBrush>
 #include <QPen>
+#include <QObject>
 //#include "netmodel.h"
 #include <assert.h>
 
@@ -69,7 +70,7 @@ class DiagramScene;
 class Arrow;
 
 //! [0]
-class DiagramItem : public QGraphicsItem
+class DiagramItem : public QObject,public QGraphicsItem
 {
 public:
     enum { Type = UserType + 15 };
@@ -98,6 +99,7 @@ public:
     QPen pen() const { return _pen; }
     void setBrush(const QBrush& br) {_brush=br;}
     double radius() const {return 25.0;}
+    void invalidate() {_event=0;}
 protected:
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);

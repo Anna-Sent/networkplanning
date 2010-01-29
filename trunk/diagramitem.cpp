@@ -174,6 +174,7 @@ void DiagramItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 QVariant DiagramItem::itemChange(GraphicsItemChange change,
                      const QVariant &value)
 {
+    if (!_event) return QVariant();
     if (change == QGraphicsItem::ItemPositionChange) {
         foreach (Arrow *arrow, arrows) {
             arrow->updatePosition();
@@ -209,6 +210,7 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 void DiagramItem::setValue(QString& val)
 {
+	if (!_event) return;
         bool ok=false;
         int num = val.toInt(&ok,10);
         //emit changeN(i->event(),num);

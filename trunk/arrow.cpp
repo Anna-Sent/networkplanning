@@ -81,7 +81,7 @@ void Arrow::updatePosition()
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
           QWidget *)
 {
-    if (myStartItem==0||myEndItem==0) return;
+    if (myStartItem==0||myEndItem==0||_op==0) return;
     /*if (myStartItem->collidesWithItem(myEndItem))
         return;*/
     QLineF centerLine(myStartItem->pos(), myEndItem->pos());
