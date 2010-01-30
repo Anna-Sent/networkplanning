@@ -20,7 +20,10 @@ void CacheManager::put(Event *p1,Event *p2, const QList<Path>* data)
 bool CacheManager::get(Event *p1,Event *p2, QList<Path>* data)
 {
     if (cache[p1][p2]) {
-        (*data).append(*cache[p1][p2]);
+        //(*data).append(*cache[p1][p2]);
+	foreach(const Path& p,*cache[p1][p2]) {
+		data->append(p);
+	}
         ++hit;
         return true;
     } else {
