@@ -156,7 +156,7 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
     header << "i-j" << "t(i-j)" << QString::fromUtf8("t р.н.(i-j)")
             << QString::fromUtf8("t п.н.(i-j)") << QString::fromUtf8("t р.о.(i-j)")
             << QString::fromUtf8("t п.о.(i-j)") << QString::fromUtf8("R п.(i-j)")
-            << QString::fromUtf8("R с.(i-j)");
+            << QString::fromUtf8("R с.(i-j)") << QString::fromUtf8("K н.(i-j)");
     data.clear();
     if (!operationsList)
         operationsList = netmodel->getSortedOperatioins();
@@ -165,7 +165,7 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
         QList<QVariant> row;
         row << o->getCode() << o->getWaitTime() << netmodel->getEarlyStartTime(o) << netmodel->getLaterStartTime(o)
                 << netmodel->getEarlyEndTime(o) << netmodel->getLaterEndTime(o) << netmodel->getFullReserveTime(o)
-                << netmodel->getFreeReserveTime(o);
+                << netmodel->getFreeReserveTime(o) << netmodel->getIntensityFactor(o);
         data << row;
     }
     //delete operationsList;

@@ -9,7 +9,6 @@
 #include <QPoint>
 #include <QDataStream>
 
-
 class Operation;
 class NetModel;
 class CacheManager;
@@ -42,8 +41,8 @@ public:
     QString getName() {return name;}
 };
 
-Q_DECLARE_METATYPE(Event*);
-Q_DECLARE_METATYPE(Operation*);
+Q_DECLARE_METATYPE(Event*)
+Q_DECLARE_METATYPE(Operation*)
 
 class Operation
 {
@@ -205,6 +204,8 @@ public:
     double getReserveTime(Event*);
     double getFullReserveTime(Operation*);
     double getFreeReserveTime(Operation*);
+
+    double getIntensityFactor(Operation *);
 public:
     void connect(Event*,Operation*);
     void connect(Operation*,Event*);
@@ -244,17 +245,3 @@ signals:
 };
 
 #endif // NETMODEL_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-

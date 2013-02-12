@@ -1115,15 +1115,7 @@ bool NetModel::inCriticalPath(Operation *o)
         return false;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+double NetModel::getIntensityFactor(Operation *)
+{
+    return -1;
+}

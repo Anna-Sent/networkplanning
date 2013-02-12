@@ -16,11 +16,12 @@ void CalcOperationModel::setupHeader()
     header << QString::fromUtf8("t п.о.(i-j)");//Поздний срок окончания работы");
     header << QString::fromUtf8("t п.(i-j)");//Полный резерв времени");
     header << QString::fromUtf8("t с.(i-j)");//Свободный резерв времени");
+    header << QString::fromUtf8("K н.(i-j)");//Коэффициент напряженности
 }
 
 int CalcOperationModel::colCount() const
 {
-    return 8;
+    return 9;
 }
 
 void CalcOperationModel::setupModelData()
@@ -39,6 +40,7 @@ void CalcOperationModel::setupModelData()
             row << netmodel->getLaterEndTime(operation);
             row << netmodel->getFullReserveTime(operation);
             row << netmodel->getFreeReserveTime(operation);
+            row << netmodel->getIntensityFactor(operation);
             modelData << row;
         }
     }
