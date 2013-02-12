@@ -352,20 +352,40 @@ void NetModel::connect(Event *e1, Operation *o, Event *e2)
     connect(o,e2);
 }
 
+#define A(i, j) a[i * n + j]
+
 bool NetModel::hasLoops()
 {
-    int n=events.count();
-    bool a[n][n];
-    for (int i=0; i<n; ++i)
-        for (int j=0; j<n; ++j)
-            a[i][j] = events[i]->hasEdge(events[j]);
-    for (int i=0;i<n;++i)
-        for (int j=0;j<n;++j)
-            for (int k=0;k<n;++k)
-                a[j][k] = a[j][k] || (a[j][i] && a[i][k]);
-    for (int i=0; i<n; ++i)
-            if (a[i][i])
-                return true;
+    int n = events.count();
+    bool *a = new bool[n * n];
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < n; ++j)
+        {
+            A(i, j) = events[i]->hasEdge(events[j]);
+        }
+    }
+
+    for (int i = 0; i < n; ++i)
+    {
+        for (int j = 0; j < n; ++j)
+        {
+            for (int k = 0; k < n; ++k)
+            {
+                A(j, k) = A(j, k) || (A(j, i) && A(i, k));
+            }
+        }
+    }
+    for (int i = 0; i < n; ++i)
+    {
+        if (A(i, i))
+        {
+            delete[] a;
+            return true;
+        }
+    }
+
+    delete[] a;
     return false;
 }
 
