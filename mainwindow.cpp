@@ -95,7 +95,7 @@ void MainWindow::sceneScaleChanged(const QString &scale)
     ui->graphView->scale(newScale, newScale);
 }
 
-void MainWindow::itemInserted(DiagramItem */*item*/)
+void MainWindow::itemInserted(DiagramItem *)
 {
     buttonGroup->button(int(DiagramScene::MoveItem))->setChecked(true);
     scene->setMode(DiagramScene::Mode(buttonGroup->checkedId()));
@@ -103,7 +103,7 @@ void MainWindow::itemInserted(DiagramItem */*item*/)
 
 void MainWindow::buttonGroupClicked(int id)
 {
-    scene->setMode(DiagramScene::Mode(id));//buttonGroup->checkedId()));
+    scene->setMode(DiagramScene::Mode(id));
 }
 
 void MainWindow::createToolbar()
@@ -411,22 +411,3 @@ MainWindow::~MainWindow()
     delete dialog;
     delete scene;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -22,7 +22,7 @@ QPoint EventWidget::center() const
     return QPoint(15,15);
 }
 
-void EventWidget::paintEvent(QPaintEvent */*event*/)
+void EventWidget::paintEvent(QPaintEvent *)
 {
     QPainter p;
     p.begin(this);
