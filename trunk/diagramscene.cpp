@@ -186,7 +186,6 @@ void DiagramScene::debugDump()
     foreach(QGraphicsItem *gr,items())
     {
         Arrow *ar;
-        DiagramItem *di;
         if ((ar=dynamic_cast<Arrow*>(gr))) {
             qDebug() <<"arrow " << ar->startItem()->event()->getN() <<
                     ar->endItem()->event()->getN();
@@ -227,10 +226,8 @@ void DiagramScene::removeEvent(DiagramItem *di)
 }
 
 
-void DiagramScene::OperationRedirect(Operation *op, Event *ev)
+void DiagramScene::OperationRedirect(Operation *op, Event *)
 {
-    /*ArrowDel(o,*op);
-    ArrowAdd(*/
     int aid = _model->getOperations()->indexOf(op);
     if (aid<0) return;
     Arrow *arr = darrows.at(aid);
@@ -498,7 +495,7 @@ bool DiagramScene::isItemChange(int type)
     return false;
 }
 //! [14]
-void DiagramScene::NChanged(Event *ev, int id)
+void DiagramScene::NChanged(Event *ev, int)
 {
     int idx = _model->getEvents()->indexOf(ev);
     DiagramItem *di = devents.at(idx);
@@ -508,7 +505,7 @@ void DiagramScene::NChanged(Event *ev, int id)
 
 void DiagramScene::onChange(const QList<QRectF> & region)
 {
-    //emit changed();
+    Q_UNUSED(region);
 }
 
 void DiagramScene::setSelected(Event * e)
