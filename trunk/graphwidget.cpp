@@ -44,7 +44,7 @@
 #include "graphwidget.h"
 #include "arrowpointwidget.h"
 #include <QDebug>
-#include <cmath>
+#include <math.h>
 
 void GraphWidget::setModel(NetModel* model)
 {
@@ -278,15 +278,15 @@ template<class Ty>
     return x*x;
 }
 
-QLine GraphWidget::adjustLine(QPoint p1,QPoint p2,int margin)
+QLine GraphWidget::adjustLine(QPoint p1, QPoint p2, int margin)
 {
-    QPoint vec = p2-p1;
-    double len = sqrt(  sqr(vec.x())+sqr(vec.y()) );
-    //QPoint shift = (vec/len)*static_cast<double>(margin);
-    double sx = static_cast<double>(vec.x())/len*static_cast<double>(margin);
-    double sy = static_cast<double>(vec.y())/len*static_cast<double>(margin);
-    QPoint shift(sx,sy);
-    return QLine(p1+shift,p2-shift);
+    QPoint vec = p2 - p1;
+    int x = vec.x(), y = vec.y();
+    double len = sqrt((double)(x * x + y * y));
+    double sx = static_cast<double>(x) / len * static_cast<double>(margin);
+    double sy = static_cast<double>(y) / len * static_cast<double>(margin);
+    QPoint shift(sx, sy);
+    return QLine(p1 + shift, p2 - shift);
 }
 
 void GraphWidget::recreatePoints()
@@ -319,6 +319,7 @@ void GraphWidget::recreatePoints()
 
 void GraphWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
 
     qDebug() << "paint";
     if (!_model) return;
@@ -348,16 +349,14 @@ void GraphWidget::paintEvent(QPaintEvent *event)
 
 void GraphWidget::drawArrow(QPainter &p,QLine l)
 {
-
     p.translate(l.p2());
-    double angle = atan2(l.dx(),l.dy())/M_PI*180.0;
+    int dx = l.dx(), dy = l.dy();
+    double angle = atan2((double)dx, (double)dy) / M_PI * 180.0;
     p.rotate(-angle);
-    double len = sqrt(  sqr(l.dx())+sqr(l.dy()) );
-    //QPoint end
-    p.drawLine(QPoint(0,0), QPoint(0,-len));
-    p.drawLine(0,0,4,-10);
-    p.drawLine(0,0,-4,-10);
-    //p.drawLine(
+    double len = sqrt((double)(dx * dx + dy * dy));
+    p.drawLine(QPoint(0, 0), QPoint(0, -len));
+    p.drawLine(0, 0, 4, -10);
+    p.drawLine(0, 0, -4, -10);
     p.resetTransform();
 }
 
@@ -372,8 +371,10 @@ void GraphWidget::eventNameChanged(QObject *, Event * event, const QString &)
         }
     }
 }
+
 void GraphWidget::eventIdChanged(QObject *, Event * event, const int id)
 {
+    Q_UNUSED(id);
     QObjectList ch = children();
     foreach(QObject* qo,ch)
     {
