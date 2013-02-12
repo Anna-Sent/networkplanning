@@ -46,17 +46,6 @@ SOURCES = treeitem.cpp \
     aboutdialog.cpp \
     cachemanager.cpp
 CONFIG += qt
-
-# install
-target.path = $$[QT_INSTALL_EXAMPLES]/itemviews/simpletreemodel
-sources.files = $$SOURCES \
-    $$HEADERS \
-    $$RESOURCES \
-    *.pro \
-    *.txt
-sources.path = $$[QT_INSTALL_EXAMPLES]/itemviews/simpletreemodel
-INSTALLS += target \
-    sources
 FORMS += mainwindow.ui \
     dialog.ui \
     aboutdialog.ui
