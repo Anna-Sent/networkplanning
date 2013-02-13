@@ -22,11 +22,13 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
 private slots:
     void sceneScaleChanged(const QString &scale);
     void buttonGroupClicked(int);
     void itemInserted(DiagramItem *item);
     void deleteItem();
+
 private:
     Ui::MainWindow *ui;
     AboutDialog *aboutDialog;
@@ -35,7 +37,6 @@ private:
     Dialog *dialog;
     QString filename;
     DiagramScene *scene;
-
     QButtonGroup *buttonGroup;
 
     void setFileName(const QString &fn)
@@ -72,20 +73,3 @@ signals:
 };
 
 #endif // MAINWINDOW_H
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

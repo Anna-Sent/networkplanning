@@ -366,7 +366,6 @@ void TreeModel::afterOperationInsert(Operation *o, int index)
 
 void TreeModel::updated()
 {
-    //reset();
 }
 
 void TreeModel::beforeClear()
@@ -508,8 +507,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
-QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent)
-            const
+QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) const
 {
     if (!hasIndex(row, column, parent))
         return QModelIndex();
@@ -605,21 +603,3 @@ void TreeModel::fill(QComboBox *cbox, const QModelIndex &index) const
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

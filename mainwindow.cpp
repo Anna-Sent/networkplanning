@@ -3,8 +3,8 @@
 #include "operationdelegate.h"
 #include "treeitem.h"
 #include "positioning.h"
-#include <QFileDialog>
 #include "diagramscene.h"
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
         : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -88,7 +88,7 @@ void MainWindow::deleteItem()
 
 void MainWindow::sceneScaleChanged(const QString &scale)
 {
-    double newScale = scale.left(scale.indexOf(tr("%"))).toDouble() / 100.0;
+    double newScale = scale.left(scale.indexOf("%")).toDouble() / 100.0;
     QMatrix oldMatrix = ui->graphView->matrix();
     ui->graphView->resetMatrix();
     ui->graphView->translate(oldMatrix.dx(), oldMatrix.dy());
@@ -144,7 +144,7 @@ void MainWindow::createToolbar()
 
     QAction *deleteAction = new QAction (QIcon(":/images/delete.png"),
             QString::fromUtf8("Удалить выбранный элемент"), toolBar);
-    deleteAction->setShortcut(tr("Delete"));
+    deleteAction->setShortcut(QString("Delete"));
     deleteAction->setStatusTip(QString::fromUtf8("Удалить выбранный элемент"));
     connect(deleteAction,SIGNAL(triggered()),this,SLOT(deleteItem()));
     connect(scene,SIGNAL(actionsEnabled(bool)),deleteAction,SLOT(setEnabled(bool)));
@@ -212,7 +212,6 @@ void MainWindow::open()
                 scene->setModel(&netmodel);
                 // then dialog. order is important
                 dialog->setModel(netmodel);
-                //netmodel.update();
             }
         }
         else
@@ -352,7 +351,7 @@ void MainWindow::deleteOperation()
     treemodel->removeOperation(selected);
 }
 
-void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
+void MainWindow::currentChanged(const QModelIndex &current, const QModelIndex &)
 {
     if (current.isValid())
     {

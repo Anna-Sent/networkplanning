@@ -66,20 +66,3 @@ private slots:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

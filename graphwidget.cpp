@@ -1,44 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: Nokia Corporation (qt-info@nokia.com)
-**
-** This file is part of the examples of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial Usage
-** Licensees holding valid Qt Commercial licenses may use this file in
-** accordance with the Qt Commercial License Agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Nokia.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Nokia gives you certain
-** additional rights. These rights are described in the Nokia Qt LGPL
-** Exception version 1.0, included in the file LGPL_EXCEPTION.txt in this
-** package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
-** If you are unsure which license is appropriate for your use, please
-** contact the sales department at http://www.qtsoftware.com/contact.
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include <QtGui>
 
 #include "graphwidget.h"
@@ -48,10 +7,9 @@
 
 void GraphWidget::setModel(NetModel* model)
 {
-
     if (_model!=0)
     {
-        foreach(QObject* o,children())
+        foreach(QObject* o, children())
         {
             delete o;
         }
@@ -61,13 +19,8 @@ void GraphWidget::setModel(NetModel* model)
     if (!model) return;
 
     QList<Event*>* events = _model->getEvents();
-    foreach(Event* ev,*events)
+    foreach(Event* ev, *events)
     {
-        /*EventWidget *ic = new EventWidget(ev,model,this);
-                //ic->setText(QString::number(ev->getN()));
-                ic->move(ev->getPoint());
-                ic->show();
-                ic->setAttribute(Qt::WA_DeleteOnClose);*/
         EventAdd(0,ev);
     }
     connect(model, SIGNAL(eventNameChanged(QObject *, Event *, const QString &)), this, SLOT(eventNameChanged(QObject *, Event *, const QString &)));
@@ -81,27 +34,24 @@ void GraphWidget::setModel(NetModel* model)
 
 void GraphWidget::clearModel()
 {
-            foreach(QObject* o,children())
-        {
-            delete o;
-        }
+    foreach(QObject* o, children())
+    {
+        delete o;
+    }
     update();
 }
 
 void GraphWidget::updatePositions()
 {
-
 }
 
 void GraphWidget::EventAdd(QObject *, Event * ev)
 {
     EventWidget *ic = new EventWidget(ev,_model,this);
-    //ic->setText(QString::number(ev->getN()));
     ic->move(ev->getPoint());
     ic->show();
     ic->setAttribute(Qt::WA_DeleteOnClose);
     recreatePoints();
-    //update();
     ic->update();
 }
 
@@ -110,35 +60,14 @@ void GraphWidget::EventAdd(QObject *, Event * ev,int)
     EventAdd(0,ev);
 }
 
-//! [0]
 GraphWidget::GraphWidget(QWidget *parent)
     : QFrame(parent)
 {
     _model=0;
     setMinimumSize(200, 200);
     setFrameStyle(QFrame::Sunken | QFrame::StyledPanel);
-
     setAcceptDrops(true);
-    /*
-    QLabel *boatIcon = new QLabel(this);
-    boatIcon->setPixmap(QPixmap(":/images/boat.png"));
-    boatIcon->move(20, 20);
-    boatIcon->show();
-    boatIcon->setAttribute(Qt::WA_DeleteOnClose);
-
-    QLabel *carIcon = new QLabel(this);
-    carIcon->setPixmap(QPixmap(":/images/car.png"));
-    carIcon->move(120, 20);
-    carIcon->show();
-    carIcon->setAttribute(Qt::WA_DeleteOnClose);
-
-    QLabel *houseIcon = new QLabel(this);
-    houseIcon->setPixmap(QPixmap(":/images/house.png"));
-    houseIcon->move(20, 120);
-    houseIcon->show();
-    houseIcon->setAttribute(Qt::WA_DeleteOnClose);*/
 }
-//! [0]
 
 void GraphWidget::dragEnterEvent(QDragEnterEvent *event)
 {
@@ -176,14 +105,10 @@ void GraphWidget::dropEvent(QDropEvent *event)
 
         QPixmap pixmap;
         QPoint offset;
-        //Event* ev;
-        //void * ev;
         dataStream >> pixmap >> offset;
         Event * chev = 0;
         dataStream.readRawData(reinterpret_cast<char*>(&chev),sizeof(chev));
-        //EventAdd(0,chev);
         EventWidget *newIcon = new EventWidget(chev,_model,this);
-        //QLabel *newIcon = new QLabel(this);
         newIcon->setPixmap(pixmap);
         newIcon->move(event->pos() - offset);
         newIcon->show();
@@ -198,7 +123,6 @@ void GraphWidget::dropEvent(QDropEvent *event)
     } else
         if (event->mimeData()->hasFormat("application/x-arrowpointdata")) {
         event->setDropAction(Qt::MoveAction);
-        //event->accept();
         EventWidget *child = qobject_cast<EventWidget*>(childAt(event->pos()));
         if (child) child->dropEvent(event);
     } else
@@ -210,7 +134,6 @@ void GraphWidget::dropEvent(QDropEvent *event)
 
 }
 
-//! [1]
 void GraphWidget::mousePressEvent(QMouseEvent *event)
 {
     EventWidget *child = qobject_cast<EventWidget*>(childAt(event->pos()));
@@ -242,18 +165,10 @@ void GraphWidget::mousePressEvent(QMouseEvent *event)
         mimeData->setData("application/x-arrowpointdata", itemData);
     }
 
-    //! [1]
-
-    //! [2]
-
-    //! [2]
-
-    //! [3]
     QDrag *drag = new QDrag(this);
     drag->setMimeData(mimeData);
     drag->setPixmap(pixmap);
     drag->setHotSpot(event->pos() - achild->pos());
-    //! [3]
 
     QPixmap tempPixmap = pixmap;
     QPainter painter;
@@ -295,7 +210,6 @@ void GraphWidget::recreatePoints()
     {
         arrowpointwidget * ap = qobject_cast<arrowpointwidget *>(qo);
         delete ap;
-
     }
     if (!_model) return;
     foreach(Operation * op,*_model->getOperations())
@@ -304,8 +218,6 @@ void GraphWidget::recreatePoints()
         Event *ee = op->getEndEvent();
         QPoint center = QPoint(15,15);
         if (be&&ee) {
-            //painter.drawLine();
-
             QLine l = adjustLine(be->getPoint()+center,ee->getPoint()+center,15);
             arrowpointwidget* ap = new arrowpointwidget(arrowpointwidget::EEnd,op,ee,this);
             ap->move(l.p2());
@@ -325,7 +237,6 @@ void GraphWidget::paintEvent(QPaintEvent *event)
     if (!_model) return;
     QPainter painter;
     painter.begin(this);
-    QObjectList ch = children();
 
     QList<Event*>* events = _model->getEvents();
     foreach(Event* ev,*events)
@@ -337,12 +248,9 @@ void GraphWidget::paintEvent(QPaintEvent *event)
             Event *ee = op->getEndEvent();
             QPoint center = QPoint(15,15);
             if (be&&ee) {
-                //painter.drawLine();
                 drawArrow(painter,adjustLine(be->getPoint()+center,ee->getPoint()+center,15));
-
             }
         }
-
     }
     painter.end();
 }

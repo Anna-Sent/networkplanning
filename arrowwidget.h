@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QPaintEvent>
 
-class ArrowWidget:public QWidget
+class ArrowWidget : public QWidget
 {
 	void paintEvent(QPaintEvent *event);
 };

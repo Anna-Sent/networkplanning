@@ -61,20 +61,6 @@ void Dialog::display()
     QString error;
     cursor.beginEditBlock();
 
-/*    QRectF sceneRect = scene->itemsBoundingRect();
-    QSizeF size(sceneRect.size());
-    QSize imgSize = size.toSize();
-    QImage img(imgSize, QImage::Format_ARGB32);
-    img.fill(0);
-    if (!img.isNull())
-    {
-        QPainter p(&img);
-        scene->render(&p,img.rect(),sceneRect);
-        ui->textBrowser->setAlignment(Qt::AlignCenter);
-        cursor.insertImage(img, QString::fromUtf8("Сетевая модель"));
-    }
-    cursor.insertBlock();*/
-
     if (!netmodel)
     {
         ui->textBrowser->setAlignment(Qt::AlignLeft);
@@ -138,7 +124,6 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
     data.clear();
     if (!pathes)
         pathes = netmodel->getFullPathes();
-    //netmodel->sort(*pathes);
     foreach (Path p, *pathes)
     {
         QList<QVariant> row;
@@ -147,7 +132,6 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
         row << FORMAT(netmodel->getReserveTime(p));
         data << row;
     }
-    //delete pathes;
 }
 
 /*Before call this function check the netmodel is not null and is correct.*/

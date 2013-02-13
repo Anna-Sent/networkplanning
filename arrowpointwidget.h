@@ -6,13 +6,13 @@
 
 class arrowpointwidget : public QLabel
 {
-        Q_OBJECT
+    Q_OBJECT
 public:
     enum EndRole {EBegin,EEnd};
     EndRole role;
     Operation *op;
-    Event * ev;
-    arrowpointwidget(EndRole role,Operation* op,Event * ev,QWidget *parent=0);
+    Event *ev;
+    arrowpointwidget(EndRole role, Operation * op,Event * ev,QWidget * parent = 0);
 };
 
 #endif // ARROWPOINTWIDGET_H

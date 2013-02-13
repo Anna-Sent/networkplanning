@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDropEvent>
 #include "arrowpointwidget.h"
+
 EventWidget::EventWidget(Event *event, NetModel *model, QWidget *parent):QLabel(parent)
 {
     _event=(event);
@@ -17,6 +18,7 @@ EventWidget::EventWidget(Event *event, NetModel *model, QWidget *parent):QLabel(
     this->setPixmap(icon);
     setAcceptDrops(true);
 }
+
 QPoint EventWidget::center() const
 {
     return QPoint(15,15);
@@ -27,7 +29,7 @@ void EventWidget::paintEvent(QPaintEvent *)
     QPainter p;
     p.begin(this);
     p.drawPixmap(0,0,*this->pixmap());
-    p.drawText(QRect(0,0,30,30),Qt::AlignCenter,QString::number(_event->getN()) );
+    p.drawText(QRect(0,0,30,30),Qt::AlignCenter,QString::number(_event->getN()));
     p.end();
 }
 
@@ -41,13 +43,10 @@ void EventWidget::dropEvent(QDropEvent *event)
 
         QPixmap pixmap;
         QPoint offset;
-        //Event* ev;
-        //void * ev;
         dataStream >> pixmap >> offset;
         Event * chev = 0;
         Operation * chop = 0;
         arrowpointwidget::EndRole role;
-        //dataStream.readRawData(reinterpret_cast<char*>(&role  ),sizeof(role));
         int rol;
         dataStream >> rol;
         role=static_cast<arrowpointwidget::EndRole>(rol);
@@ -65,14 +64,6 @@ void EventWidget::dropEvent(QDropEvent *event)
                break;
             };
         };
-
-        //EventAdd(0,chev);
-        /*EventWidget *newIcon = new EventWidget(chev,_model,this);
-        //QLabel *newIcon = new QLabel(this);
-        newIcon->setPixmap(pixmap);
-        newIcon->move(event->pos() - offset);
-        newIcon->show();
-        newIcon->setAttribute(Qt::WA_DeleteOnClose);*/
 
         if (event->source() == this) {
             event->setDropAction(Qt::MoveAction);

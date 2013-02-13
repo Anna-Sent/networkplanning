@@ -6,7 +6,7 @@
 #include "diagramscene.h"
 #include <assert.h>
 
-DiagramItem::DiagramItem(DiagramType diagramType, Event * ev, QMenu *contextMenu,
+DiagramItem::DiagramItem(DiagramType diagramType, Event *ev, QMenu *contextMenu,
              QGraphicsItem *parent, DiagramScene *scene)
     : QGraphicsItem(parent, scene)
 {
@@ -45,7 +45,6 @@ void DiagramItem::paint ( QPainter *painter, const QStyleOptionGraphicsItem *, Q
 void DiagramItem::removeArrow(Arrow *arrow)
 {
     int index = arrows.indexOf(arrow);
-
 
     if (index != -1)
     {
@@ -105,7 +104,7 @@ void DiagramItem::updateText()
 void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if ( event->button() == Qt::LeftButton ) {
-        DiagramTextItem * f = new DiagramTextItem ( this, scene() );
+        DiagramTextItem *f = new DiagramTextItem ( this, scene() );
         f->setPlainText(QString::number(_event->getN()));
         f->setZValue ( 1000.0 );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );

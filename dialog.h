@@ -1,11 +1,8 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-#include <QDialog>
 #include "netmodel.h"
-//#include "fullpathesmodel.h"
-//#include "calceventmodel.h"
-//#include "calcoperationmodel.h"
+#include <QDialog>
 #include <QTextCursor>
 #include "ui_dialog.h"
 #include <QPrinter>

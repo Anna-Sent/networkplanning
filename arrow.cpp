@@ -1,15 +1,14 @@
 #include <QtGui>
 
 #include "arrow.h"
-#include <math.h>
-#include <assert.h>
 #include "diagramtextitem.h"
 #include "netmodel.h"
 #include "diagramscene.h"
+#include <math.h>
+#include <assert.h>
 
 const qreal Pi = 3.14;
 
-//! [0]
 Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem,
          QGraphicsItem *parent, DiagramScene *scene)
     : QGraphicsLineItem(parent, scene)
@@ -23,12 +22,6 @@ Arrow::Arrow(DiagramItem *startItem, DiagramItem *endItem,
     setPen(QPen(myColor, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
     editing=false;
 }
-//! [0]
-
-/*Arrow::Arrow(Operation * op,QGraphicsItem *parent = 0, QGraphicsScene *scene = 0)
-{
-    my
-}*/
 
 void Arrow::setEndItem(DiagramItem* di)
 {
@@ -36,8 +29,6 @@ void Arrow::setEndItem(DiagramItem* di)
     updatePosition();
 }
 
-
-//! [1]
 QRectF Arrow::boundingRect() const
 {
     qreal extra = (pen().width()+5) ;
@@ -50,9 +41,7 @@ QRectF Arrow::boundingRect() const
         .adjusted(-extra, -extra, extra, extra);
     return result;
 }
-//! [1]
 
-//! [2]
 QPainterPath Arrow::shape() const
 {
     QPen p = pen();
@@ -66,62 +55,42 @@ QPainterPath Arrow::shape() const
     me->setPen(op);
     return path;
 }
-//! [2]
 
-//! [3]
 void Arrow::updatePosition()
 {
     if (myStartItem==0||myEndItem==0) return;
     QLineF line(mapFromItem(myStartItem, 0, 0), mapFromItem(myEndItem, 0, 0));
     setLine(line);
 }
-//! [3]
 
-//! [4]
 void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
           QWidget *)
 {
     if (myStartItem==0||myEndItem==0||_op==0) return;
-    /*if (myStartItem->collidesWithItem(myEndItem))
-        return;*/
     QLineF centerLine(myStartItem->pos(), myEndItem->pos());
     if (centerLine.length()<myStartItem->radius()+myEndItem->radius()) return;
 
     QPen myPen = pen();
-    //QPen bpen = pen();
-    //bpen.setColor(Qt::green);
-    //painter->setPen(bpen);
-    //painter->drawRect(boundingRect().adjusted(-1,-1,1,1));
-    //myPen.setColor(myColor);
     qreal arrowSize = 20;
     if (isSelected()&&static_cast<DiagramScene*>(scene())->getRenderSelection()) myPen.setWidth(myPen.width()*2);
     if (_op->inCriticalPath())
     {
         painter->setBrush(myCritColor);
         myPen.setColor(myCritColor);
-
-        //setColor(myCritColor);
     }
     else
     {
         painter->setBrush(myColor);
         myPen.setColor(myColor);
-        //setColor(myColor);
     }
     if (_op->getWaitTime()==0) myPen.setStyle(Qt::DashLine);
     painter->setPen(myPen);
-    //painter->setBrush(myColor);
-
-//! [4] //! [5]
-
 
     centerLine.setLength(centerLine.length()-endItem()->radius());
 
     QPointF mid = centerLine.pointAt(0.5);
     QLineF diff = centerLine.normalVector().unitVector();
-    //qreal asc = painter->fontMetrics().ascent();
     diff.setLength(20.0);
-    //diff.translate(mid);
     qreal ddy = diff.dy();
     qreal ddx = diff.dx();
     if (centerLine.normalVector().dy()>1)
@@ -138,35 +107,25 @@ void Arrow::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 
     QLineF resLine = QLineF(centerLine.p2(), myStartItem->pos());
     setLine(resLine);
-//! [5] //! [6]
 
     double angle = ::acos(line().dx() / line().length());
     if (line().dy() >= 0)
         angle = (Pi * 2) - angle;
 
-        QPointF arrowP1 = line().p1() + QPointF(sin(angle + Pi / 3) * arrowSize,
-                                        cos(angle + Pi / 3) * arrowSize);
-        QPointF arrowP2 = line().p1() + QPointF(sin(angle + Pi - Pi / 3) * arrowSize,
-                                        cos(angle + Pi - Pi / 3) * arrowSize);
+    QPointF arrowP1 = line().p1() + QPointF(sin(angle + Pi / 3) * arrowSize,
+                                    cos(angle + Pi / 3) * arrowSize);
+    QPointF arrowP2 = line().p1() + QPointF(sin(angle + Pi - Pi / 3) * arrowSize,
+                                    cos(angle + Pi - Pi / 3) * arrowSize);
 
-        arrowHead.clear();
-        arrowHead << line().p1() << arrowP1 << arrowP2;
-//! [6] //! [7]
-        painter->drawLine(line());
+    arrowHead.clear();
+    arrowHead << line().p1() << arrowP1 << arrowP2;
+
+    painter->drawLine(line());
 	myPen.setStyle(Qt::SolidLine);
 	painter->setPen(myPen);
 
-	painter->drawPolygon(arrowHead);
-	/*if (isSelected()) {
-            painter->setPen(QPen(myColor, 1, Qt::DashLine));
-        QLineF myLine = line();
-        myLine.translate(4.0, 4.0);
-        painter->drawLine(myLine);
-        myLine.translate(-8.0,-8.0);
-        painter->drawLine(myLine);
-    }*/
+    painter->drawPolygon(arrowHead);
 }
-//! [7]
 
 void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -175,13 +134,12 @@ void Arrow::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         f->setPlainText(QString::number(_op->getWaitTime()));
         f->setZValue ( 1000.0 );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
-        f->setPos ( /*event->pos()*/textLabelR.topLeft() );
+        f->setPos ( textLabelR.topLeft() );
         f->setTextInteractionFlags ( Qt::TextEditorInteraction );
         f->setFocus();
         DiagramScene *ds = static_cast<DiagramScene*>(scene());
         editing=true;
         ds->editing(true);
-        //QObject::connect(f,SIGNAL(changeN(Event*,int)), dynamic_cast<DiagramScene*>(scene())->model(),SLOT(setN(Event*,int)));
     }
 }
 
@@ -189,7 +147,6 @@ void Arrow::setValue(QString &str)
 {
         bool ok=false;
         double num = str.toDouble(&ok);
-        //emit changeN(i->event(),num);
         DiagramScene *ds = static_cast<DiagramScene*>(scene());
         editing=false;
         if (ok) ds->model()->setOperationWaitTime(_op,num);
