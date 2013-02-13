@@ -2,9 +2,9 @@
 #define DIALOG_H
 
 #include "netmodel.h"
+#include "ui_dialog.h"
 #include <QDialog>
 #include <QTextCursor>
-#include "ui_dialog.h"
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QPainter>
