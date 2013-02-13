@@ -120,10 +120,10 @@ void DiagramItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void DiagramItem::setValue(QString& val)
 {
 	if (!_event) return;
-        bool ok=false;
-        int num = val.toInt(&ok,10);
-        DiagramScene *ds = static_cast<DiagramScene*>(scene());
-        if (ok) ds->model()->setN(_event,num);
-        ds->editing(false);
-        editing=false;
+    bool ok=false;
+    int num = val.toInt(&ok,10);
+    DiagramScene *ds = static_cast<DiagramScene*>(scene());
+    if (ok) ds->model()->setN(_event,num);
+    ds->editing(false);
+    editing=false;
 }
