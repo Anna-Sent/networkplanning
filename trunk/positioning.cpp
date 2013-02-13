@@ -6,8 +6,8 @@ void PlanarPosition::position(NetModel* model)
 {
 	typedef QSet<Event*> evlist;
 	Event* begin = model->getBeginEvent();
-        if (!begin)
-            return ;
+    if (!begin)
+        return ;
 	evlist wave;
 	evlist nextWave;
 	evlist processed;
@@ -31,12 +31,11 @@ void PlanarPosition::position(NetModel* model)
 					end->getPoint()=QPoint(x,y);
 					processed.insert(end);
 					nextWave.insert(end);
-                                        y+=150;
+                    y+=150;
 				}
 			}
 		}
-                x+=60;
+        x+=60;
 		wave=nextWave;
 	}
 }
-

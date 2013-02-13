@@ -1,7 +1,8 @@
 #include "netmodel.h"
+#include "cachemanager.h"
 #include <QDebug>
 #include <limits>
-#include "cachemanager.h"
+
 using namespace std;
 
 Event::Event()
@@ -145,8 +146,6 @@ NetModel::NetModel() : fullPathes(NULL), criticPathes(NULL)
 void NetModel::updateCriticalPath()
 {
     clearCache();
-    //fullPathes = _getFullPathes();
-    //criticPathes = _getCriticalPathes();
     foreach (Operation *o, operations)
     {
         o->_inCriticalPath = inCriticalPath(o);
@@ -272,7 +271,7 @@ bool NetModel::insert(int i, Event* event)
         return false;
 }
 
-bool NetModel::remove(Event* event/*, bool deleteOutput*/)
+bool NetModel::remove(Event* event)
 {
     int index=events.indexOf(event);
     if (index!=-1)
@@ -296,12 +295,8 @@ void NetModel::connect(Event* event, Operation* operation)
 {
     if (operation && operation->getBeginEvent()==NULL)
     {
-        //add(event);
-        //add(operation);
         if (event) event->addOutOperation(operation);
         operation->setBeginEvent(event);
-        //cmanager->reset(operation->getBeginEvent());
-        //emit updated();
     }
 }
 
@@ -309,12 +304,8 @@ void NetModel::connect(Operation* operation, Event* event)
 {
     if (operation && operation->getEndEvent()==NULL)
     {
-        //add(event);
-        //add(operation);
         if (event) event->addInOperation(operation);
         operation->setEndEvent(event);
-        //cmanager->reset(operation->getBeginEvent());
-        //emit updated();
     }
 }
 
@@ -328,8 +319,6 @@ void NetModel::disconnect(Event* event,Operation* operation)
     }
     if (operation && operation->getBeginEvent()==event)
         operation->setBeginEvent(NULL);
-    //cmanager->reset(operation->getBeginEvent());
-    //emit updated();
 }
 
 void NetModel::disconnect(Operation* operation,Event* event)
@@ -342,8 +331,6 @@ void NetModel::disconnect(Operation* operation,Event* event)
     }
     if (operation && operation->getEndEvent()==event)
         operation->setEndEvent(NULL);
-    //cmanager->reset(operation->getBeginEvent());
-    //emit updated();
 }
 
 void NetModel::connect(Event *e1, Operation *o, Event *e2)
@@ -544,7 +531,6 @@ void NetModel::getPathes(Event *begin, Event *end, QList<Path> *pathes)
             pathes->append(path);
         } else {
             Event *prev = operation->getBeginEvent();
-            //QList<Path> pathes1;
             int c1 = pathes->count();
             getPathes(begin, prev, pathes);
             int c2 = pathes->count();
@@ -601,7 +587,6 @@ bool pathLessThan(const Path &p1, const Path &p2)
         else
             return p1.events[i]->getN()<p2.events[i]->getN();
     }
-    //return p1.code() < p2.code();
 }
 
 void NetModel::qsort(QList<Path> &pathes)
@@ -643,27 +628,11 @@ bool operationLessThan(const Operation *o1, const Operation *o2)
         return true;
     else
         return false;
-//    return o1->getCode()<o2->getCode();
 }
 
 QList<Event*> *NetModel::getSortedEvents()
 {
     QList<Event*> *list = new QList<Event*>(events);
-    /*for (int i=0; i<list->count()-1; ++i)
-    {
-        int max = i;
-        for (int j=i+1; j<list->count(); ++j)
-        {
-            if (list->at(j)->getN()<list->at(max)->getN())
-                max = j;
-        }
-        if (max!=i)
-        {
-            Event *tmp = list->at(i);
-            list->replace(i, list->at(max));
-            list->replace(max, tmp);
-        }
-    }*/
     qSort(list->begin(), list->end(), eventLessThan);
     return list;
 }
@@ -671,21 +640,6 @@ QList<Event*> *NetModel::getSortedEvents()
 QList<Operation*> *NetModel::getSortedOperatioins()
 {
     QList<Operation*> *list = new QList<Operation*>(operations);
-    /*for (int i=0; i<list->count()-1; ++i)
-    {
-        int max = i;
-        for (int j=i+1; j<list->count(); ++j)
-        {
-            if (list->at(j)->getCode()<list->at(max)->getCode())
-                max = j;
-        }
-        if (max!=i)
-        {
-            Operation *tmp = list->at(i);
-            list->replace(i, list->at(max));
-            list->replace(max, tmp);
-        }
-    }*/
     qSort(list->begin(), list->end(), operationLessThan);
     return list;
 }
@@ -753,8 +707,7 @@ QList<Path> *NetModel::getCriticalPathes()
 {
     if (!criticPathes)
         criticPathes = _getCriticalPathes();
-    return criticPathes;//new QList<Path>(*criticPathes);
-//    return _getCriticalPathes();
+    return criticPathes;
 }
 
 QList<Path> *NetModel::getFullPathes()
@@ -764,8 +717,7 @@ QList<Path> *NetModel::getFullPathes()
         fullPathes = _getFullPathes();
         qsort(*fullPathes);
     }
-    return fullPathes;//new QList<Path>(*fullPathes);
-//    return _getFullPathes();
+    return fullPathes;
 }
 
 double NetModel::getCriticalPathWeight()
@@ -774,7 +726,6 @@ double NetModel::getCriticalPathWeight()
     QList<Path> *pathes = getCriticalPathes();
     if (pathes->count()>0)
         w = pathes->first().weight();
-    //delete pathes;
     return w;
 }
 
@@ -821,7 +772,6 @@ double NetModel::getReserveTime(Event *e)
 double NetModel::getFullReserveTime(Operation *o)
 {
     return getLaterEndTime(o)-getEarlyEndTime(o);
-    //return getLaterStartTime(o)-getEarlyStartTime(o); // it's the same
 }
 
 double NetModel::getFreeReserveTime(Operation *o)
@@ -854,7 +804,6 @@ bool NetModel::setName(Event *e, const QString &name)
 
 bool NetModel::setOperationEndEvent(Operation *o, Event *e)
 {
-    //if (!e) return false;
     if (getOperationByEvents(o->getBeginEvent(), e))
         return false;
     else
@@ -1039,8 +988,8 @@ QDataStream &NetModel::readOperation(Operation **o, QDataStream &stream)
             connect(*o, NULL);
         else
             connect(*o, getEventByNumber(end));
-        (*o)->setName(name); // setOperationName(this, *o, name);
-        (*o)->setWaitTime(twait); // setOperationWaitTime(this, *o, twait);
+        (*o)->setName(name);
+        (*o)->setWaitTime(twait);
     }
     else
         *o = NULL;
@@ -1108,7 +1057,7 @@ bool NetModel::inCriticalPath(Operation *o)
                 break;
             }
         }
-        //delete pathes;
+
         return contains;
     }
     else

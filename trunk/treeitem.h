@@ -29,19 +29,14 @@ public:
 
     TreeItem *child(int row);
     int childCount() const {return childItems.count();}
-    //int columnCount() const;
-    //QVariant data(int column) const;
     int row() const;
     TreeItem *parent();
 
     Event *getEvent() {return event;}
     Operation *getOperation() {return operation;}
-    //void setEvent(Event *e) {if (!operation) event=e;}
-    //void setOperation(Operation *o) {if (!event) operation=o;}
 
 private:
     QList<TreeItem*> childItems;
-    //QList<QVariant> itemData;
     TreeItem *parentItem;
     Event *event;
     Operation *operation;

@@ -8,7 +8,7 @@ CacheManager::CacheManager()
     miss=0;
 }
 
-void CacheManager::put(Event *p1,Event *p2, const QList<Path>* data)
+void CacheManager::put(Event *p1, Event *p2, const QList<Path> *data)
 {
     if (cache[p1][p2]) {
         (*cache[p1][p2])=*data;
@@ -17,11 +17,10 @@ void CacheManager::put(Event *p1,Event *p2, const QList<Path>* data)
     }
 }
 
-bool CacheManager::get(Event *p1,Event *p2, QList<Path>* data)
+bool CacheManager::get(Event *p1, Event *p2, QList<Path> *data)
 {
     if (cache[p1][p2]) {
-        //(*data).append(*cache[p1][p2]);
-	foreach(const Path& p,*cache[p1][p2]) {
+    foreach(const Path &p, *cache[p1][p2]) {
 		data->append(p);
 	}
         ++hit;
@@ -32,33 +31,32 @@ bool CacheManager::get(Event *p1,Event *p2, QList<Path>* data)
     }
 }
 
-void CacheManager::prepending(Event *ev,QSet<Event*>& r)
+void CacheManager::prepending(Event *ev, QSet<Event*> &r)
 {
     if(ev==0) return;
     if (!r.contains(ev)) {
         r.insert(ev);
-        foreach(Operation* o,ev->getInOperations())
+        foreach(Operation *o, ev->getInOperations())
         {
-            prepending(o->getBeginEvent(),r);
+            prepending(o->getBeginEvent(), r);
         }
     }
 }
 
-void CacheManager::postponing(Event *ev,QSet<Event*>& r)
+void CacheManager::postponing(Event *ev, QSet<Event*> &r)
 {
     if(ev==0) return;
     if (!r.contains(ev)) {
         r.insert(ev);
-        foreach(Operation* o,ev->getOutOperations())
+        foreach(Operation *o, ev->getOutOperations())
         {
-            postponing(o->getEndEvent(),r);
+            postponing(o->getEndEvent(), r);
         }
     }
 }
 
 void CacheManager::reset(Event *ev)
 {
-    //qDebug() << hit << miss;
     hit=0;
     miss=0;
     if (ev==0) {
@@ -72,9 +70,9 @@ void CacheManager::reset(Event *ev)
         QSet<Event*> post;
         prepending(ev,pre);
         postponing(ev,post);
-        foreach(Event* e1,pre)
+        foreach(Event* e1, pre)
         {
-            foreach(Event* e2,post)
+            foreach(Event* e2, post)
             {
                 QList<Path>* &it = cache[e1][e2];
                 delete it;
