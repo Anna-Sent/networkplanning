@@ -76,6 +76,7 @@ private:
     QString calcCode() const;
 public:
     QList<Event*> events;
+    Path() { }
     Path(QList<Event*> events);
     QString code() const {return _code;}
     double weight() const {return _weight;}

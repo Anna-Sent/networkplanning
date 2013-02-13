@@ -1115,7 +1115,66 @@ bool NetModel::inCriticalPath(Operation *o)
         return false;
 }
 
-double NetModel::getIntensityFactor(Operation *)
+double NetModel::getIntensityFactor(Operation *operation)
 {
-    return -1;
+    // Если работа принадлежит критическому пути, то
+    // коэффициент напряженности равен 1.
+    if (inCriticalPath(operation))
+    {
+        return 1;
+    }
+
+    // Ищем все пути в графе (они кэшируются, поэтому
+    // не волнуемся за производительность).
+    QList<Path> *pathes = new QList<Path>;
+    Event *begin, *end;
+    getBeginEndEvents(&begin, &end);
+    getPathes(begin, end, pathes);
+
+    // Ищем максимальный путь, проходящий через
+    // заданную работу.
+    double tmax = 0;
+    Path pmax;
+    foreach (Path p, *pathes)
+    {
+        if (p.contains(operation) && p.weight() > tmax)
+        {
+            tmax = p.weight();
+            pmax = p;
+        }
+    }
+
+    // Если максимальный путь имеет продолжительность 0,
+    // то и коэффициент равен 0.
+    double factor = 0;
+    if (tmax > 0)
+    {
+        // Пересечение максимального пути, проходящего через
+        // заданную работу, с критическим путем.
+        double t1cr = 0;
+        for (int i = 0; i < pmax.events.count() - 1; ++i)
+        {
+            foreach (Operation *o, pmax.events[i]->getOutOperations())
+            {
+                if (o->getEndEvent() == pmax.events[i+1])
+                {
+                    if (o->inCriticalPath())
+                    {
+                        t1cr += o->getWaitTime();
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        // Продолжительность критического пути.
+        double tcr = getCriticalPathWeight();
+
+        // Считаем по формуле.
+        factor = (tmax - t1cr) / (tcr - t1cr);
+    }
+
+    delete pathes;
+    return factor;
 }
