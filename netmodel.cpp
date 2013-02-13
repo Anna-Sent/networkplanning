@@ -1048,6 +1048,7 @@ bool NetModel::inCriticalPath(Operation *o)
     if (isCorrect())
     {
         QList<Path> *pathes = getCriticalPathes();
+
         bool contains = false;
         foreach (Path path, *pathes)
         {
