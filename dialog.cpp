@@ -114,6 +114,22 @@ void Dialog::display()
     cursor.endEditBlock();
 }
 
+QString FORMAT(double x)
+{
+    QString result = QString::number(x, 'f', 3);
+    while (result.endsWith(QChar('0')))
+    {
+        result.remove(result.length() - 1, 1);
+    }
+
+    if (!result[result.length() - 1].isDigit()) // (result.endsWith(QChar('.')) || result.endsWith(QChar(',')))
+    {
+        result.remove(result.length() - 1, 1);
+    }
+
+    return result;
+}
+
 /*Before call this function check the netmodel is not null and is correct.*/
 void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> > &data)
 {
@@ -126,7 +142,9 @@ void Dialog::fillFullPathesData(QList<QVariant> &header, QList< QList<QVariant> 
     foreach (Path p, *pathes)
     {
         QList<QVariant> row;
-        row << p.code() << p.weight() << netmodel->getReserveTime(p);
+        row << p.code();
+        row << FORMAT(p.weight());
+        row << FORMAT(netmodel->getReserveTime(p));
         data << row;
     }
     //delete pathes;
@@ -143,10 +161,12 @@ void Dialog::fillEventsData(QList<QVariant> &header, QList< QList<QVariant> > &d
     foreach (Event *e, *eventsList)
     {
         QList<QVariant> row;
-        row << e->getN() << netmodel->getEarlyEndTime(e) << netmodel->getLaterEndTime(e) << netmodel->getReserveTime(e);
+        row << e->getN();
+        row << FORMAT(netmodel->getEarlyEndTime(e));
+        row << FORMAT(netmodel->getLaterEndTime(e));
+        row << FORMAT(netmodel->getReserveTime(e));
         data << row;
     }
-    //delete eventsList;
 }
 
 /*Before call this function check the netmodel is not null and is correct.*/
@@ -163,12 +183,17 @@ void Dialog::fillOperationsData(QList<QVariant> &header, QList< QList<QVariant> 
     foreach (Operation *o, *operationsList)
     {
         QList<QVariant> row;
-        row << o->getCode() << o->getWaitTime() << netmodel->getEarlyStartTime(o) << netmodel->getLaterStartTime(o)
-                << netmodel->getEarlyEndTime(o) << netmodel->getLaterEndTime(o) << netmodel->getFullReserveTime(o)
-                << netmodel->getFreeReserveTime(o) << netmodel->getIntensityFactor(o);
+        row << o->getCode();
+        row << FORMAT(o->getWaitTime());
+        row << FORMAT(netmodel->getEarlyStartTime(o));
+        row << FORMAT(netmodel->getLaterStartTime(o));
+        row << FORMAT(netmodel->getEarlyEndTime(o));
+        row << FORMAT(netmodel->getLaterEndTime(o));
+        row << FORMAT(netmodel->getFullReserveTime(o));
+        row << FORMAT(netmodel->getFreeReserveTime(o));
+        row << FORMAT(netmodel->getIntensityFactor(o));
         data << row;
     }
-    //delete operationsList;
 }
 
 void Dialog::displayTable(QTextCursor &cursor, const QList<QVariant> &header, const QList< QList<QVariant> > &data)
